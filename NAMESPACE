@@ -2,4 +2,5 @@
 
 export(geom_venn)
 import(ggplot2)
+import(sf)
 importFrom(ggforce,GeomShape)

@@ -29,11 +29,40 @@ StatVenn <- ggproto("StatVenn", Stat,
                       # else if (n_ellipses = 3) {do this}
                       # else if (n_ellipses = 4) {do this}
 
+                      data_list <- split(data[c("x", "y", "group")], f = data$group)
+                      circles <- lapply(data_list, function(x) {
+                        # repeat first polygon point to close polygon
+                        x[nrow(x) + 1, ] <- x[1, ]
+
+                        list(as.matrix(x[c("x", "y")]))
+                      })
+
+                      polygons <- lapply(circles, function(x) sf::st_polygon(x))
+
+                      if (n_ellipses == 2) {
+                        polygon_list <- make_2d_venn(polygons)
+                      } else if (n_ellipses == 3) {
+                        polygon_list <- make_3d_venn(polygons)
+                      } else if (n_ellipses == 4) {
+                        polygon_list <- make_4d_venn(polygons)
+                      } else {
+                        stop("geom_venn can only compare 2-4 sets")
+                      }
+                      #polygon_counts <- factor(c(100, 200, 300))
+                      polygon_counts <- seq(100, length(polygon_list) * 100, 100)
+                      polygon_name <- names(polygon_list)
+                      polygon_dfs <- lapply(1:length(polygon_list), function(i) {
+                        df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
+                        colnames(df) <- c("x","y")
+                        df$group <- polygon_name[[i]]
+                        df$fill <- polygon_counts[[i]]
+                        df
+                      })
+                      data_polygons <- do.call(rbind, polygon_dfs)
+
                       print("Now here!!!")
-                      str(data)
-                      print(head(data))
-                      print(tail(data))
-                      data
+                      str(data_polygons)
+                      data_polygons
                     },
                     required_aes = c('x0', 'y0', 'a', 'b', 'angle'),
                     default_aes = aes(m1 = NA, m2 = NA),
