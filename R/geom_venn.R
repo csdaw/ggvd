@@ -1,15 +1,39 @@
 StatVenn <- ggproto("StatVenn", Stat,
+
+                    required_aes = c('x0', 'y0', 'a', 'b', 'angle'),
+                    default_aes = aes(m1 = NA, m2 = NA),
+
                     setup_data = function(data, params) {
                       data$m1 <- ifelse(is.null(data$m1), 2, data$m1)
                       data$m2 <- ifelse(is.null(data$m2), data$m1, data$m2)
                       print("Here!")
+                      print(ggplot2::scale_type(data$group))
                       str(data)
                       data
                     },
-                    compute_panel = function(self, data, scales, n = 360) {
+
+                    setup_params = function(data, params) {
+                      print("params!!")
+                      str(params)
+                      params
+                    },
+
+                    extra_params = c('n', 'na.rm'),
+
+                    compute_panel = function(self, data, scales, type = "discrete", n = 360) {
                       if (is.null(data)) return(data)
 
+                      print("self!!")
+                      str(self)
+
+                      print("scales!!")
+                      str(scales)
+
                       data$group <- make.unique(as.character(data$group))
+
+                      print("group!!")
+                      str(data$group)
+
                       n_ellipses <- nrow(data)
                       print(n_ellipses)
                       data <- data[rep(seq_len(n_ellipses), each = n), ]
@@ -37,36 +61,41 @@ StatVenn <- ggproto("StatVenn", Stat,
                         list(as.matrix(x[c("x", "y")]))
                       })
 
-                      polygons <- lapply(circles, function(x) sf::st_polygon(x))
+                      if (type == "discrete") {
+                        print("discrete!")
+                        str(data)
+                        str(data_list)
+                        str(circles)
+                        data
+                      } else if (type == "continuous") {
+                        polygons <- lapply(circles, function(x) sf::st_polygon(x))
 
-                      if (n_ellipses == 2) {
-                        polygon_list <- make_2d_venn(polygons)
-                      } else if (n_ellipses == 3) {
-                        polygon_list <- make_3d_venn(polygons)
-                      } else if (n_ellipses == 4) {
-                        polygon_list <- make_4d_venn(polygons)
-                      } else {
-                        stop("geom_venn can only compare 2-4 sets")
+                        if (n_ellipses == 2) {
+                          polygon_list <- make_2d_venn(polygons)
+                        } else if (n_ellipses == 3) {
+                          polygon_list <- make_3d_venn(polygons)
+                        } else if (n_ellipses == 4) {
+                          polygon_list <- make_4d_venn(polygons)
+                        } else {
+                          stop("geom_venn can only compare 2-4 sets")
+                        }
+                        #polygon_counts <- factor(c(100, 200, 300))
+                        polygon_counts <- seq(100, length(polygon_list) * 100, 100)
+                        polygon_name <- names(polygon_list)
+                        polygon_dfs <- lapply(1:length(polygon_list), function(i) {
+                          df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
+                          colnames(df) <- c("x","y")
+                          df$group <- polygon_name[[i]]
+                          df$fill <- polygon_counts[[i]]
+                          df
+                        })
+                        data_polygons <- do.call(rbind, polygon_dfs)
+
+                        print("Now here!!!")
+                        str(data_polygons)
+                        data_polygons
                       }
-                      #polygon_counts <- factor(c(100, 200, 300))
-                      polygon_counts <- seq(100, length(polygon_list) * 100, 100)
-                      polygon_name <- names(polygon_list)
-                      polygon_dfs <- lapply(1:length(polygon_list), function(i) {
-                        df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
-                        colnames(df) <- c("x","y")
-                        df$group <- polygon_name[[i]]
-                        df$fill <- polygon_counts[[i]]
-                        df
-                      })
-                      data_polygons <- do.call(rbind, polygon_dfs)
-
-                      print("Now here!!!")
-                      str(data_polygons)
-                      data_polygons
-                    },
-                    required_aes = c('x0', 'y0', 'a', 'b', 'angle'),
-                    default_aes = aes(m1 = NA, m2 = NA),
-                    extra_params = c('n', 'na.rm')
+                    }
 )
 
 GeomVenn <- ggproto("GeomVenn", ggforce::GeomShape,
@@ -89,11 +118,21 @@ GeomVenn <- ggproto("GeomVenn", ggforce::GeomShape,
 #' @return Description.
 #' @export
 geom_venn <- function(mapping = NULL, data = NULL,
-                      position = "identity", na.rm = FALSE, show.legend = NA,
-                      inherit.aes = TRUE, ...) {
+                      position = "identity", ...,
+                      type = "discrete",
+                      na.rm = FALSE,
+                      show.legend = NA,
+                      inherit.aes = TRUE) {
+  print("mapping!!")
+  str(mapping)
+
   layer(
     stat = StatVenn, geom = GeomVenn, data = data, mapping = mapping,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
-    params = list(na.rm = na.rm, ...)
+    params = list(
+      type = type,
+      na.rm = na.rm,
+      ...
+    )
   )
 }

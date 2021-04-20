@@ -8,10 +8,11 @@ geom_venn(
   mapping = NULL,
   data = NULL,
   position = "identity",
+  ...,
+  type = "discrete",
   na.rm = FALSE,
   show.legend = NA,
-  inherit.aes = TRUE,
-  ...
+  inherit.aes = TRUE
 )
 }
 \arguments{
@@ -21,13 +22,13 @@ geom_venn(
 
 \item{position}{Description.}
 
+\item{...}{Description.}
+
 \item{na.rm}{Description.}
 
 \item{show.legend}{Description.}
 
 \item{inherit.aes}{Description.}
-
-\item{...}{Description.}
 }
 \value{
 Description.
