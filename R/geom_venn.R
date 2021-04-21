@@ -1,7 +1,6 @@
 StatVenn <- ggproto("StatVenn", Stat,
 
                     required_aes = c('x0', 'y0', 'a', 'b', 'angle'),
-                    default_aes = aes(m1 = NA, m2 = NA), # needed for super ellipse in ggforce. should delete later once I customise geom_shape
 
                     setup_params = function(data, params) {
                       print("params!!")
@@ -12,8 +11,6 @@ StatVenn <- ggproto("StatVenn", Stat,
                     extra_params = c('n', 'na.rm'),
 
                     setup_data = function(data, params) {
-                      data$m1 <- ifelse(is.null(data$m1), 2, data$m1) # super ellipse stuff. should delete later once I customise geom_shape
-                      data$m2 <- ifelse(is.null(data$m2), data$m1, data$m2) # super ellipse stuff. should delete later once I customise geom_shape
                       print("setup_data!!!")
                       print(ggplot2::scale_type(data$group))
                       str(data)
@@ -41,8 +38,8 @@ StatVenn <- ggproto("StatVenn", Stat,
                                     n_ellipses)
                       cos_p <- cos(points)
                       sin_p <- sin(points)
-                      x_tmp <- abs(cos_p)^(2 / data$m1) * data$a * sign(cos_p)
-                      y_tmp <- abs(sin_p)^(2 / data$m2) * data$b * sign(sin_p)
+                      x_tmp <- abs(cos_p) * data$a * sign(cos_p)
+                      y_tmp <- abs(sin_p) * data$b * sign(sin_p)
                       data$x <- data$x0 + x_tmp * cos(data$angle) - y_tmp * sin(data$angle)
                       data$y <- data$y0 + x_tmp * sin(data$angle) + y_tmp * cos(data$angle)
                       ## convert x and y columns to list of matrices separated by group
@@ -58,14 +55,16 @@ StatVenn <- ggproto("StatVenn", Stat,
                       print(unique(data$group))
                       print(unique(data$PANEL))
 
-                      # keep only necessary columns
-                      out <- data[ ,c("x", "y", "group", "fill", "colour", "PANEL")]
+
 
                       #out
 
                       if (type == "discrete") {
-                        out
+                        data
                       } else if (type == "continuous") {
+                        # keep only necessary columns
+                        out <- data[ ,c("x", "y", "group", "fill", "colour", "PANEL")]
+
                         # replace group to change drawing order
                         out$group <- gsub("1", "Y", out$group)
                         out$group <- gsub("2", "Z", out$group)

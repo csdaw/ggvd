@@ -63,6 +63,8 @@ ggplot() +
   scale_fill_gradient()
 
 ggplot() +
-  geom_venn(aes(x0 = x0, y0 = y0, a = a, b=b, angle = angle, fill = as.factor(count)), data = circles4,  type = "discrete", alpha = 0.5, colour = "black") +
-  coord_fixed()
+  geom_venn(aes(x0 = x0, y0 = y0, a = a, b=b, angle = angle, fill = factor(c("set1", "set2", "set3", "set4"))),
+            data = circles4,  type = "discrete", alpha = 0.5, colour = "black") +
+  coord_fixed() +
+  labs(fill = "Set")
 
