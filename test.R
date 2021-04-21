@@ -8,13 +8,30 @@ circles2 <- data.frame(
   b = c(0.5, 0.5),
   angle = c(0, 0),
   count = c(100, 100),
-  colour = factor(c("red", "blue"))
+  colour = factor(c("Set 1", "Set 2"))
 )
 
 ggplot() +
-  geom_venn(aes(x0 = x0, y0 = y0, a = a, b=b, angle = angle, fill = count, colour = colour), data = circles2, type = "continuous", alpha = 0.5) +
+  geom_venn(aes(x0 = x0, y0 = y0, a = a, b=b, angle = angle, fill = count, colour = colour), data = circles2, type = "continuous", alpha = 0.8) +
   coord_fixed() +
-  scale_fill_gradient()
+  scale_fill_gradient(na.value = NA) + # need na.value = NA for now but can remove when GeomShape is customised
+  scale_color_manual(values = c("red", "green"), na.value = NA) # need na.value = NA for now but can remove when GeomShape is customised
+
+ggplot() +
+  geom_venn(aes(x0 = x0, y0 = y0, a = a, b=b, angle = angle, fill = count, colour = factor(colour)), data = circles2, type = "continuous", alpha = 0.5) +
+  coord_fixed() +
+  scale_fill_gradient() +
+  scale_color_manual(values = c("red", "blue"))
+
+ggplot() +
+  geom_venn(aes(x0 = x0, y0 = y0, a = a, b=b, angle = angle, fill = factor(c(1, 2))), data = circles2, type = "continuous") +
+  coord_fixed() +
+  scale_fill_gradient() +
+  scale_color_manual(values = c("red", "blue", "green"))
+
+ggplot() +
+  geom_venn(aes(x0 = x0, y0 = y0, a = a, b=b, angle = angle, fill = factor(c(1, 2)), colour = factor(c(1, 2))), data = circles2, type = "discrete") +
+  coord_fixed()
 
 # Lets make some data
 circles3 <- data.frame(

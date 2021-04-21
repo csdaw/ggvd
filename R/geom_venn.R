@@ -1,16 +1,7 @@
 StatVenn <- ggproto("StatVenn", Stat,
 
                     required_aes = c('x0', 'y0', 'a', 'b', 'angle'),
-                    default_aes = aes(m1 = NA, m2 = NA),
-
-                    setup_data = function(data, params) {
-                      data$m1 <- ifelse(is.null(data$m1), 2, data$m1)
-                      data$m2 <- ifelse(is.null(data$m2), data$m1, data$m2)
-                      print("Here!")
-                      print(ggplot2::scale_type(data$group))
-                      str(data)
-                      data
-                    },
+                    default_aes = aes(m1 = NA, m2 = NA), # needed for super ellipse in ggforce. should delete later once I customise geom_shape
 
                     setup_params = function(data, params) {
                       print("params!!")
@@ -19,6 +10,15 @@ StatVenn <- ggproto("StatVenn", Stat,
                     },
 
                     extra_params = c('n', 'na.rm'),
+
+                    setup_data = function(data, params) {
+                      data$m1 <- ifelse(is.null(data$m1), 2, data$m1) # super ellipse stuff. should delete later once I customise geom_shape
+                      data$m2 <- ifelse(is.null(data$m2), data$m1, data$m2) # super ellipse stuff. should delete later once I customise geom_shape
+                      print("setup_data!!!")
+                      print(ggplot2::scale_type(data$group))
+                      str(data)
+                      data
+                    },
 
                     compute_panel = function(self, data, scales, type = "discrete", n = 360) {
                       if (is.null(data)) return(data)
@@ -53,21 +53,35 @@ StatVenn <- ggproto("StatVenn", Stat,
                       # else if (n_ellipses = 3) {do this}
                       # else if (n_ellipses = 4) {do this}
 
-                      data_list <- split(data[c("x", "y", "group")], f = data$group)
-                      circles <- lapply(data_list, function(x) {
-                        # repeat first polygon point to close polygon
-                        x[nrow(x) + 1, ] <- x[1, ]
+                      print("data!!!!!!")
+                      str(data)
+                      print(unique(data$group))
+                      print(unique(data$PANEL))
 
-                        list(as.matrix(x[c("x", "y")]))
-                      })
+                      # keep only necessary columns
+                      out <- data[ ,c("x", "y", "group", "fill", "colour", "PANEL")]
+
+                      #out
 
                       if (type == "discrete") {
-                        print("discrete!")
-                        str(data)
-                        str(data_list)
-                        str(circles)
-                        data
+                        out
                       } else if (type == "continuous") {
+                        # replace group to change drawing order
+                        out$group <- gsub("1", "Y", out$group)
+                        out$group <- gsub("2", "Z", out$group)
+
+                        # remove fill for circle outlines
+                        out$fill <- NA
+
+                        data_list <- split(data[c("x", "y", "group")], f = data$group)
+
+                        circles <- lapply(data_list, function(x) {
+                          # repeat first polygon point to close polygon
+                          x[nrow(x) + 1, ] <- x[1, ]
+
+                          list(as.matrix(x[c("x", "y")]))
+                        })
+
                         polygons <- lapply(circles, function(x) sf::st_polygon(x))
 
                         if (n_ellipses == 2) {
@@ -81,19 +95,30 @@ StatVenn <- ggproto("StatVenn", Stat,
                         }
                         #polygon_counts <- factor(c(100, 200, 300))
                         polygon_counts <- seq(100, length(polygon_list) * 100, 100)
-                        polygon_name <- names(polygon_list)
+                        print("polygon_counts!!")
+                        str(polygon_counts)
+                        polygon_names <- names(polygon_list)
+
+                        test_name <- c("X", "Y", "Z")
+
                         polygon_dfs <- lapply(1:length(polygon_list), function(i) {
                           df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
                           colnames(df) <- c("x","y")
-                          df$group <- polygon_name[[i]]
+                          df$group <- polygon_names[[i]]
                           df$fill <- polygon_counts[[i]]
+                          df$colour <- NA
+                          df$PANEL <- 1
                           df
                         })
                         data_polygons <- do.call(rbind, polygon_dfs)
 
-                        print("Now here!!!")
+                        print("data_polygons!!!")
                         str(data_polygons)
-                        data_polygons
+
+                        test <- rbind(out, data_polygons)
+                        print("test!!!")
+                        str(test)
+                        test
                       }
                     }
 )
@@ -124,7 +149,9 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       show.legend = NA,
                       inherit.aes = TRUE) {
   print("mapping!!")
+  print(names(mapping))
   str(mapping)
+  str(mapping$fill)
 
   layer(
     stat = StatVenn, geom = GeomVenn, data = data, mapping = mapping,
