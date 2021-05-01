@@ -1,38 +1,24 @@
 StatVenn <- ggproto("StatVenn", Stat,
 
                     required_aes = c('x0', 'y0', 'a', 'b', 'angle'),
+                    optional_aes = c('set_names', 'set_pos'),
 
                     setup_params = function(data, params) {
-                      print("params!!")
-                      str(params)
                       params
                     },
 
-                    extra_params = c('n', 'na.rm'),
+                    extra_params = c('n_ellipses', 'n', 'na.rm'),
 
                     setup_data = function(data, params) {
-                      print("setup_data!!!")
-                      print(ggplot2::scale_type(data$group))
-                      str(data)
                       data
                     },
 
-                    compute_panel = function(self, data, scales, type = "discrete", n = 360) {
+                    compute_panel = function(self, data, scales, n_ellipses = 2,
+                                             type = "discrete", n = 360) {
                       if (is.null(data)) return(data)
-
-                      print("self!!")
-                      str(self)
-
-                      print("scales!!")
-                      str(scales)
 
                       data$group <- make.unique(as.character(data$group))
 
-                      print("group!!")
-                      str(data$group)
-
-                      n_ellipses <- nrow(data)
-                      print(n_ellipses)
                       data <- data[rep(seq_len(n_ellipses), each = n), ]
                       points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)],
                                     n_ellipses)
@@ -42,26 +28,15 @@ StatVenn <- ggproto("StatVenn", Stat,
                       y_tmp <- abs(sin_p) * data$b * sign(sin_p)
                       data$x <- data$x0 + x_tmp * cos(data$angle) - y_tmp * sin(data$angle)
                       data$y <- data$y0 + x_tmp * sin(data$angle) + y_tmp * cos(data$angle)
-                      ## convert x and y columns to list of matrices separated by group
-                      ## convert matrices to list of polygons
-                      # polygons <- lapply(list_of_matrices, function(x) sf::st_polygon(x))
-                      ## perform the intersecting/setdiffing potentially by...
-                      # if (n_ellipses = 2) {do this}
-                      # else if (n_ellipses = 3) {do this}
-                      # else if (n_ellipses = 4) {do this}
 
                       print("data!!!!!!")
                       str(data)
                       print(unique(data$group))
-                      print(unique(data$PANEL))
-
-
-
-                      #out
 
                       if (type == "discrete") {
                         data
                       } else if (type == "continuous") {
+                        stop("work in progress")
                         # keep only necessary columns
                         out <- data[ ,c("x", "y", "group", "fill", "colour", "PANEL")]
 
@@ -123,7 +98,8 @@ StatVenn <- ggproto("StatVenn", Stat,
 )
 
 GeomVenn <- ggproto("GeomVenn", GeomPolygon,
-                    draw_panel = function(data, panel_params, coord) {
+                    extra_params = c("n_ellipses", "type"),
+                    draw_panel = function(data, panel_params, coord, type = "discrete", n_ellipses = 1) {
 
                       n <- nrow(data)
                       if (n == 1) return(ggplot2::zeroGrob())
@@ -140,16 +116,45 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       first_idx <- !duplicated(munched$group)
                       first_rows <- munched[first_idx, ]
 
-                      grid::polygonGrob(x = munched$x, y = munched$y,
-                                        id = munched$group, id.lengths = NULL,
-                                        default.units = 'native', name = NULL,
-                                        vp = NULL,
-                                        gp = grid::gpar(
-                                          col = first_rows$colour,
-                                          fill = alpha(first_rows$fill, first_rows$alpha),
-                                          lwd = first_rows$size * ggplot2::.pt,
-                                          lty = first_rows$linetype
-                                        ))
+                      circle_fill <- grid::polygonGrob(
+                        x = munched$x, y = munched$y,
+                        id = munched$group, default.units = 'native',
+                        gp = grid::gpar(
+                          col = NA,
+                          fill = alpha(first_rows$fill, first_rows$alpha)
+                        ))
+
+                      circle_outline <- grid::polygonGrob(
+                        x = munched$x, y = munched$y,
+                        id = munched$group, default.units = 'native',
+                        gp = grid::gpar(
+                          col = first_rows$colour,
+                          fill = NA,
+                          lwd = first_rows$size * ggplot2::.pt,
+                          lty = first_rows$linetype
+                        ))
+
+                      test <- data.frame(
+                        set_names = levels(munched$set_names),
+                        x = c(0, 1.5),
+                        y = c(0.4, 0.4),
+                        group = unique(data$group)
+                      )
+
+                      set_munched <- ggplot2::coord_munch(coord, test, panel_params)
+
+                      set_names <- grid::textGrob(
+                        set_munched$set_names,
+                        x = set_munched$x, set_munched$y, default.units = "native",
+                        gp = grid::gpar(
+                          col = "black",
+                          fontsize = 6 * ggplot2::.pt
+                        )
+                      )
+
+                      ggplot2:::ggname("geom_venn",
+                                       grid::grobTree(circle_fill, circle_outline,
+                                                      set_names))
                     }
 )
 
@@ -173,16 +178,14 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       na.rm = FALSE,
                       show.legend = NA,
                       inherit.aes = TRUE) {
-  print("mapping!!")
-  print(names(mapping))
-  str(mapping)
-  str(mapping$fill)
+  n_ellipses <- nrow(data)
 
   layer(
     stat = StatVenn, geom = GeomVenn, data = data, mapping = mapping,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
     params = list(
       type = type,
+      n_ellipses = n_ellipses,
       na.rm = na.rm,
       ...
     )
