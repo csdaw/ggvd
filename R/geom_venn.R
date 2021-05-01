@@ -122,9 +122,35 @@ StatVenn <- ggproto("StatVenn", Stat,
                     }
 )
 
-GeomVenn <- ggproto("GeomVenn", ggforce::GeomShape,
-                    default_aes = aes(colour = "black", fill = NA, size = 0.5, linetype = 1,
-                                      alpha = NA)
+GeomVenn <- ggproto("GeomVenn", GeomPolygon,
+                    draw_panel = function(data, panel_params, coord) {
+
+                      n <- nrow(data)
+                      if (n == 1) return(ggplot2::zeroGrob())
+
+                      munched <- ggplot2::coord_munch(coord, data, panel_params)
+                      munched <- munched[order(munched$group), ]
+                      if (!is.integer(munched$group)) {
+                        munched$group <- match(munched$group, unique(munched$group))
+                      }
+
+                      # For gpar(), there is one entry per polygon (not one entry per point).
+                      # We'll pull the first value from each group, and assume all these values
+                      # are the same within each group.
+                      first_idx <- !duplicated(munched$group)
+                      first_rows <- munched[first_idx, ]
+
+                      grid::polygonGrob(x = munched$x, y = munched$y,
+                                        id = munched$group, id.lengths = NULL,
+                                        default.units = 'native', name = NULL,
+                                        vp = NULL,
+                                        gp = grid::gpar(
+                                          col = first_rows$colour,
+                                          fill = alpha(first_rows$fill, first_rows$alpha),
+                                          lwd = first_rows$size * ggplot2::.pt,
+                                          lty = first_rows$linetype
+                                        ))
+                    }
 )
 
 #' Title
