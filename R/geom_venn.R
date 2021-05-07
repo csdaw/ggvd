@@ -1,7 +1,7 @@
 StatVenn <- ggproto("StatVenn", Stat,
 
-                    required_aes = c('x0', 'y0', 'a', 'b', 'angle'),
-                    optional_aes = c('set_names', 'set_pos'),
+                    required_aes = c("set_names"),
+                    optional_aes = c(),
 
                     setup_params = function(data, params) {
                       params
@@ -17,24 +17,12 @@ StatVenn <- ggproto("StatVenn", Stat,
                                              type = "discrete", n = 360) {
                       if (is.null(data)) return(data)
 
-                      data$group <- make.unique(as.character(data$group))
-
-                      data <- data[rep(seq_len(n_ellipses), each = n), ]
-                      points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)],
-                                    n_ellipses)
-                      cos_p <- cos(points)
-                      sin_p <- sin(points)
-                      x_tmp <- abs(cos_p) * data$a * sign(cos_p)
-                      y_tmp <- abs(sin_p) * data$b * sign(sin_p)
-                      data$x <- data$x0 + x_tmp * cos(data$angle) - y_tmp * sin(data$angle)
-                      data$y <- data$y0 + x_tmp * sin(data$angle) + y_tmp * cos(data$angle)
-
-                      print("data!!!!!!")
-                      str(data)
-                      print(unique(data$group))
+                      data2 <- generate_ellipses(data, n_ellipses = n_ellipses, n = n)
+                      print("str of data2")
+                      str(data2)
 
                       if (type == "discrete") {
-                        data
+                        data2
                       } else if (type == "continuous") {
                         stop("work in progress")
                         # keep only necessary columns
@@ -136,8 +124,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       test <- data.frame(
                         set_names = levels(munched$set_names),
-                        x = c(0, 1.5),
-                        y = c(0.4, 0.4),
+                        x = seq_len(n_ellipses) * 0.2,
+                        y = rep(0.4, n_ellipses),
                         group = unique(data$group)
                       )
 
