@@ -28,9 +28,12 @@ generate_ellipses <- function(data, n_ellipses, n) {
 }
 
 gen_2_ellipses <- function() {
+  # special number to define circle overlap, must be between 0.5 and 1
+  n <- 0.6
+
   tibble::tibble(
     # left, right
-    x0 = c(-0.6, 0.6),
+    x0 = c(-n, n),
     y0 = c(0, 0),
     a = c(1, 1),
     b = c(1, 1),
@@ -39,10 +42,13 @@ gen_2_ellipses <- function() {
 }
 
 gen_3_ellipses <- function() {
+  # special number to define circle overlap, must be between 0.5 and 1
+  n <- 0.6
+
   tibble::tibble(
     # top left, top right, bottom
-    x0 = c(-sqrt(3)/2, sqrt(3)/2, 0),
-    y0 = c(0.5, 0.5, -1),
+    x0 = c(-n, n, 0),
+    y0 = c(n/sqrt(3), n/sqrt(3), -2*n/sqrt(3)),
     a = c(1, 1, 1),
     b = c(1, 1, 1),
     angle = c(0, 0, 0)
@@ -51,8 +57,9 @@ gen_3_ellipses <- function() {
 
 gen_4_ellipses <- function() {
   tibble::tibble(
-    x0 = c(-0.72 + 2/3, 2/3, 2/3, 0.72 + 2/3),
-    y0 = c(-1/6, 0.2, 0.2, -1/6),
+    # left, center left, center right, right
+    x0 = c(-0.72, 0, 0, 0.72),
+    y0 = c(5/30, 16/30, 16/30, 5/30),
     a = c(0.75, 0.75, 0.75, 0.75),
     b = c(1.5, 1.5, 1.5, 1.5),
     angle = c(pi/4, pi/4, -pi/4, -pi/4)
