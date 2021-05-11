@@ -122,14 +122,10 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           lty = first_rows$linetype
                         ))
 
-                      test <- data.frame(
-                        set_names = levels(munched$set_names),
-                        x = seq_len(n_ellipses) * 0.2,
-                        y = rep(0.4, n_ellipses),
-                        group = unique(data$group)
+                      set_munched <- generate_set_pos(
+                        coord = coord, panel_params = panel_params,
+                        munched = munched, n_ellipses = n_ellipses
                       )
-
-                      set_munched <- ggplot2::coord_munch(coord, test, panel_params)
 
                       set_names <- grid::textGrob(
                         set_munched$set_names,
