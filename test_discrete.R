@@ -9,7 +9,6 @@ circles2 <- tibble::tibble(
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets),
             data = circles2, type = "discrete", alpha = 0.5, colour = "black") +
-  coord_fixed() +
   scale_fill_identity()
 
 # Lets make some data
@@ -20,7 +19,6 @@ circles3 <- data.frame(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets), data = circles3, type = "discrete", alpha = 0.5, colour = "black") +
-  coord_fixed() +
   scale_fill_identity()
 
 circles4 <- data.frame(
@@ -30,7 +28,6 @@ circles4 <- data.frame(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets), data = circles4, type = "discrete", alpha = 0.5, colour = "black") +
-  coord_fixed() +
   scale_fill_identity()
 
 

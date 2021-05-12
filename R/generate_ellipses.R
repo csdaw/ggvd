@@ -44,11 +44,12 @@ gen_2_ellipses <- function() {
 gen_3_ellipses <- function() {
   # special number to define circle overlap, must be between 0.5 and 1
   n <- 0.6
+  shift <- 0.2
 
   tibble::tibble(
     # top left, top right, bottom
     x0 = c(-n, n, 0),
-    y0 = c(n/sqrt(3), n/sqrt(3), -2*n/sqrt(3)),
+    y0 = c(n/sqrt(3) + shift, n/sqrt(3) + shift, -2*n/sqrt(3) + shift),
     a = c(1, 1, 1),
     b = c(1, 1, 1),
     angle = c(0, 0, 0)
@@ -59,7 +60,7 @@ gen_4_ellipses <- function() {
   tibble::tibble(
     # left, center left, center right, right
     x0 = c(-0.72, 0, 0, 0.72),
-    y0 = c(5/30, 16/30, 16/30, 5/30),
+    y0 = c(-9/30, 2/30, 2/30, -9/30),
     a = c(0.75, 0.75, 0.75, 0.75),
     b = c(1.5, 1.5, 1.5, 1.5),
     angle = c(pi/4, pi/4, -pi/4, -pi/4)

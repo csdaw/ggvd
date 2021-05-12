@@ -164,14 +164,20 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       inherit.aes = TRUE) {
   n_ellipses <- nrow(data)
 
-  layer(
-    stat = StatVenn, geom = GeomVenn, data = data, mapping = mapping,
-    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
-    params = list(
-      type = type,
-      n_ellipses = n_ellipses,
-      na.rm = na.rm,
-      ...
-    )
+  list(
+    layer(
+      stat = StatVenn, geom = GeomVenn, data = data, mapping = mapping,
+      position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+      params = list(
+        type = type,
+        n_ellipses = n_ellipses,
+        na.rm = na.rm,
+        ...
+      )
+    ),
+    scale_x_continuous(limits = c(-2, 2)),
+    scale_y_continuous(limits = c(-1.75, 1.75)),
+    coord_fixed()
   )
+
 }

@@ -39,7 +39,7 @@ gen_4_setpos <- function(set_names, n_ellipses) {
   data.frame(
     set_names = set_names,
     x = c(-1.52, -0.8, 0.8, 1.52),
-    y = c(1.5, 1.5 + 11/30, 1.5 + 11/30, 1.5),
+    y = c(1.1, 1.1 + 11/30, 1.1 + 11/30, 1.1),
     group = as.character(seq(1:n_ellipses))
   )
 }
