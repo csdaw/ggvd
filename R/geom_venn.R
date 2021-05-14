@@ -87,7 +87,9 @@ StatVenn <- ggproto("StatVenn", Stat,
 
 GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     extra_params = c("n_ellipses", "type"),
-                    draw_panel = function(data, panel_params, coord, type = "discrete", n_ellipses = 1) {
+                    draw_panel = function(data, panel_params, coord,
+                                          type = "discrete", n_ellipses = 1,
+                                          set_name_colour = "black", set_name_size = 5) {
 
                       n <- nrow(data)
                       if (n == 1) return(ggplot2::zeroGrob())
@@ -131,8 +133,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         set_munched$set_names,
                         x = set_munched$x, set_munched$y, default.units = "native",
                         gp = grid::gpar(
-                          col = "black",
-                          fontsize = 6 * ggplot2::.pt
+                          col = set_name_colour,
+                          fontsize = set_name_size * ggplot2::.pt
                         )
                       )
 
@@ -159,6 +161,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 geom_venn <- function(mapping = NULL, data = NULL,
                       position = "identity", ...,
                       type = "discrete",
+                      set_name_colour = "black",
+                      set_name_size = 5,
                       na.rm = FALSE,
                       show.legend = NA,
                       inherit.aes = TRUE) {
@@ -171,6 +175,8 @@ geom_venn <- function(mapping = NULL, data = NULL,
       params = list(
         type = type,
         n_ellipses = n_ellipses,
+        set_name_colour = set_name_colour,
+        set_name_size = set_name_size,
         na.rm = na.rm,
         ...
       )

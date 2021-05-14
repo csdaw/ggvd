@@ -8,7 +8,7 @@ circles2 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets),
-            data = circles2, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles2, type = "discrete", alpha = 0.5, colour = "black", set_name_colour = "red") +
   scale_fill_identity()
 
 # Lets make some data
