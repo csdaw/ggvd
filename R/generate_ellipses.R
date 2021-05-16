@@ -44,6 +44,7 @@ gen_2_ellipses <- function() {
 gen_3_ellipses <- function() {
   # special number to define circle overlap, must be between 0.5 and 1
   n <- 0.6
+  # special number to shift circles up a bit
   shift <- 0.2
 
   tibble::tibble(

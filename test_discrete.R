@@ -13,13 +13,14 @@ ggplot() +
 
 # Lets make some data
 circles3 <- data.frame(
-  sets = factor(c("Set 1", "Set 2", "Set 3")),
+  sets = factor(c("BY4741", "ATCC90028", "ATCC10231")),
   fill = factor(c("blue", "yellow", "green"))
 )
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets), data = circles3, type = "discrete", alpha = 0.5, colour = "black") +
-  scale_fill_identity()
+  scale_fill_identity()  +
+  theme_void()
 
 circles4 <- data.frame(
   sets = factor(c("Set 1", "Set 2", "Set 3", "Set 4")),
