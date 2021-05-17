@@ -1,9 +1,12 @@
 StatVenn <- ggproto("StatVenn", Stat,
 
-                    required_aes = c("set_names"),
+                    required_aes = c("set_names", "counts", "elements"),
                     optional_aes = c(),
 
                     setup_params = function(data, params) {
+                      str(data)
+                      test <- generate_counts(data)
+                      print(data.frame(test))
                       params
                     },
 
@@ -16,6 +19,9 @@ StatVenn <- ggproto("StatVenn", Stat,
                     compute_panel = function(self, data, scales, n_sets = 1,
                                              type = "discrete", n = 360) {
                       if (is.null(data)) return(data)
+
+                      # drop list-column as we don't need it anymore
+                      data <- data[, !names(data) %in% "elements"]
 
                       data2 <- generate_ellipses(data, n_sets = n_sets, n = n)
 
@@ -84,6 +90,10 @@ StatVenn <- ggproto("StatVenn", Stat,
 )
 
 GeomVenn <- ggproto("GeomVenn", GeomPolygon,
+
+                    required_aes = c("set_names"),
+                    optional_aes = c(),
+
                     extra_params = c("n_sets", "type"),
                     draw_panel = function(data, panel_params, coord,
                                           type = "discrete", n_sets = 1,
