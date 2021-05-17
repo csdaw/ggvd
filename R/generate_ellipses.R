@@ -1,31 +1,28 @@
-generate_ellipses <- function(data, n_ellipses, n) {
+generate_ellipses <- function(data, n_sets, n) {
   data$group <- make.unique(as.character(data$group))
 
-  data <- data[rep(seq_len(n_ellipses), each = n), ]
-  points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)], n_ellipses)
+  data <- data[rep(seq_len(n_sets), each = n), ]
+  points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)], n_sets)
   cos_p <- cos(points)
   sin_p <- sin(points)
 
-  if (n_ellipses == 2) {
-    print("generate 2 ellipses!")
+  if (n_sets == 2) {
     ellipses <- gen_2_ellipses()
-  } else if (n_ellipses == 3) {
+  } else if (n_sets == 3) {
     ellipses <- gen_3_ellipses()
-  } else if (n_ellipses == 4) {
+  } else if (n_sets == 4) {
     ellipses <- gen_4_ellipses()
   } else {
     stop("geom_venn can only generate 2-4 way Venn diagrams.")
   }
 
-  ellipses <- ellipses[rep(seq_len(n_ellipses), each = n), ]
+  ellipses <- ellipses[rep(seq_len(n_sets), each = n), ]
 
   x_tmp <- abs(cos_p) * ellipses$a * sign(cos_p)
   y_tmp <- abs(sin_p) * ellipses$b * sign(sin_p)
   data$x <- ellipses$x0 + x_tmp * cos(ellipses$angle) - y_tmp * sin(ellipses$angle)
   data$y <- ellipses$y0 + x_tmp * sin(ellipses$angle) + y_tmp * cos(ellipses$angle)
 
-  print("inside generate ellipses")
-  str(data)
   data
 }
 

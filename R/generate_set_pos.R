@@ -1,13 +1,13 @@
-generate_set_pos <- function(coord, panel_params, munched, n_ellipses) {
+generate_set_pos <- function(coord, panel_params, munched, n_sets) {
   if (!is.null(munched$set_pos)) {
     # todo: implement manual specification of set_name position
   } else {
-    if (n_ellipses == 2) {
-      set_pos <- gen_2_setpos(set_names = unique(munched$set_names), n_ellipses = n_ellipses)
-    } else if (n_ellipses == 3) {
-      set_pos <- gen_3_setpos(set_names = unique(munched$set_names), n_ellipses = n_ellipses)
-    } else if (n_ellipses == 4) {
-      set_pos <- gen_4_setpos(set_names = unique(munched$set_names), n_ellipses = n_ellipses)
+    if (n_sets == 2) {
+      set_pos <- gen_2_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
+    } else if (n_sets == 3) {
+      set_pos <- gen_3_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
+    } else if (n_sets == 4) {
+      set_pos <- gen_4_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
     } else {
       stop("geom_venn can only generate 2-4 way Venn diagrams.")
     }
@@ -17,17 +17,17 @@ generate_set_pos <- function(coord, panel_params, munched, n_ellipses) {
   }
 }
 
-gen_2_setpos <- function(set_names, n_ellipses) {
+gen_2_setpos <- function(set_names, n_sets) {
   data.frame(
     # left, right
     set_names = set_names,
     x = c(-0.8, 0.8),
     y = c(1.15, 1.15),
-    group = as.character(seq(1:n_ellipses))
+    group = as.character(seq(1:n_sets))
   )
 }
 
-gen_3_setpos <- function(set_names, n_ellipses) {
+gen_3_setpos <- function(set_names, n_sets) {
   # special number to define circle overlap, must be between 0.5 and 1
   n <- 0.6
   # special number to shift circles up a bit
@@ -42,17 +42,17 @@ gen_3_setpos <- function(set_names, n_ellipses) {
     y = c(n/sqrt(3) + shift + sin(45)*hypo,
           n/sqrt(3) + shift + sin(45)*hypo,
           -2*n/sqrt(3) + shift - hypo + 0.15),
-    group = as.character(seq(1:n_ellipses))
+    group = as.character(seq(1:n_sets))
   )
 }
 
-gen_4_setpos <- function(set_names, n_ellipses) {
+gen_4_setpos <- function(set_names, n_sets) {
   data.frame(
     # left, center left, center right, right
     set_names = set_names,
     x = c(-1.58, -0.8, 0.8, 1.58),
     y = c(1.05, 1.05 + 11/30, 1.05 + 11/30, 1.05),
-    group = as.character(seq(1:n_ellipses))
+    group = as.character(seq(1:n_sets))
   )
 }
 

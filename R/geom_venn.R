@@ -7,19 +7,17 @@ StatVenn <- ggproto("StatVenn", Stat,
                       params
                     },
 
-                    extra_params = c('n_ellipses', 'n', 'na.rm'),
+                    extra_params = c('n_sets', 'n', 'na.rm'),
 
                     setup_data = function(data, params) {
                       data
                     },
 
-                    compute_panel = function(self, data, scales, n_ellipses = 2,
+                    compute_panel = function(self, data, scales, n_sets = 1,
                                              type = "discrete", n = 360) {
                       if (is.null(data)) return(data)
 
-                      data2 <- generate_ellipses(data, n_ellipses = n_ellipses, n = n)
-                      print("str of data2")
-                      str(data2)
+                      data2 <- generate_ellipses(data, n_sets = n_sets, n = n)
 
                       if (type == "discrete") {
                         data2
@@ -46,11 +44,11 @@ StatVenn <- ggproto("StatVenn", Stat,
 
                         polygons <- lapply(circles, function(x) sf::st_polygon(x))
 
-                        if (n_ellipses == 2) {
+                        if (n_sets == 2) {
                           polygon_list <- make_2d_venn(polygons)
-                        } else if (n_ellipses == 3) {
+                        } else if (n_sets == 3) {
                           polygon_list <- make_3d_venn(polygons)
-                        } else if (n_ellipses == 4) {
+                        } else if (n_sets == 4) {
                           polygon_list <- make_4d_venn(polygons)
                         } else {
                           stop("geom_venn can only compare 2-4 sets")
@@ -86,9 +84,9 @@ StatVenn <- ggproto("StatVenn", Stat,
 )
 
 GeomVenn <- ggproto("GeomVenn", GeomPolygon,
-                    extra_params = c("n_ellipses", "type"),
+                    extra_params = c("n_sets", "type"),
                     draw_panel = function(data, panel_params, coord,
-                                          type = "discrete", n_ellipses = 1,
+                                          type = "discrete", n_sets = 1,
                                           set_name_colour = "black", set_name_size = 5) {
 
                       n <- nrow(data)
@@ -129,7 +127,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       set_munched <- generate_set_pos(
                         coord = coord, panel_params = panel_params,
-                        munched = munched, n_ellipses = n_ellipses
+                        munched = munched, n_sets = n_sets
                       )
 
                       set_names <- grid::textGrob(
@@ -169,7 +167,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       na.rm = FALSE,
                       show.legend = NA,
                       inherit.aes = TRUE) {
-  n_ellipses <- nrow(data)
+  n_sets <- nrow(data)
 
   list(
     layer(
@@ -177,7 +175,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
       position = position, show.legend = show.legend, inherit.aes = inherit.aes,
       params = list(
         type = type,
-        n_ellipses = n_ellipses,
+        n_sets = n_sets,
         set_name_colour = set_name_colour,
         set_name_size = set_name_size,
         na.rm = na.rm,
