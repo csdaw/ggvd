@@ -5,7 +5,7 @@ generate_set_pos <- function(coord, panel_params, munched, n_ellipses) {
     if (n_ellipses == 2) {
       set_pos <- gen_2_setpos(set_names = unique(munched$set_names), n_ellipses = n_ellipses)
     } else if (n_ellipses == 3) {
-      set_pos <- gen_3_setpos(set_names = unique(as.character(munched$set_names)), n_ellipses = n_ellipses)
+      set_pos <- gen_3_setpos(set_names = unique(munched$set_names), n_ellipses = n_ellipses)
     } else if (n_ellipses == 4) {
       set_pos <- gen_4_setpos(set_names = unique(munched$set_names), n_ellipses = n_ellipses)
     } else {

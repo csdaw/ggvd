@@ -24,6 +24,8 @@ generate_ellipses <- function(data, n_ellipses, n) {
   data$x <- ellipses$x0 + x_tmp * cos(ellipses$angle) - y_tmp * sin(ellipses$angle)
   data$y <- ellipses$y0 + x_tmp * sin(ellipses$angle) + y_tmp * cos(ellipses$angle)
 
+  print("inside generate ellipses")
+  str(data)
   data
 }
 

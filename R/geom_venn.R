@@ -95,7 +95,10 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       if (n == 1) return(ggplot2::zeroGrob())
 
                       munched <- ggplot2::coord_munch(coord, data, panel_params)
-                      munched <- munched[order(munched$group), ]
+
+                      # This line was screwing up the order of circles/labels
+                      # munched <- munched[order(munched$group), ]
+
                       if (!is.integer(munched$group)) {
                         munched$group <- match(munched$group, unique(munched$group))
                       }
