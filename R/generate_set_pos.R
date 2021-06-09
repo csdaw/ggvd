@@ -1,18 +1,13 @@
 generate_set_pos <- function(coord, panel_params, munched, n_sets) {
+  check_n_sets(n_sets)
+
   if (!is.null(munched$set_pos)) {
     # todo: implement manual specification of set_name position
   } else {
-    if (n_sets == 2) {
-      set_pos <- gen_2_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
-    } else if (n_sets == 3) {
-      set_pos <- gen_3_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
-    } else if (n_sets == 4) {
-      set_pos <- gen_4_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
-    } else {
-      stop("geom_venn can only generate 2-4 way Venn diagrams.")
-    }
+    gen_setpos <- match.fun(paste("gen", n_sets, "setpos", sep = "_"))
+    setpos <- gen_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
 
-    set_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
+    set_munched <- ggplot2::coord_munch(coord, setpos, panel_params)
     set_munched
   }
 }
