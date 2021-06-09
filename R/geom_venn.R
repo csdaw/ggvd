@@ -1,106 +1,28 @@
-StatVenn <- ggproto("StatVenn", Stat,
+GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                     required_aes = c("set_names", "counts", "elements"),
                     optional_aes = c(),
 
-                    setup_params = function(data, params) {
-                      str(data)
-                      test <- generate_counts(data)
-                      print(data.frame(test))
-                      params
-                    },
+                    extra_params = c('type', 'n_sets', 'n', 'na.rm'),
+                    setup_data = function(data, params, n = 360) {
+                      if (params$type == "discrete") {
+                        test <- generate_counts(data)
+                        print(data.frame(test))
+                      }
 
-                    extra_params = c('n_sets', 'n', 'na.rm'),
-
-                    setup_data = function(data, params) {
-                      data
-                    },
-
-                    compute_panel = function(self, data, scales, n_sets = 1,
-                                             type = "discrete", n = 360) {
                       if (is.null(data)) return(data)
 
                       # drop list-column as we don't need it anymore
                       data <- data[, !names(data) %in% "elements"]
 
-                      data2 <- generate_ellipses(data, n_sets = n_sets, n = n)
+                      data2 <- generate_ellipses(data, n_sets = params$n_sets, n = n)
 
-                      if (type == "discrete") {
-                        data2
-                      } else if (type == "continuous") {
-                        stop("work in progress")
-                        # keep only necessary columns
-                        out <- data[ ,c("x", "y", "group", "fill", "colour", "PANEL")]
-
-                        # replace group to change drawing order
-                        out$group <- gsub("1", "Y", out$group)
-                        out$group <- gsub("2", "Z", out$group)
-
-                        # remove fill for circle outlines
-                        out$fill <- NA
-
-                        data_list <- split(data[c("x", "y", "group")], f = data$group)
-
-                        circles <- lapply(data_list, function(x) {
-                          # repeat first polygon point to close polygon
-                          x[nrow(x) + 1, ] <- x[1, ]
-
-                          list(as.matrix(x[c("x", "y")]))
-                        })
-
-                        polygons <- lapply(circles, function(x) sf::st_polygon(x))
-
-                        if (n_sets == 2) {
-                          polygon_list <- make_2d_venn(polygons)
-                        } else if (n_sets == 3) {
-                          polygon_list <- make_3d_venn(polygons)
-                        } else if (n_sets == 4) {
-                          polygon_list <- make_4d_venn(polygons)
-                        } else {
-                          stop("geom_venn can only compare 2-4 sets")
-                        }
-                        #polygon_counts <- factor(c(100, 200, 300))
-                        polygon_counts <- seq(100, length(polygon_list) * 100, 100)
-                        print("polygon_counts!!")
-                        str(polygon_counts)
-                        polygon_names <- names(polygon_list)
-
-                        test_name <- c("X", "Y", "Z")
-
-                        polygon_dfs <- lapply(1:length(polygon_list), function(i) {
-                          df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
-                          colnames(df) <- c("x","y")
-                          df$group <- polygon_names[[i]]
-                          df$fill <- polygon_counts[[i]]
-                          df$colour <- NA
-                          df$PANEL <- 1
-                          df
-                        })
-                        data_polygons <- do.call(rbind, polygon_dfs)
-
-                        print("data_polygons!!!")
-                        str(data_polygons)
-
-                        test <- rbind(out, data_polygons)
-                        print("test!!!")
-                        str(test)
-                        test
-                      }
-                    }
-)
-
-GeomVenn <- ggproto("GeomVenn", GeomPolygon,
-
-                    required_aes = c("set_names"),
-                    optional_aes = c(),
-
-                    extra_params = c("n_sets", "type"),
+                      data2
+                    },
                     draw_panel = function(data, panel_params, coord,
                                           type = "discrete", n_sets = 1,
                                           set_name_colour = "black", set_name_size = 5) {
-
-                      n <- nrow(data)
-                      if (n == 1) return(ggplot2::zeroGrob())
+                      if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
                       munched <- ggplot2::coord_munch(coord, data, panel_params)
 
@@ -170,6 +92,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #' @return Description.
 #' @export
 geom_venn <- function(mapping = NULL, data = NULL,
+                      stat = "identity",
                       position = "identity", ...,
                       type = "discrete",
                       set_name_colour = "black",
@@ -181,7 +104,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
 
   list(
     layer(
-      stat = StatVenn, geom = GeomVenn, data = data, mapping = mapping,
+      stat = stat, geom = GeomVenn, data = data, mapping = mapping,
       position = position, show.legend = show.legend, inherit.aes = inherit.aes,
       params = list(
         type = type,
