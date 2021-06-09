@@ -7,7 +7,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     setup_params = function(data, params) {
                       params$n_sets <- nrow(data)
 
-                      test <- generate_counts(data)
+                      test <- generate_count(data$elements)
                       params$count_matrix <- test
                       params
                     },

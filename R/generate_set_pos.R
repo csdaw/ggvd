@@ -4,15 +4,15 @@ generate_set_pos <- function(coord, panel_params, munched, n_sets) {
   if (!is.null(munched$set_pos)) {
     # todo: implement manual specification of set_name position
   } else {
-    gen_setpos <- match.fun(paste("gen", n_sets, "setpos", sep = "_"))
-    setpos <- gen_setpos(set_names = unique(munched$set_names), n_sets = n_sets)
+    gen_set_pos <- match.fun(paste("gen", n_sets, "set_pos", sep = "_"))
+    set_pos <- gen_set_pos(set_names = unique(munched$set_names), n_sets = n_sets)
 
-    set_munched <- ggplot2::coord_munch(coord, setpos, panel_params)
+    set_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
     set_munched
   }
 }
 
-gen_2_setpos <- function(set_names, n_sets) {
+gen_2_set_pos <- function(set_names, n_sets) {
   data.frame(
     # left, right
     set_names = set_names,
@@ -22,7 +22,7 @@ gen_2_setpos <- function(set_names, n_sets) {
   )
 }
 
-gen_3_setpos <- function(set_names, n_sets) {
+gen_3_set_pos <- function(set_names, n_sets) {
   # special number to define circle overlap, must be between 0.5 and 1
   n <- 0.6
   # special number to shift circles up a bit
@@ -41,7 +41,7 @@ gen_3_setpos <- function(set_names, n_sets) {
   )
 }
 
-gen_4_setpos <- function(set_names, n_sets) {
+gen_4_set_pos <- function(set_names, n_sets) {
   data.frame(
     # left, center left, center right, right
     set_names = set_names,
