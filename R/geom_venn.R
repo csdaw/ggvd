@@ -6,9 +6,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     extra_params = c('type', 'n', 'na.rm'),
                     setup_params = function(data, params) {
                       params$n_sets <- nrow(data)
-
-                      test <- generate_count(data$elements)
-                      params$count_matrix <- test
+                      params$count_matrix <- generate_count(data$elements)
                       params
                     },
                     setup_data = function(data, params, n = 360) {
@@ -17,14 +15,13 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       # drop list-column as we don't need it anymore
                       data <- data[, !names(data) %in% "elements"]
 
-                      data2 <- generate_ellipses(data, n_sets = params$n_sets, n = n)
+                      data <- generate_ellipses(data, n_sets = params$n_sets, n = n)
 
-                      data2
+                      data
                     },
                     draw_panel = function(data, panel_params, coord, count_matrix,
                                           type = "discrete", n_sets = 1,
                                           set_name_colour = "black", set_name_size = 5) {
-                      print(data.frame(count_matrix))
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
                       munched <- ggplot2::coord_munch(coord, data, panel_params)
@@ -67,16 +64,27 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       set_names <- grid::textGrob(
                         set_munched$set_names,
-                        x = set_munched$x, set_munched$y, default.units = "native",
+                        x = set_munched$x, y = set_munched$y, default.units = "native",
                         gp = grid::gpar(
                           col = set_name_colour,
                           fontsize = set_name_size * ggplot2::.pt
                         )
                       )
 
+                      count_munched <- ggplot2::coord_munch(coord, count_matrix, panel_params)
+
+                      counts <- grid::textGrob(
+                        count_munched$count,
+                        x = count_munched$x, y = count_munched$y, default.units = "npc",
+                        gp = grid::gpar(
+                          col = "black",
+                          fontsize = set_name_size * ggplot2::.pt
+                        )
+                      )
+
                       ggplot2:::ggname("geom_venn",
                                        grid::grobTree(circle_fill, circle_outline,
-                                                      set_names))
+                                                      set_names, counts))
                     }
 )
 

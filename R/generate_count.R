@@ -3,10 +3,10 @@ generate_count <- function(elements) {
 
   count <- count_venn(elements)
 
-  #gen_count_pos <- match.fun(paste("gen", n_sets, "count_pos", sep = "_"))
-  #count_pos <- gen_count_pos()
+  gen_count_pos <- match.fun(paste("gen", n_sets, "count_pos", sep = "_"))
+  count_pos <- gen_count_pos()
 
-  count
+  cbind(count, count_pos)
 }
 
 count_venn <- function(l) {
@@ -17,36 +17,59 @@ count_venn <- function(l) {
 
   l_boolean <- lapply(l, function(i) as.numeric(unique(unlist(l)) %in% i))
 
-  counts <- as.vector(table(l_boolean))
+  count <- as.vector(table(l_boolean))
 
   n_segments <- 2^n_sets
 
   segments <- matrix(0, n_segments, n_sets)
   colnames(segments) <- names(l)
   for (j in 1:n_sets) segments[,j] <- rep(0:1,times=2^(j-1),each=2^(n_sets-j))
-  cbind(segments, counts)
+  cbind(segments, count)
 }
 
 gen_2_count_pos <- function() {
-  data.frame(
-    x = c(NA, 1, -1, 0),
-    y = c(NA, 0, 0, 0)
+  tibble::tribble(
+    ~seg, ~x, ~y,
+    "",   NA, NA,
+    "B",   1,  0,
+    "A",  -1,  0,
+    "AB",  0,  0
   )
 }
 
 gen_3_count_pos <- function() {
-  data.frame(
-    #x = c(NA, 0, 1, 0.5, -1, 0, -0.5, 0),
-    #y = c(NA, -1, 0.75, -0.15, 0.75, 0, 1, 0)
-    x = c(NA, rep(0, 7)),
-    y = c(NA, rep(0, 7))
+  tibble::tribble(
+    ~seg,   ~x, ~y,
+    "",     NA, NA,
+    "C",     0, -1,
+    "B",     1,  1,
+    "BC",  0.5,  0,
+    "A",    -1,  1,
+    "AC", -0.5,  0,
+    "AB",    0,  1,
+    "ABC",   0,  0
   )
 }
 
 gen_4_count_pos <- function() {
-  data.frame(
-    x = c(NA, rep(0, 15)),
-    y = c(NA, rep(0, 15))
+  tibble::tribble(
+    ~seg, ~x, ~y,
+    "", NA, NA,
+    "D", 1.5, 0.5,
+    "C", 0.75, 1,
+    "CD", 0.9, 0.5,
+    "B", -0.75, 1,
+    "BD", 0.75, -0.8,
+    "BC", 0, 0.5,
+    "BCD", 0.5, 0,
+    "A", -1.5, 0.5,
+    "AD", 0, -1.25,
+    "AC", -0.75, -0.8,
+    "ACD", -0.25, -0.8,
+    "AB", -0.9, 0.5,
+    "ABD", 0.25, -0.8,
+    "ABC", -0.5, 0,
+    "ABCD", 0, -0.5
   )
 }
 
