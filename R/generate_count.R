@@ -20,19 +20,20 @@ count_venn <- function(l) {
   count <- as.vector(table(l_boolean))
 
   n_segments <- 2^n_sets
-
   segments <- matrix(0, n_segments, n_sets)
-  colnames(segments) <- names(l)
+
+  colnames(segments) <- rev(names(l))
   for (j in 1:n_sets) segments[,j] <- rep(0:1,times=2^(j-1),each=2^(n_sets-j))
-  cbind(segments, count)
+
+  cbind(segments[, ncol(segments):1], count)
 }
 
 gen_2_count_pos <- function() {
   tibble::tribble(
     ~seg, ~x, ~y,
     "",   NA, NA,
-    "B",   1,  0,
     "A",  -1,  0,
+    "B",   1,  0,
     "AB",  0,  0
   )
 }
@@ -41,35 +42,35 @@ gen_3_count_pos <- function() {
   tibble::tribble(
     ~seg,   ~x, ~y,
     "",     NA, NA,
-    "C",     0, -1,
-    "B",     1,  1,
-    "BC",  0.5,  0,
     "A",    -1,  1,
-    "AC", -0.5,  0,
+    "B",     1,  1,
     "AB",    0,  1,
+    "C",     0, -1,
+    "AC", -0.5,  0,
+    "BC",  0.5,  0,
     "ABC",   0,  0
   )
 }
 
 gen_4_count_pos <- function() {
   tibble::tribble(
-    ~seg, ~x, ~y,
-    "", NA, NA,
-    "D", 1.5, 0.5,
-    "C", 0.75, 1,
-    "CD", 0.9, 0.5,
-    "B", -0.75, 1,
-    "BD", 0.75, -0.8,
-    "BC", 0, 0.5,
-    "BCD", 0.5, 0,
-    "A", -1.5, 0.5,
-    "AD", 0, -1.25,
-    "AC", -0.75, -0.8,
-    "ACD", -0.25, -0.8,
-    "AB", -0.9, 0.5,
-    "ABD", 0.25, -0.8,
-    "ABC", -0.5, 0,
-    "ABCD", 0, -0.5
+    ~seg,     ~x,    ~y,
+    "",       NA,    NA,
+    "A",    -1.5,   0.5,
+    "B",   -0.75,     1,
+    "AB",   -0.9,   0.5,
+    "C",    0.75,     1,
+    "AC",  -0.75,  -0.8,
+    "BC",      0,   0.5,
+    "ABC",  -0.5,     0,
+    "D",     1.5,   0.5,
+    "AD",      0, -1.25,
+    "BD",   0.75,  -0.8,
+    "ABD",  0.25,  -0.8,
+    "CD",    0.9,   0.5,
+    "ACD", -0.25,  -0.8,
+    "BCD",   0.5,     0,
+    "ABCD",    0,  -0.5
   )
 }
 
