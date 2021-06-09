@@ -1,6 +1,6 @@
 GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
-                    required_aes = c("set_names", "counts", "elements"),
+                    required_aes = c("set_names", "elements"),
                     optional_aes = c(),
 
                     extra_params = c('type', 'n_sets', 'n', 'na.rm'),
