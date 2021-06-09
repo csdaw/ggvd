@@ -3,13 +3,15 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     required_aes = c("set_names", "elements"),
                     optional_aes = c(),
 
-                    extra_params = c('type', 'n_sets', 'n', 'na.rm'),
-                    setup_data = function(data, params, n = 360) {
-                      if (params$type == "discrete") {
-                        test <- generate_counts(data)
-                        print(data.frame(test))
-                      }
+                    extra_params = c('type', 'n', 'na.rm'),
+                    setup_params = function(data, params) {
+                      params$n_sets <- nrow(data)
 
+                      test <- generate_counts(data)
+                      params$count_matrix <- test
+                      params
+                    },
+                    setup_data = function(data, params, n = 360) {
                       if (is.null(data)) return(data)
 
                       # drop list-column as we don't need it anymore
@@ -19,9 +21,10 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       data2
                     },
-                    draw_panel = function(data, panel_params, coord,
+                    draw_panel = function(data, panel_params, coord, count_matrix,
                                           type = "discrete", n_sets = 1,
                                           set_name_colour = "black", set_name_size = 5) {
+                      print(data.frame(count_matrix))
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
                       munched <- ggplot2::coord_munch(coord, data, panel_params)
@@ -100,15 +103,12 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       na.rm = FALSE,
                       show.legend = NA,
                       inherit.aes = TRUE) {
-  n_sets <- nrow(data)
-
   list(
     layer(
       stat = stat, geom = GeomVenn, data = data, mapping = mapping,
       position = position, show.legend = show.legend, inherit.aes = inherit.aes,
       params = list(
         type = type,
-        n_sets = n_sets,
         set_name_colour = set_name_colour,
         set_name_size = set_name_size,
         na.rm = na.rm,
