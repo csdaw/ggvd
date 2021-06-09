@@ -39,16 +39,23 @@ gen_2_count_pos <- function() {
 }
 
 gen_3_count_pos <- function() {
+  # special number to define circle overlap, must be between 0.5 and 1
+  n <- 0.86
+  # special number to shift circles up a bit
+  shift <- n/3
+  # a bit
+  abit <- 0.1
+
   tibble::tribble(
     ~seg,   ~x, ~y,
     "",     NA, NA,
-    "A",    -1,  1,
-    "B",     1,  1,
-    "AB",    0,  1,
-    "C",     0, -1,
-    "AC", -0.5,  0,
-    "BC",  0.5,  0,
-    "ABC",   0,  0
+    "A",    -n,  n/sqrt(3) + shift - abit,
+    "B",     n,  n/sqrt(3) + shift - abit,
+    "AB",    0,  n/sqrt(3) + shift + abit,
+    "C",     0, -2*n/sqrt(3) + shift - abit,
+    "AC", -0.5,  0 - abit,
+    "BC",  0.5,  0 - abit,
+    "ABC",   0,  0 + shift - abit
   )
 }
 
