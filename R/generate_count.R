@@ -46,37 +46,37 @@ gen_3_count_pos <- function() {
   shift <- 0.2
 
   tibble::tribble(
-    ~seg,   ~x, ~y,
-    "",     NA, NA,
-    "A",    -n2,  n2/sqrt(3) + shift,
-    "B",     n2,  n2/sqrt(3) + shift,
-    "AB",    0,  n/sqrt(3) + shift,
-    "C",     0, -2*n2/sqrt(3) + shift,
-    "AC", -n/2,  (-2*n/sqrt(3) + n/sqrt(3))/2 + shift,
-    "BC",  n/2,  (-2*n/sqrt(3) + n/sqrt(3))/2 + shift,
-    "ABC",   0,  0 + shift
+    ~seg,   ~x,                                   ~y,
+    "",     NA,                                   NA,
+    "A",   -n2,                   n2/sqrt(3) + shift,
+    "B",    n2,                   n2/sqrt(3) + shift,
+    "AB",    0,                    n/sqrt(3) + shift,
+    "C",     0,                -2*n2/sqrt(3) + shift,
+    "AC", -n/2, (-2*n/sqrt(3) + n/sqrt(3))/2 + shift,
+    "BC",  n/2, (-2*n/sqrt(3) + n/sqrt(3))/2 + shift,
+    "ABC",   0,                            0 + shift
   )
 }
 
 gen_4_count_pos <- function() {
   tibble::tribble(
-    ~seg,     ~x,    ~y,
-    "",       NA,    NA,
-    "A",    -1.5,   0.5,
-    "B",   -0.75,     1,
-    "AB",   -0.9,   0.5,
-    "C",    0.75,     1,
-    "AC",  -0.75,  -0.8,
-    "BC",      0,   0.5,
-    "ABC",  -0.5,     0,
-    "D",     1.5,   0.5,
-    "AD",      0, -1.25,
-    "BD",   0.75,  -0.8,
-    "ABD",  0.25,  -0.8,
-    "CD",    0.9,   0.5,
-    "ACD", -0.25,  -0.8,
-    "BCD",   0.5,     0,
-    "ABCD",    0,  -0.5
+    ~seg,      ~x,    ~y,
+    "",        NA,    NA,
+    "A",     -1.5,   0.3,
+    "B",    -0.75,     1,
+    "AB",  -0.925,   0.5,
+    "C",     0.75,     1,
+    "AC",    -0.8, -0.65,
+    "BC",       0,  0.55,
+    "ABC",   -0.5,     0,
+    "D",      1.5,   0.3,
+    "AD",       0,  -1.2,
+    "BD",     0.8, -0.65,
+    "ABD",  0.275, -0.85,
+    "CD",   0.925,   0.5,
+    "ACD", -0.275, -0.85,
+    "BCD",    0.5,     0,
+    "ABCD",     0,  -0.5
   )
 }
 
