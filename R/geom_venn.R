@@ -13,6 +13,9 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     setup_data = function(data, params, n = 360) {
                       if (is.null(data)) return(data)
 
+                      # get total number of elements in each set
+                      data$set_totals <- paste0("(", lengths(data$elements), ")")
+
                       # drop list-column as we don't need it anymore
                       data <- data[, !names(data) %in% "elements"]
 
@@ -23,16 +26,26 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     draw_panel = function(data, panel_params, coord, count_matrix,
                                           n_sets = 1, type = "discrete",
                                           set_name_pos = NULL,
-                                          set_name_colour = NULL, set_name_size = 5,
+                                          set_name_colour = NULL,
+                                          set_name_size = 5,
                                           set_name_face = NULL,
                                           set_name_family = NULL,
-                                          count_colour = "black", count_size = 5,
-                                          count_face = NULL, count_family = NULL,
+                                          set_total = FALSE,
+                                          set_total_pos = c(0, -0.15),
+                                          set_total_colour = NULL,
+                                          set_total_size = 3,
+                                          set_total_face = NULL,
+                                          set_total_family = NULL,
+                                          count_colour = "black",
+                                          count_size = 5,
+                                          count_face = NULL,
+                                          count_family = NULL,
                                           count_nudge = 0.04,
                                           percentage = TRUE,
                                           percentage_digits = 1,
                                           percentage_colour = "black",
-                                          percentage_size = 3, percentage_face = NULL,
+                                          percentage_size = 3,
+                                          percentage_face = NULL,
                                           percentage_family = NULL,
                                           percentage_nudge = -count_nudge) {
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
@@ -70,10 +83,11 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           lty = first_rows$linetype
                         ))
 
-                      set_munched <- generate_set_pos(
+                      set_pos <- generate_set_pos(
                         coord = coord, panel_params = panel_params,
                         munched = munched, n_sets = n_sets, pos = set_name_pos
                       )
+                      set_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
 
                       set_names <- grid::textGrob(
                         set_munched$set_names,
@@ -85,6 +99,28 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           fontfamily = if (is.null(set_name_family)) first_rows$family else set_name_family
                         )
                       )
+
+                      if (set_total) {
+                        stopifnot(is.numeric(set_total_pos) && length(set_total_pos) == 2)
+
+                        set_pos$x <- set_pos$x + set_total_pos[1]
+                        set_pos$y <- set_pos$y + set_total_pos[2]
+                        set_total_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
+
+                        set_totals <- grid::textGrob(
+                          unique(munched$set_totals),
+                          x = set_total_munched$x, y = set_total_munched$y,
+                          default.units = "native",
+                          gp = grid::gpar(
+                            col = if (is.null(set_total_colour)) first_rows$colour else set_total_colour,
+                            fontsize = set_total_size * ggplot2::.pt,
+                            fontface = if (is.null(set_total_face)) first_rows$fontface else set_total_face,
+                            fontfamily = if (is.null(set_total_family)) first_rows$family else set_total_family
+                          )
+                        )
+                      } else {
+                        set_totals <- grid::nullGrob()
+                      }
 
                       count_y_nudged <- count_matrix$y + count_nudge
                       pct_y_nudged <- count_matrix$y + percentage_nudge
@@ -122,7 +158,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       ggplot2:::ggname("geom_venn",
                                        grid::grobTree(circle_fill, circle_outline,
-                                                      set_names, counts, percentages))
+                                                      set_names, set_totals, counts, percentages))
                     }
 )
 
@@ -149,6 +185,12 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       set_name_size = 5,
                       set_name_face = NULL,
                       set_name_family = NULL,
+                      set_total = FALSE,
+                      set_total_pos = c(0, -0.15),
+                      set_total_colour = NULL,
+                      set_total_size = 4,
+                      set_total_face = NULL,
+                      set_total_family = NULL,
                       count_colour = "black",
                       count_size = 5,
                       count_face = NULL,
@@ -164,6 +206,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       na.rm = FALSE,
                       show.legend = NA,
                       inherit.aes = TRUE) {
+
   list(
     layer(
       stat = stat, geom = GeomVenn, data = data, mapping = mapping,
@@ -175,6 +218,12 @@ geom_venn <- function(mapping = NULL, data = NULL,
         set_name_size = set_name_size,
         set_name_face = set_name_face,
         set_name_family = set_name_family,
+        set_total = set_total,
+        set_total_pos = set_total_pos,
+        set_total_colour = set_total_colour,
+        set_total_size = set_total_size,
+        set_total_face = set_total_face,
+        set_total_family = set_total_family,
         count_colour = count_colour,
         count_size = count_size,
         count_face = count_face,

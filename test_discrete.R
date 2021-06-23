@@ -8,9 +8,14 @@ circles2 <- tibble::tibble(
   counts = lengths(elements)
 )
 
+custom_pos = list(
+  x = c(0, 0),
+  y = c(-0.5, 0.5)
+)
+
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles2, type = "discrete", set_name_colour = "red") +
+            data = circles2, type = "discrete", set_name_colour = "red", percentage = FALSE) +
   scale_fill_identity()
 
 # Lets make some data
@@ -23,7 +28,7 @@ circles3 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles3, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles3, type = "discrete", alpha = 0.5, colour = "black", set_total = TRUE) +
   scale_fill_identity()
 
 circles4 <- tibble::tibble(
@@ -38,5 +43,5 @@ circles4 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles4, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles4, type = "discrete", alpha = 0.5, colour = "black", set_total = TRUE) +
   scale_fill_identity()

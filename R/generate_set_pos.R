@@ -11,17 +11,15 @@ generate_set_pos <- function(coord, panel_params, munched, n_sets, pos = NULL) {
 
     set_pos[, c("x", "y")] = pos
   }
-
-  set_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
-  set_munched
+  set_pos
 }
 
 gen_2_set_pos <- function(set_names, n_sets) {
   data.frame(
     # left, right
     set_names = set_names,
-    x = c(-0.8, 0.8),
-    y = c(1.15, 1.15),
+    x = c(-1.22, 1.22),
+    y = c(1.1, 1.1),
     group = as.character(seq(1:n_sets))
   )
 }
@@ -49,8 +47,8 @@ gen_4_set_pos <- function(set_names, n_sets) {
   data.frame(
     # left, center left, center right, right
     set_names = set_names,
-    x = c(-1.58, -0.8, 0.8, 1.58),
-    y = c(1.05, 1.05 + 11/30, 1.05 + 11/30, 1.05),
+    x = c(-1.8, -0.8, 0.8, 1.8),
+    y = c(1.05, 1.12 + 11/30, 1.12 + 11/30, 1.05),
     group = as.character(seq(1:n_sets))
   )
 }
