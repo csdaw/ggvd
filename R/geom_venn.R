@@ -22,6 +22,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     },
                     draw_panel = function(data, panel_params, coord, count_matrix,
                                           n_sets = 1, type = "discrete",
+                                          set_name_pos = NULL,
                                           set_name_colour = NULL, set_name_size = 5,
                                           set_name_face = NULL,
                                           set_name_family = NULL,
@@ -71,7 +72,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       set_munched <- generate_set_pos(
                         coord = coord, panel_params = panel_params,
-                        munched = munched, n_sets = n_sets
+                        munched = munched, n_sets = n_sets, pos = set_name_pos
                       )
 
                       set_names <- grid::textGrob(
@@ -143,6 +144,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       stat = "identity",
                       position = "identity", ...,
                       type = "discrete",
+                      set_name_pos = NULL,
                       set_name_colour = NULL,
                       set_name_size = 5,
                       set_name_face = NULL,
@@ -168,6 +170,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
       position = position, show.legend = show.legend, inherit.aes = inherit.aes,
       params = list(
         type = type,
+        set_name_pos = set_name_pos,
         set_name_colour = set_name_colour,
         set_name_size = set_name_size,
         set_name_face = set_name_face,

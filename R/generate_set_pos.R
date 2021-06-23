@@ -1,15 +1,19 @@
-generate_set_pos <- function(coord, panel_params, munched, n_sets) {
+generate_set_pos <- function(coord, panel_params, munched, n_sets, pos = NULL) {
   check_n_sets(n_sets)
 
-  if (!is.null(munched$set_pos)) {
-    # todo: implement manual specification of set_name position
-  } else {
-    gen_set_pos <- match.fun(paste("gen", n_sets, "set_pos", sep = "_"))
-    set_pos <- gen_set_pos(set_names = unique(munched$set_names), n_sets = n_sets)
+  gen_set_pos <- match.fun(paste("gen", n_sets, "set_pos", sep = "_"))
+  set_pos <- gen_set_pos(set_names = unique(munched$set_names), n_sets = n_sets)
 
-    set_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
-    set_munched
+  if (!is.null(pos)) {
+    stopifnot(is.list(pos) && names(pos) %in% c("x", "y"))
+    stopifnot(length(pos) == 2)
+    stopifnot(lengths(pos) == n_sets)
+
+    set_pos[, c("x", "y")] = pos
   }
+
+  set_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
+  set_munched
 }
 
 gen_2_set_pos <- function(set_names, n_sets) {
