@@ -1,7 +1,8 @@
 GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                     required_aes = c("set_names", "elements"),
-                    optional_aes = c(),
+                    default_aes = aes(colour = "black", fill = NA, alpha = 0.5,
+                                      size = 0.5, linetype = 1),
 
                     extra_params = c('type', 'n', 'na.rm'),
                     setup_params = function(data, params) {
@@ -22,6 +23,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     draw_panel = function(data, panel_params, coord, count_matrix,
                                           n_sets = 1, type = "discrete",
                                           set_name_colour = "black", set_name_size = 5,
+                                          count_colour = "black", count_size = 5,
                                           count_nudge = 0.04,
                                           percentage = TRUE, percentage_colour = "black",
                                           percentage_size = 3,
@@ -87,8 +89,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         count_munched$count,
                         x = count_munched$x, y = count_munched$y, default.units = "npc",
                         gp = grid::gpar(
-                          col = "black",
-                          fontsize = set_name_size * ggplot2::.pt
+                          col = count_colour,
+                          fontsize = count_size * ggplot2::.pt
                         )
                       )
 
@@ -131,6 +133,8 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       type = "discrete",
                       set_name_colour = "black",
                       set_name_size = 5,
+                      count_colour = "black",
+                      count_size = 5,
                       count_nudge = 0.06,
                       percentage = TRUE,
                       percentage_colour = "black",
@@ -147,6 +151,8 @@ geom_venn <- function(mapping = NULL, data = NULL,
         type = type,
         set_name_colour = set_name_colour,
         set_name_size = set_name_size,
+        count_colour = count_colour,
+        count_size = count_size,
         count_nudge = count_nudge,
         percentage = percentage,
         percentage_colour = percentage_colour,
