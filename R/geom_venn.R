@@ -23,10 +23,14 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     draw_panel = function(data, panel_params, coord, count_matrix,
                                           n_sets = 1, type = "discrete",
                                           set_name_colour = "black", set_name_size = 5,
+                                          set_name_face = "plain",
+                                          set_name_family = "",
                                           count_colour = "black", count_size = 5,
+                                          count_face = "plain", count_family = "",
                                           count_nudge = 0.04,
                                           percentage = TRUE, percentage_colour = "black",
-                                          percentage_size = 3,
+                                          percentage_size = 3, percentage_face = "plain",
+                                          percentage_family = "",
                                           percentage_nudge = -count_nudge) {
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
@@ -73,7 +77,9 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         x = set_munched$x, y = set_munched$y, default.units = "native",
                         gp = grid::gpar(
                           col = set_name_colour,
-                          fontsize = set_name_size * ggplot2::.pt
+                          fontsize = set_name_size * ggplot2::.pt,
+                          fontface = set_name_face,
+                          fontfamily = set_name_family
                         )
                       )
 
@@ -90,7 +96,9 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         x = count_munched$x, y = count_munched$y, default.units = "npc",
                         gp = grid::gpar(
                           col = count_colour,
-                          fontsize = count_size * ggplot2::.pt
+                          fontsize = count_size * ggplot2::.pt,
+                          fontface = count_face,
+                          fontfamily = count_family
                         )
                       )
 
@@ -100,7 +108,9 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           x = pct_munched$x, y = pct_munched$y, default.units = "npc",
                           gp = grid::gpar(
                             col = percentage_colour,
-                            fontsize = percentage_size * ggplot2::.pt
+                            fontsize = percentage_size * ggplot2::.pt,
+                            fontface = percentage_face,
+                            fontfamily = percentage_family
                           )
                         )
                       } else {
@@ -133,12 +143,18 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       type = "discrete",
                       set_name_colour = "black",
                       set_name_size = 5,
+                      set_name_face = "plain",
+                      set_name_family = "",
                       count_colour = "black",
                       count_size = 5,
+                      count_face = "plain",
+                      count_family = "",
                       count_nudge = 0.06,
                       percentage = TRUE,
                       percentage_colour = "black",
                       percentage_size = 3,
+                      percentage_face = "plain",
+                      percentage_family = "",
                       percentage_nudge = -count_nudge,
                       na.rm = FALSE,
                       show.legend = NA,
@@ -151,12 +167,18 @@ geom_venn <- function(mapping = NULL, data = NULL,
         type = type,
         set_name_colour = set_name_colour,
         set_name_size = set_name_size,
+        set_name_face = set_name_face,
+        set_name_family = set_name_family,
         count_colour = count_colour,
         count_size = count_size,
+        count_face = count_face,
+        count_family = count_family,
         count_nudge = count_nudge,
         percentage = percentage,
         percentage_colour = percentage_colour,
         percentage_size = percentage_size,
+        percentage_face = percentage_face,
+        percentage_family = percentage_family,
         percentage_nudge = percentage_nudge,
         na.rm = na.rm,
         ...
