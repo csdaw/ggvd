@@ -23,7 +23,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                                           n_sets = 1, type = "discrete",
                                           set_name_colour = "black", set_name_size = 5,
                                           count_nudge = 0.04,
-                                          percentage = TRUE, percentage_size = 3,
+                                          percentage = TRUE, percentage_colour = "black",
+                                          percentage_size = 3,
                                           percentage_nudge = -count_nudge) {
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
@@ -96,7 +97,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           paste0("(", round(pct_munched$percentage, 1), "%)"),
                           x = pct_munched$x, y = pct_munched$y, default.units = "npc",
                           gp = grid::gpar(
-                            col = "black",
+                            col = percentage_colour,
                             fontsize = percentage_size * ggplot2::.pt
                           )
                         )
@@ -132,6 +133,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       set_name_size = 5,
                       count_nudge = 0.06,
                       percentage = TRUE,
+                      percentage_colour = "black",
                       percentage_size = 3,
                       percentage_nudge = -count_nudge,
                       na.rm = FALSE,
@@ -147,6 +149,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
         set_name_size = set_name_size,
         count_nudge = count_nudge,
         percentage = percentage,
+        percentage_colour = percentage_colour,
         percentage_size = percentage_size,
         percentage_nudge = percentage_nudge,
         na.rm = na.rm,
