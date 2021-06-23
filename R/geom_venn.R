@@ -8,23 +8,57 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     setup_params = function(data, params) {
                       params$n_sets <- nrow(data)
                       params$count_matrix <- generate_count(data$elements)
+                      params$set_totals <- paste0("(", lengths(data$elements), ")")
                       params
                     },
                     setup_data = function(data, params, n = 360) {
                       if (is.null(data)) return(data)
 
-                      # get total number of elements in each set
-                      data$set_totals <- paste0("(", lengths(data$elements), ")")
-
                       # drop list-column as we don't need it anymore
                       data <- data[, !names(data) %in% "elements"]
 
                       data <- generate_ellipses(data, n_sets = params$n_sets, n = n)
+                      data$segment <- NA_character_
+                      #data$count <- NA_integer_
+
+                      if (params$type == "continuous") {
+                        data_list <- split(data, f = data$group)
+
+                        ellipses <- lapply(data_list, function(x) {
+                          # repeat first polygon point to close polygon
+                          x[nrow(x) + 1, ] <- x[1, ]
+
+                          list(as.matrix(x[c("x", "y")]))
+                        })
+
+                        polygons <- lapply(ellipses, function(x) sf::st_polygon(x))
+
+                        gen_segments <- match.fun(paste("gen", params$n_sets, "segments", sep = "_"))
+                        polygon_list <- gen_segments(polygons)
+                        print("polygonlist!!")
+                        str(polygon_list)
+                        print(seq_along(polygon_list))
+
+                        polygon_dfs <- lapply(seq_along(polygon_list), function(i) {
+                          df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
+                          colnames(df) <- c("x", "y")
+                          df$group <- as.character(i)
+                          df$segment <- names(polygon_list)[[i]]
+                          df$fill <- params$count_matrix$count[i + 1]
+                          df$PANEL <- factor("1")
+                          df$set_names <- factor("banana")
+                          df
+                        })
+
+                        fill_df <- do.call(rbind, polygon_dfs)
+                        data <- rbind(data, fill_df)
+                      }
 
                       data
                     },
                     draw_panel = function(data, panel_params, coord, count_matrix,
-                                          n_sets = 1, type = "discrete",
+                                          n_sets = 1, set_totals = NULL,
+                                          type = "discrete",
                                           set_name_pos = NULL,
                                           set_name_colour = NULL,
                                           set_name_size = 5,
@@ -50,7 +84,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                                           percentage_nudge = -count_nudge) {
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
-                      munched <- ggplot2::coord_munch(coord, data, panel_params)
+                      munched <- ggplot2::coord_munch(coord, data[is.na(data$segment), ], panel_params)
 
                       # This line was screwing up the order of circles/labels
                       # munched <- munched[order(munched$group), ]
@@ -65,13 +99,38 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       first_idx <- !duplicated(munched$group)
                       first_rows <- munched[first_idx, ]
 
-                      circle_fill <- grid::polygonGrob(
-                        x = munched$x, y = munched$y,
-                        id = munched$group, default.units = 'native',
-                        gp = grid::gpar(
-                          col = NA,
-                          fill = alpha(first_rows$fill, first_rows$alpha)
-                        ))
+                      if (type == "continuous") {
+                        fill_munched <- ggplot2::coord_munch(coord, data[!is.na(data$segment), ], panel_params)
+                        print("fill_munched")
+                        str(fill_munched)
+                        #fill_munched$fill <- fill_munched$count
+
+                        if (!is.integer(fill_munched$group)) {
+                          fill_munched$group <- match(fill_munched$group, unique(fill_munched$group))
+                        }
+                        fill_first_idx <- !duplicated(fill_munched$group)
+                        fill_first_rows <- fill_munched[fill_first_idx, ]
+                        print("fill_first_rows")
+                        str(fill_first_rows)
+
+                        circle_fill <- grid::polygonGrob(
+                          x = fill_munched$x, y = fill_munched$y,
+                          id = fill_munched$group, default.units = 'native',
+                          gp = grid::gpar(
+                            col = NA,
+                            fill = alpha(fill_first_rows$fill, fill_first_rows$alpha)
+                          ))
+                      } else {
+                        circle_fill <- grid::polygonGrob(
+                          x = munched$x, y = munched$y,
+                          id = munched$group, default.units = 'native',
+                          gp = grid::gpar(
+                            col = NA,
+                            fill = alpha(first_rows$fill, first_rows$alpha)
+                          ))
+                      }
+
+
 
                       circle_outline <- grid::polygonGrob(
                         x = munched$x, y = munched$y,
@@ -108,7 +167,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         set_total_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
 
                         set_totals <- grid::textGrob(
-                          unique(munched$set_totals),
+                          set_totals,
                           x = set_total_munched$x, y = set_total_munched$y,
                           default.units = "native",
                           gp = grid::gpar(

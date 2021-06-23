@@ -1,14 +1,17 @@
+#' @keywords internal
+#' @export
 gen_2_segments <- function(polygons) {
   # regions
   A <- st_difference(polygons[[1]], polygons[[2]])
   B <- st_difference(polygons[[2]], polygons[[1]])
   AB <- st_intersection(polygons[[1]], polygons[[2]])
 
-  polygon_list <- list(A = A, B = B,
-                       AB = AB)
-  polygon_list
+  out <- list(A = A, B = B, AB = AB)
+  out
 }
 
+#' @keywords internal
+#' @export
 gen_3_segments <- function(polygons) {
   # regions
   A <- st_multi_difference(l = polygons)
@@ -19,12 +22,13 @@ gen_3_segments <- function(polygons) {
   BC <- st_difference(st_intersection(polygons[[3]], polygons[[2]]), polygons[[1]])
   ABC <- st_multi_intersection(l = polygons)
 
-  polygon_list <- list(A = A, B = B, C = C,
-                       AB = AB, AC = AC, BC = BC,
-                       ABC = ABC)
-  polygon_list
+  out <- list(A = A, B = B, AB = AB, C = C,
+              AC = AC, BC = BC, ABC = ABC)
+  out
 }
 
+#' @keywords internal
+#' @export
 gen_4_segments <- function(polygons) {
   # regions
   A <- st_multi_difference(l = polygons)
@@ -43,9 +47,8 @@ gen_4_segments <- function(polygons) {
   BCD <- st_difference(st_multi_intersection(l = polygons[c(4, 2, 3)]), polygons[[1]])
   ABCD <- st_multi_intersection(l = polygons)
 
-  polygon_list <- list(A = A, B = B, C = C, D = D,
-                       AB = AB, AC = AC, AD = AD, BC = BC, BD = BD, CD = CD,
-                       ABC = ABC, ABD = ABD, ACD = ACD, BCD = BCD,
-                       ABCD = ABCD)
-  polygon_list
+  out <- list(A = A, B = B, AB = AB, C = C, AC = AC, BC = BC,
+              ABC = ABC, D = D, AD = AD, BD = BD, ABD = ABD,
+              CD = CD, ACD = ACD, BCD = BCD, ABCD = ABCD)
+  out
 }
