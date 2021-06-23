@@ -7,7 +7,8 @@ output: github_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
-  collapse = TRUE
+  collapse = TRUE,
+  fig.path = "figs/"
 )
 ```
 
@@ -26,7 +27,7 @@ and [ggVennDiagram](https://github.com/gaospecial/ggVennDiagram).
 library(ggvd)
 ```
 
-```{r}
+```{r discrete-venn2}
 # 2 way Venn discrete
 circles2 <- tibble::tibble(
   sets = factor(c("Set 1", "Set 2")),
@@ -36,11 +37,11 @@ circles2 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles2, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles2, type = "discrete") +
   scale_fill_identity()
 ```
 
-```{r}
+```{r discrete-venn3}
 # 3 way Venn discrete
 circles3 <- tibble::tibble(
   sets = factor(c("Set1", "Set2", "Set3")),
@@ -50,11 +51,11 @@ circles3 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles3, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles3, type = "discrete") +
   scale_fill_identity()
 ```
 
-```{r}
+```{r discrete-venn4}
 # 4 way Venn discrete
 circles4 <- tibble::tibble(
   sets = factor(c("Set 1", "Set 2", "Set 3", "Set 4")),
@@ -68,7 +69,6 @@ circles4 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles4, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles4, type = "discrete") +
   scale_fill_identity()
 ```
-

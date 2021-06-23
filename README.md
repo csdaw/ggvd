@@ -28,11 +28,11 @@ circles2 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles2, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles2, type = "discrete") +
   scale_fill_identity()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](figs/discrete-venn2-1.png)<!-- -->
 
 ``` r
 # 3 way Venn discrete
@@ -44,11 +44,11 @@ circles3 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles3, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles3, type = "discrete") +
   scale_fill_identity()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](figs/discrete-venn3-1.png)<!-- -->
 
 ``` r
 # 4 way Venn discrete
@@ -64,8 +64,8 @@ circles4 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles4, type = "discrete", alpha = 0.5, colour = "black") +
+            data = circles4, type = "discrete") +
   scale_fill_identity()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](figs/discrete-venn4-1.png)<!-- -->
