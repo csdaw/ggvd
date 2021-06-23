@@ -20,8 +20,10 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       data
                     },
                     draw_panel = function(data, panel_params, coord, count_matrix,
-                                          type = "discrete", n_sets = 1,
-                                          set_name_colour = "black", set_name_size = 5) {
+                                          n_sets = 1, type = "discrete",
+                                          set_name_colour = "black", set_name_size = 5,
+                                          percentage = TRUE, percentage_size = 3,
+                                          percentage_nudge = -0.1) {
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
                       munched <- ggplot2::coord_munch(coord, data, panel_params)
@@ -71,7 +73,10 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         )
                       )
 
+
                       count_munched <- ggplot2::coord_munch(coord, count_matrix, panel_params)
+                      count_matrix$y <- count_matrix$y + percentage_nudge
+                      pct_munched <- ggplot2::coord_munch(coord, count_matrix, panel_params)
 
                       counts <- grid::textGrob(
                         count_munched$count,
@@ -82,9 +87,22 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         )
                       )
 
+                      if (percentage) {
+                        percentages <- grid::textGrob(
+                          paste0("\n(", round(pct_munched$percentage, 1), "%)"),
+                          x = pct_munched$x, y = pct_munched$y, default.units = "npc",
+                          gp = grid::gpar(
+                            col = "black",
+                            fontsize = percentage_size * ggplot2::.pt
+                          )
+                        )
+                      } else {
+                        percentages <- grid::nullGrob()
+                      }
+
                       ggplot2:::ggname("geom_venn",
                                        grid::grobTree(circle_fill, circle_outline,
-                                                      set_names, counts))
+                                                      set_names, counts, percentages))
                     }
 )
 
@@ -108,6 +126,9 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       type = "discrete",
                       set_name_colour = "black",
                       set_name_size = 5,
+                      percentage = TRUE,
+                      percentage_size = 3,
+                      percentage_nudge = -0.08,
                       na.rm = FALSE,
                       show.legend = NA,
                       inherit.aes = TRUE) {
@@ -119,6 +140,9 @@ geom_venn <- function(mapping = NULL, data = NULL,
         type = type,
         set_name_colour = set_name_colour,
         set_name_size = set_name_size,
+        percentage = percentage,
+        percentage_size = percentage_size,
+        percentage_nudge = percentage_nudge,
         na.rm = na.rm,
         ...
       )
