@@ -28,7 +28,7 @@ circles2 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles2, type = "discrete") +
+            data = circles2, type = "discrete", set_total = TRUE) +
   scale_fill_identity()
 ```
 
@@ -44,7 +44,7 @@ circles3 <- tibble::tibble(
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles3, type = "discrete") +
+            data = circles3, type = "discrete", set_total = TRUE) +
   scale_fill_identity()
 ```
 
@@ -58,13 +58,12 @@ circles4 <- tibble::tibble(
   elements = list(c(1,11:15,29:36,46:55,56:66,67:78,79:91,106:120),
                   c(2:3,11:15,16:21,29:36,37:45,46:55,79:91,92:105),
                   c(4:6,16:21,22:28,29:36,37:45,46:55,56:66,67:78),
-                  c(7:10,22:28,37:45,46:55,67:78,79:91,92:105,106:120)),
-  counts = lengths(elements)
+                  c(7:10,22:28,37:45,46:55,67:78,79:91,92:105,106:120))
 )
 
 ggplot() +
   geom_venn(aes(fill = fill, set_names = sets, elements = elements),
-            data = circles4, type = "discrete") +
+            data = circles4, type = "discrete", set_total = TRUE) +
   scale_fill_identity()
 ```
 

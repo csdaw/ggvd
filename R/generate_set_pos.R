@@ -48,7 +48,7 @@ gen_4_set_pos <- function(set_names, n_sets) {
     # left, center left, center right, right
     set_names = set_names,
     x = c(-1.8, -0.8, 0.8, 1.8),
-    y = c(1.05, 1.12 + 11/30, 1.12 + 11/30, 1.05),
+    y = c(1.07, 1.14 + 11/30, 1.14 + 11/30, 1.07),
     group = as.character(seq(1:n_sets))
   )
 }
