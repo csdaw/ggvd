@@ -74,9 +74,6 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         )
                       )
 
-                      print(count_nudge)
-                      print(percentage_nudge)
-
                       count_y_nudged <- count_matrix$y + count_nudge
                       pct_y_nudged <- count_matrix$y + percentage_nudge
 
