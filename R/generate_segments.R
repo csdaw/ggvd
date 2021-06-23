@@ -1,4 +1,4 @@
-make_2d_venn <- function(polygons) {
+gen_2_segments <- function(polygons) {
   # regions
   A <- st_difference(polygons[[1]], polygons[[2]])
   B <- st_difference(polygons[[2]], polygons[[1]])
@@ -9,7 +9,7 @@ make_2d_venn <- function(polygons) {
   polygon_list
 }
 
-make_3d_venn <- function(polygons) {
+gen_3_segments <- function(polygons) {
   # regions
   A <- st_multi_difference(l = polygons)
   B <- st_multi_difference(l = polygons[c(2, 1, 3)])
@@ -25,7 +25,7 @@ make_3d_venn <- function(polygons) {
   polygon_list
 }
 
-make_4d_venn <- function(polygons) {
+gen_4_segments <- function(polygons) {
   # regions
   A <- st_multi_difference(l = polygons)
   B <- st_multi_difference(l = polygons[c(2, 1, 3, 4)])
