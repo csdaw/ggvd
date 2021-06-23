@@ -15,7 +15,7 @@ st_multi_intersection <- function ( ...,l = NULL){
   else {
     v <- l[[1]]
     for (i in 2:n){
-      v <- sf::st_intersection(v,l[[i]])
+      v <- st_intersection(v,l[[i]])
     }
     return(v)
   }
@@ -31,7 +31,7 @@ st_multi_difference <- function ( ...,l = NULL){
   else {
     v <- l[[1]]
     for (i in 2:n){
-      v <- sf::st_difference(v,l[[i]])
+      v <- st_difference(v,l[[i]])
     }
     return(v)
   }
@@ -48,7 +48,7 @@ st_multi_union <- function ( ...,l = NULL){
   else {
     v <- l[[1]]
     for (i in 2:n){
-      v <- sf::st_union(v,l[[i]])
+      v <- st_union(v,l[[i]])
     }
     return(v)
   }

@@ -2,6 +2,5 @@
 "_PACKAGE"
 
 #' @import ggplot2
-#' @import sf
-#' @importFrom ggforce GeomShape
+#' @importFrom sf st_intersection st_union st_difference
 NULL

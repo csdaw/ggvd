@@ -7,9 +7,33 @@
 geom_venn(
   mapping = NULL,
   data = NULL,
+  stat = "identity",
   position = "identity",
   ...,
   type = "discrete",
+  set_name_pos = NULL,
+  set_name_colour = NULL,
+  set_name_size = 5,
+  set_name_face = NULL,
+  set_name_family = NULL,
+  set_total = FALSE,
+  set_total_pos = c(0, -0.15),
+  set_total_colour = NULL,
+  set_total_size = 4,
+  set_total_face = NULL,
+  set_total_family = NULL,
+  count_colour = "black",
+  count_size = 5,
+  count_face = NULL,
+  count_family = NULL,
+  count_nudge = 0.06,
+  percentage = TRUE,
+  percentage_digits = 1,
+  percentage_colour = "black",
+  percentage_size = 3,
+  percentage_face = NULL,
+  percentage_family = NULL,
+  percentage_nudge = -count_nudge,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE
@@ -20,9 +44,59 @@ geom_venn(
 
 \item{data}{Description.}
 
+\item{stat}{Description.}
+
 \item{position}{Description.}
 
 \item{...}{Description.}
+
+\item{type}{Description.}
+
+\item{set_name_pos}{Description.}
+
+\item{set_name_colour}{Description.}
+
+\item{set_name_size}{Description.}
+
+\item{set_name_face}{Description.}
+
+\item{set_name_family}{Description.}
+
+\item{set_total}{Description.}
+
+\item{set_total_pos}{Description.}
+
+\item{set_total_colour}{Description.}
+
+\item{set_total_size}{Description.}
+
+\item{set_total_face}{Description.}
+
+\item{set_total_family}{Description.}
+
+\item{count_colour}{Description.}
+
+\item{count_size}{Description.}
+
+\item{count_face}{Description.}
+
+\item{count_family}{Description.}
+
+\item{count_nudge}{Description.}
+
+\item{percentage}{Description.}
+
+\item{percentage_digits}{Description.}
+
+\item{percentage_colour}{Description.}
+
+\item{percentage_size}{Description.}
+
+\item{percentage_face}{Description.}
+
+\item{percentage_family}{Description.}
+
+\item{percentage_nudge}{Description.}
 
 \item{na.rm}{Description.}
 
@@ -35,4 +109,7 @@ Description.
 }
 \description{
 Description.
+}
+\examples{
+#
 }

@@ -2,5 +2,6 @@
 
 export(geom_venn)
 import(ggplot2)
-import(sf)
-importFrom(ggforce,GeomShape)
+importFrom(sf,st_difference)
+importFrom(sf,st_intersection)
+importFrom(sf,st_union)

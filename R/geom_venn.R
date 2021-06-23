@@ -162,20 +162,49 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     }
 )
 
+
 #' Title
 #'
 #' @description Description.
 #'
 #' @param mapping Description.
 #' @param data Description.
+#' @param stat Description.
 #' @param position Description.
+#' @param ... Description.
+#' @param type Description.
+#' @param set_name_pos Description.
+#' @param set_name_colour Description.
+#' @param set_name_size Description.
+#' @param set_name_face Description.
+#' @param set_name_family Description.
+#' @param set_total Description.
+#' @param set_total_pos Description.
+#' @param set_total_colour Description.
+#' @param set_total_size Description.
+#' @param set_total_face Description.
+#' @param set_total_family Description.
+#' @param count_colour Description.
+#' @param count_size Description.
+#' @param count_face Description.
+#' @param count_family Description.
+#' @param count_nudge Description.
+#' @param percentage Description.
+#' @param percentage_digits Description.
+#' @param percentage_colour Description.
+#' @param percentage_size Description.
+#' @param percentage_face Description.
+#' @param percentage_family Description.
+#' @param percentage_nudge Description.
 #' @param na.rm Description.
 #' @param show.legend Description.
 #' @param inherit.aes Description.
-#' @param ... Description.
 #'
 #' @return Description.
 #' @export
+#'
+#' @examples
+#' #
 geom_venn <- function(mapping = NULL, data = NULL,
                       stat = "identity",
                       position = "identity", ...,
