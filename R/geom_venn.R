@@ -22,8 +22,9 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     draw_panel = function(data, panel_params, coord, count_matrix,
                                           n_sets = 1, type = "discrete",
                                           set_name_colour = "black", set_name_size = 5,
+                                          count_nudge = 0.04,
                                           percentage = TRUE, percentage_size = 3,
-                                          percentage_nudge = -0.1) {
+                                          percentage_nudge = -count_nudge) {
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
                       munched <- ggplot2::coord_munch(coord, data, panel_params)
@@ -73,9 +74,15 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         )
                       )
 
+                      print(count_nudge)
+                      print(percentage_nudge)
 
+                      count_y_nudged <- count_matrix$y + count_nudge
+                      pct_y_nudged <- count_matrix$y + percentage_nudge
+
+                      count_matrix$y <- count_y_nudged
                       count_munched <- ggplot2::coord_munch(coord, count_matrix, panel_params)
-                      count_matrix$y <- count_matrix$y + percentage_nudge
+                      count_matrix$y <- pct_y_nudged
                       pct_munched <- ggplot2::coord_munch(coord, count_matrix, panel_params)
 
                       counts <- grid::textGrob(
@@ -89,7 +96,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       if (percentage) {
                         percentages <- grid::textGrob(
-                          paste0("\n(", round(pct_munched$percentage, 1), "%)"),
+                          paste0("(", round(pct_munched$percentage, 1), "%)"),
                           x = pct_munched$x, y = pct_munched$y, default.units = "npc",
                           gp = grid::gpar(
                             col = "black",
@@ -126,9 +133,10 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       type = "discrete",
                       set_name_colour = "black",
                       set_name_size = 5,
+                      count_nudge = 0.06,
                       percentage = TRUE,
                       percentage_size = 3,
-                      percentage_nudge = -0.08,
+                      percentage_nudge = -count_nudge,
                       na.rm = FALSE,
                       show.legend = NA,
                       inherit.aes = TRUE) {
@@ -140,6 +148,7 @@ geom_venn <- function(mapping = NULL, data = NULL,
         type = type,
         set_name_colour = set_name_colour,
         set_name_size = set_name_size,
+        count_nudge = count_nudge,
         percentage = percentage,
         percentage_size = percentage_size,
         percentage_nudge = percentage_nudge,
