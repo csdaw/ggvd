@@ -2,7 +2,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                     required_aes = c("set_names", "elements"),
                     default_aes = aes(colour = "black", fill = NA, alpha = 0.5,
-                                      size = 0.5, linetype = 1),
+                                      size = 0.5, linetype = 1, fontface = "plain", family = ""),
 
                     extra_params = c('type', 'n', 'na.rm'),
                     setup_params = function(data, params) {
@@ -22,15 +22,15 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                     },
                     draw_panel = function(data, panel_params, coord, count_matrix,
                                           n_sets = 1, type = "discrete",
-                                          set_name_colour = "black", set_name_size = 5,
-                                          set_name_face = "plain",
-                                          set_name_family = "",
+                                          set_name_colour = NULL, set_name_size = 5,
+                                          set_name_face = NULL,
+                                          set_name_family = NULL,
                                           count_colour = "black", count_size = 5,
-                                          count_face = "plain", count_family = "",
+                                          count_face = NULL, count_family = NULL,
                                           count_nudge = 0.04,
                                           percentage = TRUE, percentage_colour = "black",
-                                          percentage_size = 3, percentage_face = "plain",
-                                          percentage_family = "",
+                                          percentage_size = 3, percentage_face = NULL,
+                                          percentage_family = NULL,
                                           percentage_nudge = -count_nudge) {
                       if (nrow(data) == 1) return(ggplot2::zeroGrob())
 
@@ -76,10 +76,10 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         set_munched$set_names,
                         x = set_munched$x, y = set_munched$y, default.units = "native",
                         gp = grid::gpar(
-                          col = set_name_colour,
+                          col = if (is.null(set_name_colour)) first_rows$colour else set_name_colour,
                           fontsize = set_name_size * ggplot2::.pt,
-                          fontface = set_name_face,
-                          fontfamily = set_name_family
+                          fontface = if (is.null(set_name_face)) first_rows$fontface else set_name_face,
+                          fontfamily = if (is.null(set_name_family)) first_rows$family else set_name_family
                         )
                       )
 
@@ -97,8 +97,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         gp = grid::gpar(
                           col = count_colour,
                           fontsize = count_size * ggplot2::.pt,
-                          fontface = count_face,
-                          fontfamily = count_family
+                          fontface = if (is.null(count_face)) first_rows$fontface[1] else count_face,
+                          fontfamily = if (is.null(count_family)) first_rows$family[1] else count_family
                         )
                       )
 
@@ -109,8 +109,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           gp = grid::gpar(
                             col = percentage_colour,
                             fontsize = percentage_size * ggplot2::.pt,
-                            fontface = percentage_face,
-                            fontfamily = percentage_family
+                            fontface = if (is.null(percentage_face)) first_rows$fontface[1] else percentage_face,
+                            fontfamily = if (is.null(percentage_family)) first_rows$family[1] else percentage_family
                           )
                         )
                       } else {
@@ -141,20 +141,20 @@ geom_venn <- function(mapping = NULL, data = NULL,
                       stat = "identity",
                       position = "identity", ...,
                       type = "discrete",
-                      set_name_colour = "black",
+                      set_name_colour = NULL,
                       set_name_size = 5,
-                      set_name_face = "plain",
-                      set_name_family = "",
+                      set_name_face = NULL,
+                      set_name_family = NULL,
                       count_colour = "black",
                       count_size = 5,
-                      count_face = "plain",
-                      count_family = "",
+                      count_face = NULL,
+                      count_family = NULL,
                       count_nudge = 0.06,
                       percentage = TRUE,
                       percentage_colour = "black",
                       percentage_size = 3,
-                      percentage_face = "plain",
-                      percentage_family = "",
+                      percentage_face = NULL,
+                      percentage_family = NULL,
                       percentage_nudge = -count_nudge,
                       na.rm = FALSE,
                       show.legend = NA,
