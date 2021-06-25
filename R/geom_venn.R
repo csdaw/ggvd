@@ -19,7 +19,6 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       data <- generate_ellipses(data, n_sets = params$n_sets, n = n)
                       data$segment <- NA_character_
-                      #data$count <- NA_integer_
 
                       if (params$type == "continuous") {
                         data_list <- split(data, f = data$group)
@@ -35,9 +34,6 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                         gen_segments <- match.fun(paste("gen", params$n_sets, "segments", sep = "_"))
                         polygon_list <- gen_segments(polygons)
-                        print("polygonlist!!")
-                        str(polygon_list)
-                        print(seq_along(polygon_list))
 
                         polygon_dfs <- lapply(seq_along(polygon_list), function(i) {
                           df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
@@ -101,17 +97,12 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                       if (type == "continuous") {
                         fill_munched <- ggplot2::coord_munch(coord, data[!is.na(data$segment), ], panel_params)
-                        print("fill_munched")
-                        str(fill_munched)
-                        #fill_munched$fill <- fill_munched$count
 
                         if (!is.integer(fill_munched$group)) {
                           fill_munched$group <- match(fill_munched$group, unique(fill_munched$group))
                         }
                         fill_first_idx <- !duplicated(fill_munched$group)
                         fill_first_rows <- fill_munched[fill_first_idx, ]
-                        print("fill_first_rows")
-                        str(fill_first_rows)
 
                         circle_fill <- grid::polygonGrob(
                           x = fill_munched$x, y = fill_munched$y,
