@@ -21,7 +21,9 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       data$segment <- NA_character_
 
                       if (params$type == "continuous") {
+
                         data_list <- split(data, f = data$group)
+                        max_group <- max(as.integer(data$group))
 
                         ellipses <- lapply(data_list, function(x) {
                           # repeat first polygon point to close polygon
@@ -38,7 +40,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         polygon_dfs <- lapply(seq_along(polygon_list), function(i) {
                           df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
                           colnames(df) <- c("x", "y")
-                          df$group <- as.character(i)
+                          df$group <- as.character(max_group + i)
                           df$segment <- names(polygon_list)[[i]]
                           df$fill <- params$count_matrix$count[i + 1]
                           df$PANEL <- factor("1")
@@ -99,7 +101,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         fill_munched <- ggplot2::coord_munch(coord, data[!is.na(data$segment), ], panel_params)
 
                         if (!is.integer(fill_munched$group)) {
-                          fill_munched$group <- match(fill_munched$group, unique(fill_munched$group))
+                          fill_munched$group <- as.integer(fill_munched$group)
                         }
                         fill_first_idx <- !duplicated(fill_munched$group)
                         fill_first_rows <- fill_munched[fill_first_idx, ]
@@ -120,8 +122,6 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                             fill = alpha(first_rows$fill, first_rows$alpha)
                           ))
                       }
-
-
 
                       circle_outline <- grid::polygonGrob(
                         x = munched$x, y = munched$y,

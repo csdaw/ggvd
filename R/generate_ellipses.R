@@ -1,7 +1,7 @@
 generate_ellipses <- function(data, n_sets, n) {
   check_n_sets(n_sets)
 
-  data$group <- make.unique(as.character(data$group))
+  data$group <- as.character(1:n_sets)
 
   data <- data[rep(seq_len(n_sets), each = n), ]
   points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)], n_sets)
