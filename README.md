@@ -26,7 +26,7 @@ venn2 <- prepare_venn(ls2, fill = c("blue", "yellow"))
 
 # discrete
 ggplot() +
-  geom_venn(aes(set_names = sets, elements = elements, fill = fill),
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
             data = venn2, type = "discrete", set_total = TRUE) +
   scale_fill_identity() + 
   scale_color_identity() + 
@@ -34,7 +34,7 @@ ggplot() +
 
 # continuous
 ggplot() +
-  geom_venn(aes(set_names = sets, elements = elements, fill = count),
+  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
             data = venn2, type = "continuous", set_total = TRUE) +
   scale_fill_gradient(low = "white", high = "red") + 
   theme_void()
@@ -51,14 +51,14 @@ venn3 <- prepare_venn(ls3, fill = c("blue", "yellow", "green"))
 
 # discrete
 ggplot() +
-  geom_venn(aes(set_names = sets, elements = elements, fill = fill),
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
             data = venn3, type = "discrete", set_total = TRUE) +
   scale_fill_identity() + 
   theme_void()
 
 # continuous
 ggplot() +
-  geom_venn(aes(set_names = sets, elements = elements, fill = count),
+  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
             data = venn3, type = "continuous", set_total = TRUE) +
   scale_fill_gradient(low = "white", high = "red") + 
   theme_void()
@@ -76,14 +76,14 @@ venn4 <- prepare_venn(ls4, fill = c("blue", "yellow", "green", "red"))
 
 # discrete
 ggplot() +
-  geom_venn(aes(set_names = sets, elements = elements, fill = fill),
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
             data = venn4, type = "discrete", set_total = TRUE) +
   scale_fill_identity() + 
   theme_void()
 
 # continuous
 ggplot() +
-  geom_venn(aes(set_names = sets, elements = elements, fill = count),
+  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
             data = venn4, type = "continuous", set_total = TRUE) +
   scale_fill_gradient(low = "white", high = "red") + 
   theme_void()

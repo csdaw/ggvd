@@ -1,6 +1,6 @@
 GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
-                    required_aes = c("set_names", "elements"),
+                    required_aes = c("set_name", "elements"),
                     default_aes = aes(colour = "black", fill = NA, alpha = 0.5,
                                       size = 0.5, linetype = 1, fontface = "plain", family = ""),
 
@@ -44,7 +44,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           df$segment <- names(polygon_list)[[i]]
                           df$fill <- params$count_matrix$count[i + 1]
                           df$PANEL <- factor("1")
-                          df$set_names <- factor("banana")
+                          df$set_name <- factor("banana")
                           df
                         })
 
@@ -140,7 +140,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       set_munched <- ggplot2::coord_munch(coord, set_pos, panel_params)
 
                       set_names <- grid::textGrob(
-                        set_munched$set_names,
+                        set_munched$set_name,
                         x = set_munched$x, y = set_munched$y, default.units = "native",
                         gp = grid::gpar(
                           col = if (is.null(set_name_colour)) first_rows$colour else set_name_colour,

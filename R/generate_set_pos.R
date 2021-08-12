@@ -2,7 +2,7 @@ generate_set_pos <- function(coord, panel_params, munched, n_sets, pos = NULL) {
   check_n_sets(n_sets)
 
   gen_set_pos <- match.fun(paste("gen", n_sets, "set_pos", sep = "_"))
-  set_pos <- gen_set_pos(set_names = unique(munched$set_names), n_sets = n_sets)
+  set_pos <- gen_set_pos(set_name = unique(munched$set_name), n_sets = n_sets)
 
   if (!is.null(pos)) {
     stopifnot(is.list(pos) && names(pos) %in% c("x", "y"))
@@ -14,17 +14,17 @@ generate_set_pos <- function(coord, panel_params, munched, n_sets, pos = NULL) {
   set_pos
 }
 
-gen_2_set_pos <- function(set_names, n_sets) {
+gen_2_set_pos <- function(set_name, n_sets) {
   data.frame(
     # left, right
-    set_names = set_names,
+    set_name = set_name,
     x = c(-1.22, 1.22),
     y = c(1.1, 1.1),
     group = as.character(seq(1:n_sets))
   )
 }
 
-gen_3_set_pos <- function(set_names, n_sets) {
+gen_3_set_pos <- function(set_name, n_sets) {
   # special number to define circle overlap, must be between 0.5 and 1
   n <- 0.6
   # special number to shift circles up a bit
@@ -34,7 +34,7 @@ gen_3_set_pos <- function(set_names, n_sets) {
 
   out <- data.frame(
     # top left, top right, bottom
-    set_names = set_names,
+    set_name = set_name,
     x = c(-n - cos(45)*hypo, n + cos(45)*hypo, 0),
     y = c(n/sqrt(3) + shift + sin(45)*hypo,
           n/sqrt(3) + shift + sin(45)*hypo,
@@ -43,10 +43,10 @@ gen_3_set_pos <- function(set_names, n_sets) {
   )
 }
 
-gen_4_set_pos <- function(set_names, n_sets) {
+gen_4_set_pos <- function(set_name, n_sets) {
   data.frame(
     # left, center left, center right, right
-    set_names = set_names,
+    set_name = set_name,
     x = c(-1.8, -0.8, 0.8, 1.8),
     y = c(1.07, 1.14 + 11/30, 1.14 + 11/30, 1.07),
     group = as.character(seq(1:n_sets))
