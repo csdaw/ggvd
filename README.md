@@ -90,3 +90,28 @@ ggplot() +
 ```
 
 <img src="figs/discrete-venn4-1.png" width="50%" /><img src="figs/discrete-venn4-2.png" width="50%" />
+
+``` r
+# 4 way Venn
+ls4_2 <- list("ZZZ" = c(1:100),
+              "AAA" = c(2),
+              "YYY" = c(1:100),
+              "BBB" = c(1:100))
+venn4_2 <- prepare_venn(ls4_2, fill = c("blue", "yellow", "green", "red"))
+
+# discrete
+ggplot() +
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
+            data = venn4_2, type = "discrete", set_total = TRUE) +
+  scale_fill_identity() + 
+  theme_void()
+
+# continuous
+ggplot() +
+  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
+            data = venn4_2, type = "continuous", set_total = TRUE) +
+  scale_fill_gradient(low = "white", high = "red") + 
+  theme_void()
+```
+
+<img src="figs/discrete-venn5-1.png" width="50%" /><img src="figs/discrete-venn5-2.png" width="50%" />
