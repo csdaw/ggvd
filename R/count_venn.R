@@ -12,7 +12,7 @@ count_venn <- function(l) {
   n_segments <- 2^n_sets
   segments_mat <- matrix(0, n_segments, n_sets)
 
-  colnames(segments_mat) <- rev(names(l))
+  colnames(segments_mat) <- names(l)
   for (j in 1:n_sets) segments_mat[, j] <- rep(0:1, times = 2^(j - 1), each = 2^(n_sets - j))
 
   # perform counting and edit segment matrix
@@ -23,5 +23,5 @@ count_venn <- function(l) {
   percentage <- count / max(lengths(count_ls)) * 100
 
   # bind segment matrix, counts, and percentages
-  cbind(segments_mat[, ncol(segments_mat):1], count, percentage)
+  cbind(segments_mat, count, percentage)
 }
