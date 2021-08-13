@@ -37,18 +37,22 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                         gen_segments <- match.fun(paste("gen", params$n_sets, "segments", sep = "_"))
                         polygon_list <- gen_segments(polygons)
 
+                        # reorder according to count_matrix (IMPORTANT!)
+                        polygon_list <- polygon_list[params$count_matrix$segment[2:2^params$n_sets]]
+
                         polygon_dfs <- lapply(seq_along(polygon_list), function(i) {
                           df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
                           colnames(df) <- c("x", "y")
                           df$group <- as.character(max_group + i)
                           df$segment <- names(polygon_list)[[i]]
-                          df$fill <- params$count_matrix$count[i + 1]
                           df$PANEL <- factor("1")
                           df$set_name <- factor("banana")
                           df
                         })
 
                         fill_df <- do.call(rbind, polygon_dfs)
+                        fill_df <- merge(fill_df, params$count_matrix[, c("count", "segment")], by = "segment")
+                        names(fill_df)[names(fill_df) == "count"] <- "fill"
                         data <- rbind(data, fill_df)
                       }
 
