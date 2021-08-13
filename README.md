@@ -58,7 +58,6 @@ ggplot() +
   geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
             data = venn2, type = "discrete", set_total = TRUE) +
   scale_fill_identity() + 
-  scale_color_identity() + 
   theme_void()
 
 # continuous
@@ -79,7 +78,6 @@ ggplot() +
   geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
             data = venn3, type = "discrete", set_total = TRUE) +
   scale_fill_identity() + 
-  scale_color_identity() + 
   theme_void()
 
 # continuous
@@ -100,7 +98,6 @@ ggplot() +
   geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
             data = venn4, type = "discrete", set_total = TRUE) +
   scale_fill_identity() + 
-  scale_color_identity() + 
   theme_void()
 
 # continuous
