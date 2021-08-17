@@ -1,4 +1,23 @@
+#' Convert list to geom_venn compatible data.frame
+#'
+#' @description Description.
+#'
+#' @param ls Description.
+#' @param ... Description.
+#'
+#' @return Returns ...
 #' @export
+#'
+#' @examples
+#'
+#' lst <- list(
+#'   set1 = c(1:3),
+#'   set2 = c(3:20),
+#'   set3 = c(1, 20:66)
+#' )
+#'
+#' prepare_venn(lst, fill = c("blue", "red", "green"))
+#'
 prepare_venn <- function(ls, ...) {
   count_matrix <- count_venn(ls)
 

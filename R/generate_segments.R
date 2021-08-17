@@ -1,5 +1,3 @@
-#' @keywords internal
-#' @export
 gen_2_segments <- function(polygons) {
   # regions
   A <- st_difference(polygons[[1]], polygons[[2]])
@@ -10,8 +8,6 @@ gen_2_segments <- function(polygons) {
   out
 }
 
-#' @keywords internal
-#' @export
 gen_3_segments <- function(polygons) {
   # regions
   A <- st_multi_difference(l = polygons)
@@ -27,8 +23,6 @@ gen_3_segments <- function(polygons) {
   out
 }
 
-#' @keywords internal
-#' @export
 gen_4_segments <- function(polygons) {
   # regions
   A <- st_multi_difference(l = polygons)

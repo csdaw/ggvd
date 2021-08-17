@@ -1,4 +1,22 @@
+#' Compute counts for Venn Diagram
+#'
+#' @description Description.
+#'
+#' @param l Description.
+#'
+#' @return Returns ...
 #' @export
+#'
+#' @examples
+#'
+#' lst <- list(
+#'   set1 = c(1:3),
+#'   set2 = c(3:20),
+#'   set3 = c(1, 20:66)
+#' )
+#'
+#' count_venn(lst)
+#'
 count_venn <- function(l) {
   n_sets <- length(l)
 
@@ -6,7 +24,7 @@ count_venn <- function(l) {
   if(is.null(names(l))) names(l) <- LETTERS[1:n_sets]
 
   # convert l into matrix with one row per unique value
-  l_mat <- table(stack(l))
+  l_mat <- table(utils::stack(l))
 
   # set up empty segment matrix, 1 row per segment, 1 column per set
   n_segments <- 2^n_sets
