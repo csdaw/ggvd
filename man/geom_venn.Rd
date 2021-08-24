@@ -40,69 +40,108 @@ geom_venn(
 )
 }
 \arguments{
-\item{mapping}{Description.}
+\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
+\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
+default), it is combined with the default mapping at the top level of the
+plot. You must supply \code{mapping} if there is no plot mapping.}
 
-\item{data}{Description.}
+\item{data}{The data to be displayed in this layer. There are three
+options:
 
-\item{stat}{Description.}
+If \code{NULL}, the default, the data is inherited from the plot
+data as specified in the call to \code{\link[ggplot2:ggplot]{ggplot()}}.
 
-\item{position}{Description.}
+A \code{data.frame}, or other object, will override the plot
+data. All objects will be fortified to produce a data frame. See
+\code{\link[ggplot2:fortify]{fortify()}} for which variables will be created.
 
-\item{...}{Description.}
+A \code{function} will be called with a single argument,
+the plot data. The return value must be a \code{data.frame}, and
+will be used as the layer data. A \code{function} can be created
+from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
-\item{type}{Description.}
+\item{stat}{The statistical transformation to use on the data for this
+layer, as a string.}
 
-\item{set_name_pos}{Description.}
+\item{position}{Position adjustment, either as a string, or the result of
+a call to a position adjustment function.}
 
-\item{set_name_colour}{Description.}
+\item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
+often aesthetics, used to set an aesthetic to a fixed value, like
+\code{colour = "red"} or \code{size = 3}. They may also be parameters
+to the paired geom/stat.}
 
-\item{set_name_size}{Description.}
+\item{type}{\code{string}, type of Venn diagram to plot. Either \code{"discrete"}
+(the default) or \code{"continuous"}.}
 
-\item{set_name_face}{Description.}
+\item{set_name_pos}{Optional. \code{data.frame} with the same nrow as \code{data} and
+two columns: \code{x} and \code{y} containing \code{numeric} coordinates to customize the
+position of the set name text.}
 
-\item{set_name_family}{Description.}
+\item{set_name_colour}{\code{string}, colour of the set name text (default is \code{"black"}).}
 
-\item{set_total}{Description.}
+\item{set_name_size}{\code{numeric}, size of the set name text (default is \code{5}).}
 
-\item{set_total_pos}{Description.}
+\item{set_name_face}{\code{string}, font face of set name text (default is \code{"plain"})}
 
-\item{set_total_colour}{Description.}
+\item{set_name_family}{\code{string}, font family of set name text (default is \code{"sans"})}
 
-\item{set_total_size}{Description.}
+\item{set_total}{\code{logical}, should the total number of elements in each set
+be shown? (default is \code{FALSE}).}
 
-\item{set_total_face}{Description.}
+\item{set_total_pos}{Optional. \code{numeric} of length 2 specifying the position
+of set total text relative to the center of the set name text (default is
+\code{c(0, -0.15)}).}
 
-\item{set_total_family}{Description.}
+\item{set_total_colour}{\code{string}, colour of the set total text (default is \code{"black"}).}
 
-\item{count_colour}{Description.}
+\item{set_total_size}{\code{numeric}, size of the set total text (default is \code{3}).}
 
-\item{count_size}{Description.}
+\item{set_total_face}{\code{string}, font face of set total text (default is \code{"plain"}).}
 
-\item{count_face}{Description.}
+\item{set_total_family}{\code{string}, font family of set total text (default is \code{"sans"}).}
 
-\item{count_family}{Description.}
+\item{count_colour}{\code{string}, colour of the segment count text (default is \code{"black"}).}
 
-\item{count_nudge}{Description.}
+\item{count_size}{\code{numeric}, size of the segment count text (default is \code{5}).}
 
-\item{percentage}{Description.}
+\item{count_face}{\code{string}, font face of segment count text (default is \code{"plain"})}
 
-\item{percentage_digits}{Description.}
+\item{count_family}{\code{string}, font family of segment count text (default is \code{"sans"}).}
 
-\item{percentage_colour}{Description.}
+\item{count_nudge}{\code{numeric}, amount to nudge segment count text in the y
+direction (default is \code{0.04}).}
 
-\item{percentage_size}{Description.}
+\item{percentage}{\code{logical}, should the percentage of elements in each
+segment be shown? (default is \code{TRUE}).}
 
-\item{percentage_face}{Description.}
+\item{percentage_digits}{\code{numeric}, number of decimal places to show in the
+percentage text (default is \code{1}).}
 
-\item{percentage_family}{Description.}
+\item{percentage_colour}{\code{string}, colour of the percentage text (default is \code{"black"}).}
 
-\item{percentage_nudge}{Description.}
+\item{percentage_size}{\code{numeric}, size of the percentage text (default is \code{3}).}
 
-\item{na.rm}{Description.}
+\item{percentage_face}{\code{string}, font face of percentage text (default is \code{"plain"}).}
 
-\item{show.legend}{Description.}
+\item{percentage_family}{\code{string}, font family of percentage text (default is \code{"sans"}).}
 
-\item{inherit.aes}{Description.}
+\item{percentage_nudge}{\code{numeric}, amount to nudge percentage text in the y direction
+(default is \code{0.04}).}
+
+\item{na.rm}{If \code{FALSE}, the default, missing values are removed with
+a warning. If \code{TRUE}, missing values are silently removed.}
+
+\item{show.legend}{logical. Should this layer be included in the legends?
+\code{NA}, the default, includes if any aesthetics are mapped.
+\code{FALSE} never includes, and \code{TRUE} always includes.
+It can also be a named logical vector to finely select the aesthetics to
+display.}
+
+\item{inherit.aes}{If \code{FALSE}, overrides the default aesthetics,
+rather than combining with them. This is most useful for helper functions
+that define both data and aesthetics and shouldn't inherit behaviour from
+the default plot specification, e.g. \code{\link[ggplot2:borders]{borders()}}.}
 }
 \value{
 Description.

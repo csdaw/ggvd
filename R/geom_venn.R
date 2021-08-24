@@ -46,7 +46,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                           df$group <- as.character(max_group + i)
                           df$segment <- names(polygon_list)[[i]]
                           df$PANEL <- factor("1")
-                          df$set_name <- factor("banana")
+                          df$set_name <- factor("thisisaplaceholder")
                           df
                         })
 
@@ -221,38 +221,41 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #'
 #' @description Description.
 #'
-#' @param mapping Description.
-#' @param data Description.
-#' @param stat Description.
-#' @param position Description.
-#' @param ... Description.
-#' @param type Description.
-#' @param set_name_pos Description.
-#' @param set_name_colour Description.
-#' @param set_name_size Description.
-#' @param set_name_face Description.
-#' @param set_name_family Description.
-#' @param set_total Description.
-#' @param set_total_pos Description.
-#' @param set_total_colour Description.
-#' @param set_total_size Description.
-#' @param set_total_face Description.
-#' @param set_total_family Description.
-#' @param count_colour Description.
-#' @param count_size Description.
-#' @param count_face Description.
-#' @param count_family Description.
-#' @param count_nudge Description.
-#' @param percentage Description.
-#' @param percentage_digits Description.
-#' @param percentage_colour Description.
-#' @param percentage_size Description.
-#' @param percentage_face Description.
-#' @param percentage_family Description.
-#' @param percentage_nudge Description.
-#' @param na.rm Description.
-#' @param show.legend Description.
-#' @param inherit.aes Description.
+#' @inheritParams ggplot2::geom_point
+#' @param type `string`, type of Venn diagram to plot. Either `"discrete"`
+#' (the default) or `"continuous"`.
+#' @param set_name_pos Optional. `data.frame` with the same nrow as `data` and
+#' two columns: `x` and `y` containing `numeric` coordinates to customize the
+#' position of the set name text.
+#' @param set_name_colour `string`, colour of the set name text (default is `"black"`).
+#' @param set_name_size `numeric`, size of the set name text (default is `5`).
+#' @param set_name_face `string`, font face of set name text (default is `"plain"`)
+#' @param set_name_family `string`, font family of set name text (default is `"sans"`)
+#' @param set_total `logical`, should the total number of elements in each set
+#' be shown? (default is `FALSE`).
+#' @param set_total_pos Optional. `numeric` of length 2 specifying the position
+#' of set total text relative to the center of the set name text (default is
+#' `c(0, -0.15)`).
+#' @param set_total_colour `string`, colour of the set total text (default is `"black"`).
+#' @param set_total_size `numeric`, size of the set total text (default is `3`).
+#' @param set_total_face `string`, font face of set total text (default is `"plain"`).
+#' @param set_total_family `string`, font family of set total text (default is `"sans"`).
+#' @param count_colour `string`, colour of the segment count text (default is `"black"`).
+#' @param count_size `numeric`, size of the segment count text (default is `5`).
+#' @param count_face `string`, font face of segment count text (default is `"plain"`)
+#' @param count_family `string`, font family of segment count text (default is `"sans"`).
+#' @param count_nudge `numeric`, amount to nudge segment count text in the y
+#' direction (default is `0.04`).
+#' @param percentage `logical`, should the percentage of elements in each
+#' segment be shown? (default is `TRUE`).
+#' @param percentage_digits `numeric`, number of decimal places to show in the
+#' percentage text (default is `1`).
+#' @param percentage_colour `string`, colour of the percentage text (default is `"black"`).
+#' @param percentage_size `numeric`, size of the percentage text (default is `3`).
+#' @param percentage_face `string`, font face of percentage text (default is `"plain"`).
+#' @param percentage_family `string`, font family of percentage text (default is `"sans"`).
+#' @param percentage_nudge `numeric`, amount to nudge percentage text in the y direction
+#' (default is `0.04`).
 #'
 #' @return Description.
 #' @export
