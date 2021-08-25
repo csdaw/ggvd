@@ -18,7 +18,7 @@ gen_2_set_pos <- function(set_name, n_sets) {
   data.frame(
     # left, right
     set_name = set_name,
-    x = c(-1.22, 1.22),
+    x = c(-1.30, 1.30),
     y = c(1.1, 1.1),
     group = as.character(seq(1:n_sets))
   )
@@ -47,7 +47,7 @@ gen_4_set_pos <- function(set_name, n_sets) {
   data.frame(
     # left, center left, center right, right
     set_name = set_name,
-    x = c(-1.8, -0.8, 0.8, 1.8),
+    x = c(-1.85, -0.8, 0.8, 1.85),
     y = c(1.07, 1.14 + 11/30, 1.14 + 11/30, 1.07),
     group = as.character(seq(1:n_sets))
   )
