@@ -110,7 +110,7 @@ of set total text relative to the center of the set name text (default is
 \item{count_family}{\code{string}, font family of segment count text (default is \code{"sans"}).}
 
 \item{count_nudge}{\code{numeric}, amount to nudge segment count text in the y
-direction (default is \code{0.04}).}
+direction (default is \code{0.06}).}
 
 \item{percentage}{\code{logical}, should the percentage of elements in each
 segment be shown? (default is \code{TRUE}).}
@@ -127,7 +127,7 @@ percentage text (default is \code{1}).}
 \item{percentage_family}{\code{string}, font family of percentage text (default is \code{"sans"}).}
 
 \item{percentage_nudge}{\code{numeric}, amount to nudge percentage text in the y direction
-(default is \code{0.04}).}
+(default is \code{-0.06}).}
 
 \item{na.rm}{If \code{FALSE}, the default, missing values are removed with
 a warning. If \code{TRUE}, missing values are silently removed.}

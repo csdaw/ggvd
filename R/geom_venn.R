@@ -34,7 +34,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                         polygons <- lapply(ellipses, function(x) sf::st_polygon(x))
 
-                        gen_segments <- match.fun(paste("gen", params$n_sets, "segments", sep = "_"))
+                        gen_segments <- generate_segments(params)
                         polygon_list <- gen_segments(polygons)
 
                         # reorder according to count_matrix (IMPORTANT!)
@@ -245,7 +245,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #' @param count_face `string`, font face of segment count text (default is `"plain"`)
 #' @param count_family `string`, font family of segment count text (default is `"sans"`).
 #' @param count_nudge `numeric`, amount to nudge segment count text in the y
-#' direction (default is `0.04`).
+#' direction (default is `0.06`).
 #' @param percentage `logical`, should the percentage of elements in each
 #' segment be shown? (default is `TRUE`).
 #' @param percentage_digits `numeric`, number of decimal places to show in the
@@ -255,7 +255,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #' @param percentage_face `string`, font face of percentage text (default is `"plain"`).
 #' @param percentage_family `string`, font family of percentage text (default is `"sans"`).
 #' @param percentage_nudge `numeric`, amount to nudge percentage text in the y direction
-#' (default is `0.04`).
+#' (default is `-0.06`).
 #'
 #' @return Description.
 #' @export
