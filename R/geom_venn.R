@@ -217,11 +217,13 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 )
 
 
-#' Title
+#' Plot a 2-4 way Venn diagram
 #'
-#' @description Description.
+#' @description Plot a 2-4 way Venn diagram. Use \code{\link{prepare_venn}} to
+#' prepare the input data.frame `data` in the correct format.
+#' See **Examples** section below for basic usage instructions.
 #'
-#' @inheritParams ggplot2::geom_point
+#' @inheritParams ggplot2::geom_polygon
 #' @param type `string`, type of Venn diagram to plot. Either `"discrete"`
 #' (the default) or `"continuous"`.
 #' @param set_name_pos Optional. `data.frame` with the same nrow as `data` and
@@ -257,11 +259,68 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #' @param percentage_nudge `numeric`, amount to nudge percentage text in the y direction
 #' (default is `-0.06`).
 #'
-#' @return Description.
+#' @return Returns a _layer_ ggproto object with `geom = GeomVenn`.
 #' @export
 #'
 #' @examples
-#' #
+#' library(ggplot2)
+#'
+#' # Start with a list of vectors to compare.
+#' # Within each vector, there must not be any duplicated elements.
+#' lst <- list(
+#'   Set1 = c(letters[1:8]),
+#'   Set2 = c(letters[20:26]),
+#'   Set3 = c(letters[8:20])
+#' )
+#'
+#' # Use prepare_venn to convert the list into a data.frame
+#' # of the correct format. You can add extra column to the data.frame.
+#' # Here we add a column named fill.
+#' df <- prepare_venn(lst, fill = c("blue", "green", "red"))
+#'
+#' # Now we plot a basic Venn diagram
+#' ggplot() +
+#'  geom_venn(aes(set_name = set_name, elements = elements), data = df)
+#'
+#' # As this is just a normal ggplot layer we can add whatever we want
+#' # to the plot. Some annotations for example.
+#' ggplot() +
+#'  geom_venn(aes(set_name = set_name, elements = elements), data = df) +
+#'  annotate("curve", x = -1.2, xend = -0.75, y = -0.6, yend = -0.3,
+#'           curvature = 0.3, arrow = arrow(length = unit(2, "mm"))) +
+#'  annotate("text", x = -1.25, y = -0.6, label = "Interesting!", hjust = "right")
+#'
+#' # Use theme_void() to get a plain background
+#' ggplot() +
+#'  geom_venn(aes(set_name = set_name, elements = elements), data = df) +
+#'  theme_void()
+#'
+#' # Add set totals
+#' ggplot() +
+#'  geom_venn(aes(set_name = set_name, elements = elements),
+#'            data = df, set_total = TRUE) +
+#'  theme_void()
+#'
+#' # Remove percentages
+#' ggplot() +
+#'  geom_venn(aes(set_name = set_name, elements = elements),
+#'            data = df, percentage = FALSE) +
+#'  theme_void()
+#'
+#' # Add discrete fills to the ellipses
+#' ggplot() +
+#'  geom_venn(aes(set_name = set_name, elements = elements, fill = fill),
+#'            data = df, type = "discrete") +
+#'  theme_void() +
+#'  scale_fill_identity()
+#'
+#' # Add continuous fills to the ellipse segments
+#' ggplot() +
+#'  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
+#'            data = df, type = "continuous") +
+#'  theme_void() +
+#'  scale_fill_gradient(low = "white", high = "red")
+#'
 geom_venn <- function(mapping = NULL, data = NULL,
                       stat = "identity",
                       position = "identity", ...,
