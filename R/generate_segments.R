@@ -1,3 +1,7 @@
+generate_segments <- function(n_sets) {
+  match.fun(paste("gen", n_sets, "segments", sep = "_"))
+}
+
 gen_2_segments <- function(polygons) {
   # regions
   A <- st_difference(polygons[[1]], polygons[[2]])

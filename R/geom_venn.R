@@ -34,7 +34,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 
                         polygons <- lapply(ellipses, function(x) sf::st_polygon(x))
 
-                        gen_segments <- generate_segments(params)
+                        gen_segments <- generate_segments(params$n_sets)
                         polygon_list <- gen_segments(polygons)
 
                         # reorder according to count_matrix (IMPORTANT!)
