@@ -2,18 +2,28 @@
 % Please edit documentation in R/count_venn.R
 \name{count_venn}
 \alias{count_venn}
-\title{Compute counts for Venn Diagram}
+\title{Compute counts for a list of sets}
 \usage{
 count_venn(l)
 }
 \arguments{
-\item{l}{Description.}
+\item{l}{\code{list} of up to 26 numeric or character vectors (i.e. sets) to
+compare. Within each set there must not be any duplicated elements. If the
+list is not named then capital letters starting from A to Z will be
+substituted as names.}
 }
 \value{
-Returns ...
+Returns a \verb{numeric matrix} with \code{2^length(l)} rows and
+\code{length(l) + 2} columns. Each row corresponds to the overlap of a particular
+combination of sets. The first \code{length(l)} columns correspond to each set and
+contain 1 or 0 indicating membership or not in each set. The second last
+column called \code{count} gives the sum of each row and the last column \code{percent}
+is the the value of \code{count} for each row, divided by sum of the \code{count}
+column multiplied by 100.
 }
 \description{
-Description.
+Compute the overlaps of up to 26 sets in a list.
+Similar to \code{vennCounts} from the \code{limma} package.
 }
 \examples{
 

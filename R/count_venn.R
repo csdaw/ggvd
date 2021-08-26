@@ -1,10 +1,20 @@
-#' Compute counts for Venn Diagram
+#' Compute counts for a list of sets
 #'
-#' @description Description.
+#' @description Compute the overlaps of up to 26 sets in a list.
+#' Similar to `vennCounts` from the `limma` package.
 #'
-#' @param l Description.
+#' @param l `list` of up to 26 numeric or character vectors (i.e. sets) to
+#' compare. Within each set there must not be any duplicated elements. If the
+#' list is not named then capital letters starting from A to Z will be
+#' substituted as names.
 #'
-#' @return Returns ...
+#' @return Returns a `numeric matrix` with `2^length(l)` rows and
+#' `length(l) + 2` columns. Each row corresponds to the overlap of a particular
+#' combination of sets. The first `length(l)` columns correspond to each set and
+#' contain 1 or 0 indicating membership or not in each set. The second last
+#' column called `count` gives the sum of each row and the last column `percent`
+#' is the the value of `count` for each row, divided by sum of the `count`
+#' column multiplied by 100.
 #' @export
 #'
 #' @examples
@@ -18,6 +28,8 @@
 #' count_venn(lst)
 #'
 count_venn <- function(l) {
+  stopifnot(length(l) %in% c(1L:26L))
+
   n_sets <- length(l)
 
   # give arbitrary names to sets if they are not named already
