@@ -227,17 +227,17 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #' @param type `string`, type of Venn diagram to plot. Either `"discrete"`
 #' (the default) or `"continuous"`.
 #' @param set_name_pos Optional. `data.frame` with the same nrow as `data` and
-#' two columns: `x` and `y` containing `numeric` coordinates to customize the
-#' position of the set name text.
+#' two columns: `x` and `y` containing `numeric` coordinates to precisely
+#' customise the position of the set name text.
 #' @param set_name_colour `string`, colour of the set name text (default is `"black"`).
 #' @param set_name_size `numeric`, size of the set name text (default is `5`).
 #' @param set_name_face `string`, font face of set name text (default is `"plain"`)
 #' @param set_name_family `string`, font family of set name text (default is `"sans"`)
 #' @param set_total `logical`, should the total number of elements in each set
 #' be shown? (default is `FALSE`).
-#' @param set_total_pos Optional. `numeric` of length 2 specifying the position
-#' of set total text relative to the center of the set name text (default is
-#' `c(0, -0.15)`).
+#' @param set_total_pos Optional. `numeric` of length 2 specifying the precise
+#' position of set total text relative to the center of the set name text
+#' (default is `c(0, -0.15)`).
 #' @param set_total_colour `string`, colour of the set total text (default is `"black"`).
 #' @param set_total_size `numeric`, size of the set total text (default is `3`).
 #' @param set_total_face `string`, font face of set total text (default is `"plain"`).
@@ -273,8 +273,8 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #'   Set3 = c(letters[8:20])
 #' )
 #'
-#' # Use prepare_venn to convert the list into a data.frame
-#' # of the correct format. You can add extra column to the data.frame.
+#' # Use prepare_venn() to convert the list into a data.frame.
+#' # of the correct format. You can add extra columns to the data.frame.
 #' # Here we add a column named fill.
 #' df <- prepare_venn(lst, fill = c("blue", "green", "red"))
 #'
@@ -304,7 +304,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #' # Remove percentages
 #' ggplot() +
 #'  geom_venn(aes(set_name = set_name, elements = elements),
-#'            data = df, percentage = FALSE) +
+#'            data = df, percentage = FALSE, count_nudge = 0) +
 #'  theme_void()
 #'
 #' # Add discrete fills to the ellipses
@@ -319,7 +319,7 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
 #'  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
 #'            data = df, type = "continuous") +
 #'  theme_void() +
-#'  scale_fill_gradient(low = "white", high = "red")
+#'  scale_fill_gradientn(colors = alpha(c("white", "red"), 0.7))
 #'
 geom_venn <- function(mapping = NULL, data = NULL,
                       stat = "identity",

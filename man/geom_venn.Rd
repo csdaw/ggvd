@@ -75,8 +75,8 @@ to the paired geom/stat.}
 (the default) or \code{"continuous"}.}
 
 \item{set_name_pos}{Optional. \code{data.frame} with the same nrow as \code{data} and
-two columns: \code{x} and \code{y} containing \code{numeric} coordinates to customize the
-position of the set name text.}
+two columns: \code{x} and \code{y} containing \code{numeric} coordinates to precisely
+customise the position of the set name text.}
 
 \item{set_name_colour}{\code{string}, colour of the set name text (default is \code{"black"}).}
 
@@ -89,9 +89,9 @@ position of the set name text.}
 \item{set_total}{\code{logical}, should the total number of elements in each set
 be shown? (default is \code{FALSE}).}
 
-\item{set_total_pos}{Optional. \code{numeric} of length 2 specifying the position
-of set total text relative to the center of the set name text (default is
-\code{c(0, -0.15)}).}
+\item{set_total_pos}{Optional. \code{numeric} of length 2 specifying the precise
+position of set total text relative to the center of the set name text
+(default is \code{c(0, -0.15)}).}
 
 \item{set_total_colour}{\code{string}, colour of the set total text (default is \code{"black"}).}
 
@@ -162,8 +162,8 @@ lst <- list(
   Set3 = c(letters[8:20])
 )
 
-# Use prepare_venn to convert the list into a data.frame
-# of the correct format. You can add extra column to the data.frame.
+# Use prepare_venn() to convert the list into a data.frame.
+# of the correct format. You can add extra columns to the data.frame.
 # Here we add a column named fill.
 df <- prepare_venn(lst, fill = c("blue", "green", "red"))
 
@@ -193,7 +193,7 @@ ggplot() +
 # Remove percentages
 ggplot() +
  geom_venn(aes(set_name = set_name, elements = elements),
-           data = df, percentage = FALSE) +
+           data = df, percentage = FALSE, count_nudge = 0) +
  theme_void()
 
 # Add discrete fills to the ellipses
@@ -208,6 +208,6 @@ ggplot() +
  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
            data = df, type = "continuous") +
  theme_void() +
- scale_fill_gradient(low = "white", high = "red")
+ scale_fill_gradientn(colors = alpha(c("white", "red"), 0.7))
 
 }
