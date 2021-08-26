@@ -34,6 +34,9 @@
 #'   scale_fill_identity()
 #'
 prepare_venn <- function(l, ...) {
+  if (any(sapply(l, function(x) any(duplicated(x))))) {
+    stop("The vectors in the input list contain duplicates which must be removed.")
+  }
   count_matrix <- count_venn(l)
 
   out <- tibble::tibble(

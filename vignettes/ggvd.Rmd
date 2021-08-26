@@ -1,0 +1,86 @@
+---
+title: "Getting Started"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+library(ggplot2)
+library(ggvd)
+library(magrittr)
+library(patchwork)
+```
+
+This package aims to simplify making 2-4 way Venn diagrams with ggplot2, 
+whilst allowing for easy customisation. It builds upon the 
+[ggvenn](https://github.com/yanlinlin82/ggvenn) and 
+[ggVennDiagram](https://github.com/gaospecial/ggVennDiagram) packages but is
+(in my opinion) simpler use.
+
+In future I hope to adapt the 2-3 way Euler 
+diagrams from 
+[VennDiagram](https://cran.r-project.org/web/packages/VennDiagram/index.html) 
+as well. I will not expand this package past 4 sets as at that point, it would
+be best to use UpSet plots (see [UpSetR](https://github.com/hms-dbmi/UpSetR) or
+[ComplexUpset](https://github.com/krassowski/complex-upset)).
+
+## Dummy data
+
+Generally I use Venn diagrams to compare lists of proteins, so here we create
+a vector of fake proteins to use in this vignette.
+
+```{r}
+# Make some fake protein names
+generate_protein_names <- function(n) {
+  protein_letters <- do.call(
+    paste0, 
+    replicate(3, sample(LETTERS, n, replace = TRUE), simplify = FALSE)
+  )
+  paste0(protein_letters, sample.int(9, n, replace = TRUE))
+}
+
+# Must ensure protein name are unique!
+proteins <- generate_protein_names(n = 2000)
+```
+
+Then we sample these proteins to create some sets to compare.
+
+```{r}
+# The input for prepare_venn should be a list
+set.seed(42)
+results <- list(
+  "Sample 1" = sample(proteins, 1651),
+  "Sample 2" = sample(proteins, 687),
+  "Sample 3" = sample(proteins, 872),
+  "Sample 4" = sample(proteins, 712)
+)
+```
+
+## `prepare_venn()`
+
+Starting with a list of numeric or characters vectors (i.e. a list of sets) to
+compare, you must construct a data.frame of the appropriate format using
+`prepare_venn()`. It is important that within each vector in the list, there
+are no duplicated elements.
+
+```{r}
+sapply(results, function(x) any(duplicated(x)))
+```
+
+```{r}
+prepare_venn(results)
+```
+
+## `geom_venn()`
+
+## `count_venn()`
