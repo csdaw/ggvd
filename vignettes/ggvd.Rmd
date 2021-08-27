@@ -25,46 +25,15 @@ This package aims to simplify making 2-4 way Venn diagrams with ggplot2,
 whilst allowing for easy customisation. It builds upon the 
 [ggvenn](https://github.com/yanlinlin82/ggvenn) and 
 [ggVennDiagram](https://github.com/gaospecial/ggVennDiagram) packages but is
-(in my opinion) simpler use.
-
-In future I hope to adapt the 2-3 way Euler 
+(in my opinion) simpler use. In future I hope to adapt the 2-3 way Euler 
 diagrams from 
 [VennDiagram](https://cran.r-project.org/web/packages/VennDiagram/index.html) 
-as well. I will not expand this package past 4 sets as at that point, it would
-be best to use UpSet plots (see [UpSetR](https://github.com/hms-dbmi/UpSetR) or
+as well. 
+
+For comparing 5 or more sets, it is better to use UpSet plots (see 
+[ggupset](https://github.com/const-ae/ggupset), 
+[UpSetR](https://github.com/hms-dbmi/UpSetR) or 
 [ComplexUpset](https://github.com/krassowski/complex-upset)).
-
-## Dummy data
-
-Generally I use Venn diagrams to compare lists of proteins, so here we create
-a vector of fake proteins to use in this vignette.
-
-```{r}
-# Make some fake protein names
-generate_protein_names <- function(n) {
-  protein_letters <- do.call(
-    paste0, 
-    replicate(3, sample(LETTERS, n, replace = TRUE), simplify = FALSE)
-  )
-  paste0(protein_letters, sample.int(9, n, replace = TRUE))
-}
-
-# Must ensure protein name are unique!
-proteins <- generate_protein_names(n = 2000)
-```
-
-Then we sample these proteins to create some sets to compare.
-
-```{r}
-# The input for prepare_venn should be a list
-set.seed(42)
-results <- list(
-  "Sample 1" = sample(proteins, 1651),
-  "Sample 2" = sample(proteins, 687),
-  "Sample 3" = sample(proteins, 872),
-  "Sample 4" = sample(proteins, 712)
-)
-```
 
 ## `prepare_venn()`
 
@@ -74,13 +43,68 @@ compare, you must construct a data.frame of the appropriate format using
 are no duplicated elements.
 
 ```{r}
-sapply(results, function(x) any(duplicated(x)))
+# Create dummy data
+set.seed(42)
+lst <- list(
+  "Set 1" = sample.int(2000, size = 1651, replace = FALSE),
+  "Set 2" = sample.int(2000, size = 687, replace = FALSE),
+  "Set 3" = sample.int(2000, size = 872, replace = FALSE),
+  "Set 4" = sample.int(2000, size = 712, replace = FALSE)
+)
 ```
 
 ```{r}
-prepare_venn(results)
+# Ensure no duplicates within each set, 
+# otherwise prepare_venn() will produce an error
+sapply(lst, function(x) any(duplicated(x)))
+```
+
+```{r}
+# Create a data.frame to input into ggplot()
+venn4_df <- prepare_venn(lst)
+venn4_df
+```
+
+```{r}
+# Add a column for discrete fill colours
+venn4_df <- prepare_venn(lst, fill = c("blue", "yellow", "green", "red"))
+venn4_df
+```
+
+
+```{r}
+# Create data.frames for 2 and 3-way Venns as well
+venn2_df <- prepare_venn(lst[1:2])
+venn3_df <- prepare_venn(lst[1:3])
 ```
 
 ## `geom_venn()`
+
+```{r}
+# The most basic output
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements), data = venn4_df)
+
+# Use theme_void() to get a plain background
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements), data = venn4_df) + 
+  theme_void()
+```
+
+```{r}
+# Give circles discrete fills
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill), 
+            type = "discrete", data = venn4_df) + 
+  scale_fill_identity()
+```
+
+```{r}
+# Fill each overlap based on the count
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements, fill = count),
+            type = "continuous", data = venn4_df) + 
+  scale_fill_gradientn(colours = alpha(c("white", "red"), 0.7))
+```
 
 ## `count_venn()`
