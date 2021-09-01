@@ -7,8 +7,8 @@
 #' compare. Within each set there must not be any duplicated elements. If the
 #' list is not named then capital letters starting from A to Z will be
 #' substituted as names.
-#' @param ... Other columns to create in the output data.frame. See **Examples**
-#' section for an example.
+#' @param ... Name-value pairs and other arguments to be passed to
+#' \code{\link[tibble]{add_column}}. See **Examples** section for an example.
 #'
 #' @return Returns a `data.frame` with `length(l)` rows and at least three
 #' essential columns: column 1 is `set_name` with the names of each set,
@@ -48,6 +48,5 @@ prepare_venn <- function(l, ...) {
 
   out$set_name <- factor(out$set_name, as.character(unique(out$set_name)))
 
-  dots <- list(...)
-  if (length(dots) > 0) cbind(out, dots) else out
+  tibble::add_column(out, ...)
 }

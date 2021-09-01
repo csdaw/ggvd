@@ -12,8 +12,8 @@ compare. Within each set there must not be any duplicated elements. If the
 list is not named then capital letters starting from A to Z will be
 substituted as names.}
 
-\item{...}{Other columns to create in the output data.frame. See \strong{Examples}
-section for an example.}
+\item{...}{Name-value pairs and other arguments to be passed to
+\code{\link[tibble]{add_column}}. See \strong{Examples} section for an example.}
 }
 \value{
 Returns a \code{data.frame} with \code{length(l)} rows and at least three
