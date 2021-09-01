@@ -10,15 +10,17 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  fig.width = 5,
+  fig.height = (5*5.5)/6,
+  out.width = "90%",
+  dpi = 150
 )
 ```
 
 ```{r}
 library(ggplot2)
 library(ggvd)
-library(magrittr)
-library(patchwork)
 ```
 
 This package aims to simplify making 2-4 way Venn diagrams with ggplot2, 
@@ -71,7 +73,6 @@ venn4_df <- prepare_venn(lst, fill = c("blue", "yellow", "green", "red"))
 venn4_df
 ```
 
-
 ```{r}
 # Create data.frames for 2 and 3-way Venns as well
 venn2_df <- prepare_venn(lst[1:2])
@@ -80,8 +81,12 @@ venn3_df <- prepare_venn(lst[1:3])
 
 ## `geom_venn()`
 
-```{r}
-# The most basic output
+```{r, fig.show = "hold", out.width = "47%", fig.width = 5, fig.height = (5*5.5)/6}
+# The most basic outputs
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements), data = venn2_df)
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements), data = venn3_df)
 ggplot() + 
   geom_venn(aes(set_name = set_name, elements = elements), data = venn4_df)
 
@@ -91,20 +96,93 @@ ggplot() +
   theme_void()
 ```
 
+### Venn types
+
 ```{r}
-# Give circles discrete fills
+# Give circles discrete fills (discrete Venn type)
 ggplot() + 
   geom_venn(aes(set_name = set_name, elements = elements, fill = fill), 
             type = "discrete", data = venn4_df) + 
-  scale_fill_identity()
+  scale_fill_identity() + 
+  theme_void()
 ```
 
 ```{r}
-# Fill each overlap based on the count
+# Fill each overlap based on the count (continuous Venn type)
 ggplot() + 
   geom_venn(aes(set_name = set_name, elements = elements, fill = count),
             type = "continuous", data = venn4_df) + 
-  scale_fill_gradientn(colours = alpha(c("white", "red"), 0.7))
+  scale_fill_gradientn(colours = alpha(c("white", "red"), 0.7)) + 
+  theme_void()
+```
+
+### Set names
+
+```{r}
+# Custom set name position
+new_pos <- data.frame(
+  x = c(-1.5, -1, 1, 1.5),
+  y = c(-1.2, 1.5, 1.5, -1.2)
+)
+
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill), 
+            type = "discrete", data = venn4_df, 
+            set_name_pos = new_pos) + 
+  scale_fill_identity()
+```
+
+### Set totals
+
+```{r}
+# Add set totals
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill), 
+            type = "discrete", data = venn4_df, 
+            set_total = TRUE) + 
+  scale_fill_identity() + 
+  theme_void()
+```
+
+### Segment counts
+
+### Segment percentages
+
+```{r, fig.show = "hold", out.width = "47%", fig.width = 5, fig.height = (5*5.5)/6}
+# Adjust percentage y position down a little
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill), 
+            type = "discrete", data = venn4_df, 
+            percentage_nudge = -0.09) + 
+  scale_fill_identity() + 
+  theme_void()
+
+# Adjust set total y position above
+ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements, fill = fill), 
+            type = "discrete", data = venn4_df, 
+            set_total = TRUE, set_total_pos = c(0, 0.2)) + 
+  scale_fill_identity() + 
+  theme_void()
+```
+
+### Adding annotations
+
+```{r, fig.show = "hold", out.width = "47%", fig.width = 5, fig.height = (5*5.5)/6}
+p <- ggplot() + 
+  geom_venn(aes(set_name = set_name, elements = elements), 
+            type = "discrete", data = venn2_df,
+            percentage_nudge = -0.08) + 
+  annotate("curve", x = -1.2, xend = -0.1, y = -1.2, yend = -0.2,
+           curvature = 0.3, arrow = arrow(length = unit(2, "mm"))) +
+  annotate("text", x = -1.25, y = -1.2, label = "Interesting!", hjust = "right") + 
+  labs(title = "Venn Diagram")
+p
+p + theme_void()
 ```
 
 ## `count_venn()`
+
+```{r}
+count_venn(lst)
+```
