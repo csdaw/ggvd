@@ -7,7 +7,7 @@ generate_segments <- function(n_sets, polygons) {
     B <- st_difference(polygons[[2]], polygons[[1]])
     AB <- st_intersection(polygons[[1]], polygons[[2]])
 
-    out <- list(A = A, B = B, AB = AB)
+    out <- list(A = A, AB = AB, B = B)
     out
   } else if (n_sets == 3) {
     # regions
@@ -19,8 +19,8 @@ generate_segments <- function(n_sets, polygons) {
     BC <- st_difference(st_intersection(polygons[[3]], polygons[[2]]), polygons[[1]])
     ABC <- st_multi_intersection(l = polygons)
 
-    out <- list(A = A, B = B, AB = AB, C = C,
-                AC = AC, BC = BC, ABC = ABC)
+    out <- list(A = A, AB = AB, ABC = ABC, AC = AC,
+                B = B, BC = BC, C = C)
     out
   } else if (n_sets == 4) {
     # regions
@@ -40,9 +40,10 @@ generate_segments <- function(n_sets, polygons) {
     BCD <- st_difference(st_multi_intersection(l = polygons[c(4, 2, 3)]), polygons[[1]])
     ABCD <- st_multi_intersection(l = polygons)
 
-    out <- list(A = A, B = B, AB = AB, C = C, AC = AC, BC = BC,
-                ABC = ABC, D = D, AD = AD, BD = BD, ABD = ABD,
-                CD = CD, ACD = ACD, BCD = BCD, ABCD = ABCD)
+    out <- list(A = A, AB = AB, ABC = ABC, ABCD = ABCD,
+                AC = AC, ACD = ACD, AD = AD,
+                B = B, BC = BC, BCD = BCD, BD = BD,
+                C = C, CD = CD, D = D)
     out
   }
 }
