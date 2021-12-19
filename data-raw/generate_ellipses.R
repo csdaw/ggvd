@@ -52,10 +52,14 @@ generate_ellipses <- function(n_sets, n = 360, type = "discrete") {
   ellipses$x <- ellipses$x0 + x_tmp * cos(ellipses$angle) - y_tmp * sin(ellipses$angle)
   ellipses$y <- ellipses$y0 + x_tmp * sin(ellipses$angle) + y_tmp * cos(ellipses$angle)
 
-  # get rid of now unnecessary columns
-  out <- ellipses[, c("x", "y", "group")]
+  # need to add segment column for recombining data frames
+  # within the function GeomVenn$setup_data()
+  ellipses$segment <- NA_character_
 
-  if (type == "continuous") {
+  if (type == "discrete") {
+    ellipses[, c("x", "y", "segment")]
+
+  } else if (type == "continuous") {
     # split data according to group (i.e. set number)
     ellipses_list <- split(ellipses, f = ellipses$group)
 
@@ -74,20 +78,16 @@ generate_ellipses <- function(n_sets, n = 360, type = "discrete") {
     segments_list <- generate_segments(n_sets, polygons_list)
 
     # convert list of segment polygons into list of segment data frames
-    aaa <- lapply(seq_along(segments_list), function(i) {
+    segments <- lapply(seq_along(segments_list), function(i) {
       df <- as.data.frame(matrix(unlist(segments_list[[i]]), ncol = 2))
       colnames(df) <- c("x", "y")
       df$group <- as.character(n_sets + i)
       df$segment <- names(segments_list)[[i]]
+      df$PANEL <- factor("1")
+      df$set_name <- factor("thisisaplaceholder")
       df
     })
 
-    # need to add segment column for recombining the `out` data frame with
-    # `segments_list` otherwise the number of columns won't match
-    out$segment <- NA_character_
-
-    out <- rbind(out, do.call(rbind, aaa))
+    do.call(rbind, segments)
   }
-
-  out
 }

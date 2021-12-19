@@ -7,6 +7,7 @@
 library(sf)
 source("./data-raw/generate_ellipses.R")
 source("./data-raw/generate_segments.R")
+source("./R/st_multi.R")
 
 venn_sets <- 2:4
 venn_types <- c("discrete", "continuous")
@@ -22,4 +23,4 @@ for (i in seq_along(venn_sets)) {
 names(ggvd_data) <- venn_sets
 
 #### Save ggvd_data as internal data ####
-usethis::use_data(ggvd_data, internal = TRUE)
+usethis::use_data(ggvd_data, internal = TRUE, overwrite = TRUE)
