@@ -17,41 +17,20 @@ GeomVenn <- ggproto("GeomVenn", GeomPolygon,
                       # drop list-column as we don't need it anymore
                       data <- data[, !names(data) %in% "elements"]
 
-                      data <- generate_ellipses(data, n_sets = params$n_sets, n = n)
-                      data$segment <- NA_character_
+                      # duplicate data rows to match number of x, y coordinates
+                      data_long <- data[rep(seq_len(params$n_sets), each = n), ]
+
+                      # combine `data_long` which has fill and group data with
+                      # `discrete` data frame which has x, y coordinates of ellipses
+                      data <- cbind(data_long, ggvd_data[[as.character(params$n_sets)]][["discrete"]])
 
                       if (params$type == "continuous") {
-
-                        data_list <- split(data, f = data$group)
-                        max_group <- max(as.integer(data$group))
-
-                        ellipses <- lapply(data_list, function(x) {
-                          # repeat first polygon point to close polygon
-                          x[nrow(x) + 1, ] <- x[1, ]
-
-                          list(as.matrix(x[c("x", "y")]))
-                        })
-
-                        polygons <- lapply(ellipses, function(x) sf::st_polygon(x))
-
-                        gen_segments <- generate_segments(params$n_sets)
-                        polygon_list <- gen_segments(polygons)
-
-                        # reorder according to count_matrix (IMPORTANT!)
-                        polygon_list <- polygon_list[params$count_matrix$segment[2:2^params$n_sets]]
-
-                        polygon_dfs <- lapply(seq_along(polygon_list), function(i) {
-                          df <- as.data.frame(matrix(unlist(polygon_list[[i]]), ncol = 2))
-                          colnames(df) <- c("x", "y")
-                          df$group <- as.character(max_group + i)
-                          df$segment <- names(polygon_list)[[i]]
-                          df$PANEL <- factor("1")
-                          df$set_name <- factor("thisisaplaceholder")
-                          df
-                        })
-
-                        fill_df <- do.call(rbind, polygon_dfs)
-                        fill_df <- merge(fill_df, params$count_matrix[, c("count", "segment")], by = "segment")
+                        # merge `ggvd_data` which has x, y, coordinates and
+                        # segment IDs with `count_matrix` which also has segment
+                        # IDs and segment counts
+                        fill_df <- merge(ggvd_data[[as.character(params$n_sets)]][[params$type]],
+                                         params$count_matrix[, c("count", "segment")],
+                                         by = "segment")
                         names(fill_df)[names(fill_df) == "count"] <- "fill"
                         data <- rbind(data, fill_df)
                       }
