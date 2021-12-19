@@ -19,3 +19,5 @@ Imports:
     sf,
     tibble,
     utils
+Depends: 
+    R (>= 2.10)

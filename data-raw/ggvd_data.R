@@ -4,48 +4,22 @@
 # having the `sf` package as a dependency.
 
 #### Setup ####
-# define number of points to use for ellipse polygons
-n <- 360
+library(sf)
+source("./data-raw/generate_ellipses.R")
+source("./data-raw/generate_segments.R")
 
-# define allowed Venn types
-venn_types <- list("discrete" = data.frame(), "continuous" = data.frame())
-
-# define allowed number of Venn sets
 venn_sets <- 2:4
+venn_types <- c("discrete", "continuous")
+ggvd_data <- vector(mode = "list", length = length(venn_sets))
 
-# define an empty list to contain the ellipse data frames
-ggvd_data <- rep(list(venn_types), times = length(venn_sets))
+#### Generate ellipses for geom_venn()
+for (i in seq_along(venn_sets)) {
+  ggvd_data[[i]] <- lapply(venn_types, function(t) {
+    generate_ellipses(n_sets = venn_sets[i], type = t)
+  })
+  names(ggvd_data[[i]]) <- venn_types
+}
 names(ggvd_data) <- venn_sets
 
-#### 2-way Venn ####
-n_sets <- 2
-points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)], n_sets)
-cos_p <- cos(points)
-sin_p <- sin(points)
-
-# special number to define circle overlap, must be between 0.5 and 1
-overlap <- 0.6
-
-ellipses <- tibble::tibble(
-  # left, right
-  group = as.character(1:n_sets),
-  x0 = c(-overlap, overlap),
-  y0 = c(0, 0),
-  a = c(1, 1),
-  b = c(1, 1),
-  angle = c(0, 0)
-)
-
-ellipses <- ellipses[rep(seq_len(n_sets), each = n), ]
-
-x_tmp <- abs(cos_p) * ellipses$a * sign(cos_p)
-y_tmp <- abs(sin_p) * ellipses$b * sign(sin_p)
-ellipses$x <- ellipses$x0 + x_tmp * cos(ellipses$angle) - y_tmp * sin(ellipses$angle)
-ellipses$y <- ellipses$y0 + x_tmp * sin(ellipses$angle) + y_tmp * cos(ellipses$angle)
-
-# save discrete ellipses in ggvd_data
-ggvd_data[[names(ggvd_data) == n_sets]][["discrete"]] <- ellipses
-
-# 3-way Venn
-
-# 4-way Venn
+#### Save ggvd_data as internal data ####
+usethis::use_data(ggvd_data, internal = TRUE)

@@ -28,7 +28,7 @@ generate_ellipses <- function(n_sets, n = 360, type = "discrete") {
       # top left, top right, bottom
       group = as.character(1:n_sets),
       x0 = c(-overlap, overlap, 0),
-      y0 = c(n/sqrt(3) + shift, n/sqrt(3) + shift, -2*n/sqrt(3) + shift),
+      y0 = c(overlap/sqrt(3) + shift, overlap/sqrt(3) + shift, -2*overlap/sqrt(3) + shift),
       a = c(1, 1, 1),
       b = c(1, 1, 1),
       angle = c(0, 0, 0)
@@ -53,16 +53,9 @@ generate_ellipses <- function(n_sets, n = 360, type = "discrete") {
   ellipses$y <- ellipses$y0 + x_tmp * sin(ellipses$angle) + y_tmp * cos(ellipses$angle)
 
   # get rid of now unnecessary columns
-  ellipses <- ellipses[, c("x", "y", "group")]
+  out <- ellipses[, c("x", "y", "group")]
 
-  if (type == "discrete") {
-    return(ellipses)
-
-  } else if (type == "continuous") {
-    # need to add segment column for recombining the `ellipses` data frame with
-    # the segments data frame we create below
-    ellipses$segment <- NA_character_
-
+  if (type == "continuous") {
     # split data according to group (i.e. set number)
     ellipses_list <- split(ellipses, f = ellipses$group)
 
@@ -81,7 +74,7 @@ generate_ellipses <- function(n_sets, n = 360, type = "discrete") {
     segments_list <- generate_segments(n_sets, polygons_list)
 
     # convert list of segment polygons into list of segment data frames
-    segments_list <- lapply(seq_along(segments_list), function(i) {
+    aaa <- lapply(seq_along(segments_list), function(i) {
       df <- as.data.frame(matrix(unlist(segments_list[[i]]), ncol = 2))
       colnames(df) <- c("x", "y")
       df$group <- as.character(n_sets + i)
@@ -89,15 +82,12 @@ generate_ellipses <- function(n_sets, n = 360, type = "discrete") {
       df
     })
 
+    # need to add segment column for recombining the `out` data frame with
+    # `segments_list` otherwise the number of columns won't match
+    out$segment <- NA_character_
 
-    out <- rbind(ellipses, do.call(rbind, segments_list))
-    out
+    out <- rbind(out, do.call(rbind, aaa))
   }
-}
 
-library(sf)
-source("data-raw/generate_segments.R")
-source("R/st_multi.R")
-xxx <- generate_ellipses(n_sets = 2, type = "discrete")
-debugonce(generate_ellipses)
-yyy <- generate_ellipses(n_sets = 2, type = "continuous")
+  out
+}
