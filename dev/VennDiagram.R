@@ -6,10 +6,7 @@ library(ggvd)
 source("R/generate_count.R")
 source("dev/geom_euler.R")
 
-# as.list(body(VennDiagram::draw.pairwise.venn))
-# trace(VennDiagram:::draw.pairwise.venn, browser, at = 46)
-# trace(VennDiagram::draw.pairwise.venn, edit = TRUE)
-
+# create some data
 set.seed(1234)
 set1 <- sample(1:2000, 1000)
 set2 <- sample(1:2000, 342)
