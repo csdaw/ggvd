@@ -4,14 +4,19 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                      default_aes = aes(colour = "black", fill = NA, alpha = 0.5,
                                        size = 0.5, linetype = 1, fontface = "plain", family = ""),
 
-                     extra_params = c('type', 'n', 'na.rm'),
+                     extra_params = c('type', 'n', 'na.rm', 'scaled'),
                      setup_params = function(data, params) {
                        params$n_sets <- nrow(data)
-                       params$count_matrix <- generate_count(data$elements)
+                       params$count_matrix <- ggvd:::generate_count(data$elements)
                        params$set_totals <- paste0("(", lengths(data$elements), ")")
+
+                       # for testing purposes
+                       params$inverted <- FALSE
+
                        params
                      },
                      setup_data = function(data, params, n = 360) {
+                       browser()
                        if (is.null(data)) return(data)
 
                        # drop list-column as we don't need it anymore
@@ -66,22 +71,43 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                        # draw.pairwise.venn logic is quite complicated but overall
                        # the function has the following sections:
 
-                       # if (scaled & !special.inclusion & !special.exclusion & !special.coincidental) {
-                       # do stuff
-                       # }
+                       if (params$scaled & !special.inclusion & !special.exclusion & !special.coincidental) {
+                         # Option (1): plot scaled, generic pairwise Venn diagram with or without external texts
+
+                         # calculate centres of circles
+                         d <- find.dist(area1, area2, cross.area, inverted = params$inverted);
+                         d <- d * shrink.factor;
+                         x.centre.1 <- (1 + r1 - r2 - d) / 2;
+                         x.centre.2 <- x.centre.1 + d;
+
+                         # draw both circles
+                         poly1 <- VennDiagram::ell2poly(x = x.centre.1,
+                                                        y = 0.5,
+                                                        a = ifelse(!params$inverted, r1, r2),
+                                                        b = ifelse(!params$inverted, r1, r2),
+                                                        rotation = 0,
+                                                        n.sides = 3000)
+
+                         poly2 <- VennDiagram::ell2poly(x = x.centre.2,
+                                                        y = 0.5,
+                                                        a = ifelse(params$inverted, r1, r2),
+                                                        b = ifelse(params$inverted, r1, r2),
+                                                        rotation = 0,
+                                                        n.sides = 3000)
+                       }
 
                        # else if (euler.d & special.inclusion & !special.coincidental) {
-                       # plot scaled Venn diagram when one set is completely included
+                       # Option (2): plot scaled Venn diagram when one set is completely included
                        # in (but not exactly coincidental with) the other set
                        # with or without external texts
                        # }
 
                        # else if (euler.d & special.coincidental) {
-                       # plot scaled Venn diagrams when the two sets are coincidental
+                       # Option (3): plot scaled Venn diagrams when the two sets are coincidental
                        # }
 
                        # else if (euler.d & special.exclusion) {
-                       # plot scaled Venn diagrams when the two sets are mutually exclusive
+                       # Option (4): plot scaled Venn diagrams when the two sets are mutually exclusive
                        # }
 
 
@@ -187,4 +213,33 @@ find.intersect <- function(d, r1, r2) {
 
   area <- r1^2 * (acos(beta) - 0.5 * sin(2 * acos(beta))) + r2^2 * (acos(gamma) - 0.5 * sin(2 * acos(gamma)));
   return(area);
+}
+
+ell2poly <- function(x, y, a, b, rotation, n.sides) {
+  # draw an n-sided polygon that resembles an ellipse
+
+  rotation <- rotation * pi / 180;
+  # calculate the angle corresponding to each "section" of the polygon
+  # (there are as many sections as there are sides in the polygon)
+  theta <- 2 * pi / n.sides;
+  angles <- seq(0, 2 * pi, theta);
+
+  # initialize vectors to hold the x and y coordinates of each vertex of the polygon
+  x.coord <- vector(length = n.sides + 1, mode = 'numeric');
+  x.coord[1] <- x + a * cos(rotation);
+  y.coord <- vector(length = n.sides + 1, mode = 'numeric');
+  y.coord[1] <- y + a * sin(rotation);
+
+  # starting from the initial point, sequentially obtain the coordinates of each vertex of the polygon and store them
+  for (i in 1:n.sides) {
+    x.coord[i + 1] <- x + a * cos(angles[i + 1]) * cos(rotation) - b * sin(angles[i + 1]) * sin(rotation);
+    y.coord[i + 1] <- y + a * cos(angles[i + 1]) * sin(rotation) + b * sin(angles[i + 1]) * cos(rotation);
+  }
+
+  return(
+    list(
+      x = x.coord,
+      y = y.coord
+    )
+  );
 }
