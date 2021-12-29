@@ -22,9 +22,9 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                        # drop list-column as we don't need it anymore
                        data <- data[, !names(data) %in% "elements"]
 
-                       area1 <- params$count_matrix$count[2]
-                       area2 <- params$count_matrix$count[4]
                        cross.area <- params$count_matrix$count[3]
+                       area1 <- params$count_matrix$count[2] + cross.area
+                       area2 <- params$count_matrix$count[4] + cross.area
 
                        max.circle.size <- 0.2
 
@@ -33,6 +33,8 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                        special.inclusion <- FALSE
                        special.exclusion <- FALSE
                        list.switch <- FALSE
+                       euler.d <- TRUE
+                       offset <- 0
 
                        if (!params$inverted) {
                          tmp1 <- max(area1, area2);
@@ -96,21 +98,93 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                                                         n.sides = 3000)
                        }
 
-                       # else if (euler.d & special.inclusion & !special.coincidental) {
-                       # Option (2): plot scaled Venn diagram when one set is completely included
-                       # in (but not exactly coincidental with) the other set
-                       # with or without external texts
-                       # }
+                       else if (euler.d & special.inclusion & !special.coincidental) {
+                         # Option (2): plot scaled Venn diagram when one set is completely included
+                         # in (but not exactly coincidental with) the other set
+                         # with or without external texts
 
-                       # else if (euler.d & special.coincidental) {
+                         inverted <- FALSE
+
+                         if (params$inverted) {
+                           tmp1 <- area1;
+                           tmp2 <- area2;
+                           area1 <- tmp2;
+                           area2 <- tmp1;
+                         }
+
+                         if (!params$scaled & !params$inverted) {
+                           r1 <- 0.4;
+                           r2 <- 0.2;
+                         }
+
+                         if (!params$scaled & params$inverted) {
+                           r1 <- 0.2;
+                           r2 <- 0.4;
+                         }
+
+                         poly1 <- VennDiagram::ell2poly(x = 0.5,
+                                                        y = 0.5,
+                                                        a = r1,
+                                                        b = r1,
+                                                        rotation = 0,
+                                                        n.sides = 3000)
+
+                         poly2 <- VennDiagram::ell2poly(x = 0.5 - offset * (r1 - r2),
+                                                        y = 0.5,
+                                                        a = r2,
+                                                        b = r2,
+                                                        rotation = 0,
+                                                        n.sides = 3000)
+                       }
+
+                       else if (euler.d & special.coincidental) {
                        # Option (3): plot scaled Venn diagrams when the two sets are coincidental
-                       # }
+                         poly1 <- VennDiagram::ell2poly(x = 0.5,
+                                                        y = 0.5,
+                                                        a = max.circle.size,
+                                                        b = max.circle.size,
+                                                        rotation = 0,
+                                                        n.sides = 3000)
 
-                       # else if (euler.d & special.exclusion) {
+                         poly2 <- VennDiagram::ell2poly(x = 0.5,
+                                                        y = 0.5,
+                                                        a = max.circle.size,
+                                                        b = max.circle.size,
+                                                        rotation = 0,
+                                                        n.sides = 3000)
+
+                       }
+
+                       else if (euler.d & special.exclusion) {
                        # Option (4): plot scaled Venn diagrams when the two sets are mutually exclusive
-                       # }
+                         if (!scaled) {
+                           r1 <- 0.2;
+                           r2 <- 0.2;
+                         }
+
+                         # determine centres of exclusive circles and draw them
+                         x.centre.1 <- (1 - 2 * (r1 + r2)) / 2 + r1 - sep.dist / 2;
+
+                         poly1 <- VennDiagram::ell2poly(x = x.centre.1,
+                                                        y = 0.5,
+                                                        a = r1,
+                                                        b = r1,
+                                                        rotation = 0,
+                                                        n.sides = 3000)
+
+                         x.centre.2 <- 1 - (1 - 2 * (r1 + r2)) / 2 - r2 + sep.dist / 2;
+
+                         poly2 <- VennDiagram::ell2poly(x = x.centre.2,
+                                                        y = 0.5,
+                                                        a = r2,
+                                                        b = r2,
+                                                        rotation = 0,
+                                                        n.sides = 3000)
 
 
+                       } else if ((!scaled & !euler.d) | (!scaled & euler.d & !special.inclusion & !special.exclusion & !special.coincidental)) {
+                         print("how did you get here??")
+                       }
 
                        # draw.triple.venn logic is even more complicated wow!
 
