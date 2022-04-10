@@ -83,19 +83,19 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                          x.centre.2 <- x.centre.1 + d;
 
                          # draw both circles
-                         poly1 <- VennDiagram::ell2poly(x = x.centre.1,
-                                                        y = 0.5,
-                                                        a = ifelse(!params$inverted, r1, r2),
-                                                        b = ifelse(!params$inverted, r1, r2),
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         poly1 <<- VennDiagram::ell2poly(x = x.centre.1,
+                                                         y = 0.5,
+                                                         a = ifelse(!params$inverted, r1, r2),
+                                                         b = ifelse(!params$inverted, r1, r2),
+                                                         rotation = 0,
+                                                         n.sides = 3000)
 
-                         poly2 <- VennDiagram::ell2poly(x = x.centre.2,
-                                                        y = 0.5,
-                                                        a = ifelse(params$inverted, r1, r2),
-                                                        b = ifelse(params$inverted, r1, r2),
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         poly2 <<- VennDiagram::ell2poly(x = x.centre.2,
+                                                         y = 0.5,
+                                                         a = ifelse(params$inverted, r1, r2),
+                                                         b = ifelse(params$inverted, r1, r2),
+                                                         rotation = 0,
+                                                         n.sides = 3000)
                        }
 
                        else if (euler.d & special.inclusion & !special.coincidental) {
@@ -122,41 +122,41 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                            r2 <- 0.4;
                          }
 
-                         poly1 <- VennDiagram::ell2poly(x = 0.5,
-                                                        y = 0.5,
-                                                        a = r1,
-                                                        b = r1,
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         poly1 <<- VennDiagram::ell2poly(x = 0.5,
+                                                         y = 0.5,
+                                                         a = r1,
+                                                         b = r1,
+                                                         rotation = 0,
+                                                         n.sides = 3000)
 
-                         poly2 <- VennDiagram::ell2poly(x = 0.5 - offset * (r1 - r2),
-                                                        y = 0.5,
-                                                        a = r2,
-                                                        b = r2,
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         poly2 <<- VennDiagram::ell2poly(x = 0.5 - offset * (r1 - r2),
+                                                         y = 0.5,
+                                                         a = r2,
+                                                         b = r2,
+                                                         rotation = 0,
+                                                         n.sides = 3000)
                        }
 
                        else if (euler.d & special.coincidental) {
-                       # Option (3): plot scaled Venn diagrams when the two sets are coincidental
-                         poly1 <- VennDiagram::ell2poly(x = 0.5,
-                                                        y = 0.5,
-                                                        a = max.circle.size,
-                                                        b = max.circle.size,
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         # Option (3): plot scaled Venn diagrams when the two sets are coincidental
+                         poly1 <<- VennDiagram::ell2poly(x = 0.5,
+                                                         y = 0.5,
+                                                         a = max.circle.size,
+                                                         b = max.circle.size,
+                                                         rotation = 0,
+                                                         n.sides = 3000)
 
-                         poly2 <- VennDiagram::ell2poly(x = 0.5,
-                                                        y = 0.5,
-                                                        a = max.circle.size,
-                                                        b = max.circle.size,
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         poly2 <<- VennDiagram::ell2poly(x = 0.5,
+                                                         y = 0.5,
+                                                         a = max.circle.size,
+                                                         b = max.circle.size,
+                                                         rotation = 0,
+                                                         n.sides = 3000)
 
                        }
 
                        else if (euler.d & special.exclusion) {
-                       # Option (4): plot scaled Venn diagrams when the two sets are mutually exclusive
+                         # Option (4): plot scaled Venn diagrams when the two sets are mutually exclusive
                          if (!scaled) {
                            r1 <- 0.2;
                            r2 <- 0.2;
@@ -165,21 +165,21 @@ GeomEuler <- ggproto("GeomEuler", GeomPolygon,
                          # determine centres of exclusive circles and draw them
                          x.centre.1 <- (1 - 2 * (r1 + r2)) / 2 + r1 - sep.dist / 2;
 
-                         poly1 <- VennDiagram::ell2poly(x = x.centre.1,
-                                                        y = 0.5,
-                                                        a = r1,
-                                                        b = r1,
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         poly1 <<- VennDiagram::ell2poly(x = x.centre.1,
+                                                         y = 0.5,
+                                                         a = r1,
+                                                         b = r1,
+                                                         rotation = 0,
+                                                         n.sides = 3000)
 
                          x.centre.2 <- 1 - (1 - 2 * (r1 + r2)) / 2 - r2 + sep.dist / 2;
 
-                         poly2 <- VennDiagram::ell2poly(x = x.centre.2,
-                                                        y = 0.5,
-                                                        a = r2,
-                                                        b = r2,
-                                                        rotation = 0,
-                                                        n.sides = 3000)
+                         poly2 <<- VennDiagram::ell2poly(x = x.centre.2,
+                                                         y = 0.5,
+                                                         a = r2,
+                                                         b = r2,
+                                                         rotation = 0,
+                                                         n.sides = 3000)
 
 
                        } else if ((!scaled & !euler.d) | (!scaled & euler.d & !special.inclusion & !special.exclusion & !special.coincidental)) {

@@ -1,4 +1,5 @@
 # install VennDiagram from my fork
+remotes::install_github("csdaw/VennDiagram")
 library(VennDiagram)
 futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")
 library(ggplot2)
