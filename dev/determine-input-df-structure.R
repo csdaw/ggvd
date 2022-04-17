@@ -33,6 +33,8 @@ my_sets <- list(
 
 circle_coords <- euler(my_sets)
 circle_plot <- plot(circle_coords, quantities = TRUE)
+debugonce(eulerr:::plot.euler)
+plot(circle_coords, quantities = TRUE)
 
 test_seg_labs <- data.frame(
   seg_count = circle_plot$data$centers$quantities,
@@ -56,7 +58,12 @@ test_input %>%
                alpha = 0.2) +
   # I am unsure where the x y coords for A B C are stored
   geom_text(aes(label = seg_count, x = seg_count_x, y = seg_count_y), data = test_seg_labs, size = 6) +
-  coord_fixed()
+  geom_text(aes(label = set), x)
+
+## test plot_euler()
+aaa <- plot_euler(circle_coords, quantities = TRUE)
+
+
 
 
 
