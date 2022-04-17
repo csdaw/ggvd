@@ -318,7 +318,7 @@ plot_euler <- function(x,
   # set up geometry for diagrams
   if (do_groups) {
     data <- lapply(x,
-                   eulerr:::setup_geometry,
+                   setup_geometry,
                    fills = fills,
                    edges = edges,
                    labels = labels,
@@ -330,14 +330,14 @@ plot_euler <- function(x,
     # important: x (input list), n (integer), id? (matrix), merged_sets (logical)
     # maybe important: labels, quantities
     # likely not important: fills, edges
-    data <- eulerr:::setup_geometry(x,
-                                    fills = fills,
-                                    edges = edges,
-                                    labels = labels,
-                                    quantities = quantities,
-                                    n = n,
-                                    id = id,
-                                    merged_sets = merged_sets)
+    data <- setup_geometry(x,
+                           fills = fills,
+                           edges = edges,
+                           labels = labels,
+                           quantities = quantities,
+                           n = n,
+                           id = id,
+                           merged_sets = merged_sets)
   }
 
   data

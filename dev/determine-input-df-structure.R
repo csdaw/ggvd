@@ -61,8 +61,8 @@ test_input %>%
   geom_text(aes(label = set), x)
 
 ## test plot_euler()
-debug(plot_euler)
-aaa <- plot_euler(circle_coords, quantities = TRUE)
+debug(setup_geometry)
+aaa <- plot_euler(circle_coords, quantities = TRUE, labels = FALSE)
 
 
 

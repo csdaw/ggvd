@@ -15,11 +15,11 @@ setup_geometry <- function(x,
   dd <- dd[!empty_sets, , drop = FALSE]
 
   # avoid plotting very small intersections
-  nonzero <- nonzero_fit(fitted)
+  nonzero <- eulerr:::nonzero_fit(fitted)
   nonzero <- ifelse(is.na(nonzero), FALSE, nonzero)
 
-  do_fills <- !is.null(fills)
-  do_edges <- !is.null(edges)
+  do_fills <- FALSE
+  do_edges <- FALSE
   do_labels <- !is.null(labels)
   do_quantities <- !is.null(quantities)
 
@@ -34,19 +34,19 @@ setup_geometry <- function(x,
   n_e <- NROW(dd)
   n_id <- 2L^n_e - 1L
 
-  e <- ellipse(h, k, a, b, phi, n)
+  e <- eulerr:::ellipse(h, k, a, b, phi, n)
   e_x <- c(lapply(e, "[[", "x"), recursive = TRUE)
   e_y <- c(lapply(e, "[[", "y"), recursive = TRUE)
 
-  limits <- get_bounding_box(h, k, a, b, phi)
+  limits <- eulerr:::get_bounding_box(h, k, a, b, phi)
 
-  # setup edges
+  # setup edges (can delete)
   if (do_edges)
     edges <- list(x = e_x, y = e_y, id.lengths = rep.int(n, n_e))
 
   if (do_fills || do_labels || do_quantities) {
     # decompose ellipse polygons into intersections
-    pieces <- fills <- vector("list", n_id)
+    pieces <- fills <- vector("list", n_id) # delete references to fills in this block
     for (i in rev(seq_len(n_id))) {
       if (nonzero[i]) {
         idx <- which(id[i, ])
@@ -55,16 +55,16 @@ setup_geometry <- function(x,
         if (n_idx == 1L) {
           pieces[[i]] <- list(e[[idx[1]]])
         } else {
-          pieces[[i]] <- poly_clip(e[[idx[1L]]], e[[idx[2L]]], "intersection")
+          pieces[[i]] <- eulerr:::poly_clip(e[[idx[1L]]], e[[idx[2L]]], "intersection")
           if (n_idx > 2L) {
             for (j in 3L:n_idx) {
-              pieces[[i]] <- poly_clip(pieces[[i]], e[[idx[j]]], "intersection")
+              pieces[[i]] <- eulerr:::poly_clip(pieces[[i]], e[[idx[j]]], "intersection")
             }
           }
         }
 
         for (j in which(!id[i, ])) {
-          pieces[[i]] <- poly_clip(pieces[[i]], e[[j]], "minus")
+          pieces[[i]] <- eulerr:::poly_clip(pieces[[i]], e[[j]], "minus")
         }
       }
     }
@@ -83,14 +83,14 @@ setup_geometry <- function(x,
 
   if (do_labels || do_quantities) {
     n_singles <- sum(rowSums(id) == 1)
-    empty <- !nonzero_fit(fitted)
+    empty <- !eulerr:::nonzero_fit(fitted)
 
     width <- abs(limits$xlim[1] - limits$xlim[2])
     height <- abs(limits$ylim[1] - limits$ylim[2])
 
     prec <- max(width, height)/100
 
-    centers <- lapply(pieces, locate_centers, precision = prec)
+    centers <- lapply(pieces, eulerr:::locate_centers, precision = prec)
 
     centers_x <- vapply(centers, "[[", "x", FUN.VALUE = double(1))
     centers_y <- vapply(centers, "[[", "y", FUN.VALUE = double(1))
