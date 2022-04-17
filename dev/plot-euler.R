@@ -29,15 +29,17 @@ plot_euler <- function(x,
   do_strips <- !eulerr:::is_false(strips) && do_groups
   do_main <- is.character(main) || is.expression(main) || is.list(main)
 
+  # x$ellipses defines the ellipse geometries
   ellipses <- if (do_groups) x[[1L]]$ellipses else x$ellipses
 
-  n_e <- NROW(ellipses)
-  n_id <- 2^n_e - 1
-  id <- eulerr:::bit_indexr(n_e)
+  n_e <- NROW(ellipses) # number of ellipse
+  n_id <- 2^n_e - 1 # numer of segments
+  id <- eulerr:::bit_indexr(n_e) # which part of the data do segments include
 
-  setnames <- rownames(ellipses)
+  setnames <- rownames(ellipses) # set names
 
   if (do_groups) {
+    # delete this bit
     res <- lapply(x, function(xi) is.na(xi$ellipses)[, 1L])
     empty_sets <- apply(do.call(rbind, res), 2, all)
 
@@ -52,6 +54,7 @@ plot_euler <- function(x,
     nonzero <- apply(do.call(rbind, res), 2, any)
 
   } else {
+    # don't delete
     empty_sets <- is.na(x$ellipses[, 1L])
     empty_subsets <- rowSums(id[, empty_sets, drop = FALSE]) > 0
     fitted <- x$fitted.values[!empty_subsets]
@@ -61,7 +64,7 @@ plot_euler <- function(x,
 
   merged_sets <- rep(FALSE, length(setnames))
 
-  if (!do_groups && any(nonzero)) {
+  if (!do_groups && any(nonzero)) { # keep if any nonzero
     n_overlaps <- integer(n_id)
     single_mass <- logical(n_e)
 
@@ -89,7 +92,7 @@ plot_euler <- function(x,
 
   stopifnot(n > 0, is.numeric(n) && length(n) == 1)
 
-  # setup fills
+  # setup fills (I think I can delete this?)
   if (do_fills) {
     fills_out <- eulerr:::replace_list(
       list(fill = opar$fills$fill,
@@ -119,7 +122,7 @@ plot_euler <- function(x,
     fills <- NULL
   }
 
-  # setup edges
+  # setup edges (I think I can delete this?)
   if (do_edges) {
     if (isTRUE(edges))
       edges_out <- list()
@@ -140,7 +143,7 @@ plot_euler <- function(x,
     edges <- NULL
   }
 
-  # setup strips
+  # setup strips (I think I can delete this?)
   if (do_groups) {
     group_names <- lapply(groups, levels)
     n_levels <- sum(lengths(group_names))
@@ -153,7 +156,7 @@ plot_euler <- function(x,
     strips <- NULL
   }
 
-  # setup labels
+  # setup labels (I think I can delete this?)
   if (do_labels) {
     if (is.list(labels)) {
       labels <- eulerr:::update_list(list(labels = setnames,
@@ -181,7 +184,7 @@ plot_euler <- function(x,
     labels <- NULL
   }
 
-  # setup quantities
+  # setup quantities (I think I can delete this?)
   if (do_quantities) {
     if (is.list(quantities)) {
       if (!is.null(quantities$type)) {
@@ -220,7 +223,7 @@ plot_euler <- function(x,
     quantities <- NULL
   }
 
-  # setup legend
+  # setup legend (I think I can delete this?)
   if (do_custom_legend) {
     legend <- legend
   } else if (do_legend) {
@@ -267,6 +270,7 @@ plot_euler <- function(x,
     legend <- NULL
   }
 
+  # I think I can delete this?
   if (do_main) {
     if (is.list(main)) {
       if (length(main) == 1 && is.null(names(main)))
@@ -323,6 +327,9 @@ plot_euler <- function(x,
                    id = id,
                    merged_sets = merged_sets)
   } else {
+    # important: x (input list), n (integer), id? (matrix), merged_sets (logical)
+    # maybe important: labels, quantities
+    # likely not important: fills, edges
     data <- eulerr:::setup_geometry(x,
                                     fills = fills,
                                     edges = edges,
