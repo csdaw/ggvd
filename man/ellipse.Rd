@@ -32,9 +32,11 @@ with two columns: \code{x} and \code{y} and \code{n + 1} rows.
 }
 \description{
 Given a set of geometric parameters, generate the x,y coordinates
-of an ellipse or superellipse.
+of an ellipse or super ellipse.
 }
 \examples{
+library(ggplot2)
+
 # default is a unit circle
 ggplot(ellipse(), aes(x, y)) +
 geom_polygon(colour = "black", fill = NA) +

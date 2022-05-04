@@ -1,7 +1,7 @@
 #' Generate an ellipse
 #'
 #' @description Given a set of geometric parameters, generate the x,y coordinates
-#' of an ellipse or superellipse.
+#' of an ellipse or super ellipse.
 #'
 #' @param x0 `numeric`, x coordinate for ellipse centre.
 #' @param y0 `numeric`, y coordinate for ellipse centre.
@@ -20,6 +20,8 @@
 #' @export
 #'
 #' @examples
+#' library(ggplot2)
+#'
 #' # default is a unit circle
 #' ggplot(ellipse(), aes(x, y)) +
 #' geom_polygon(colour = "black", fill = NA) +
@@ -39,7 +41,7 @@ ellipse <- function(x0 = 0, y0 = 0, a = 1, b = 1, angle = 0, n = 360L, m1 = 2, m
   # define m2 default
   m2 <- ifelse(missing(m2), m1, m2)
 
-  points <- seq(0, 2 * pi, length.out = n + 1)
+  points <- seq(0, 2 * pi, length.out = n)
   cos_p <- cos(points)
   sin_p <- sin(points)
   x_tmp <- abs(cos_p)^(2 / m1) * a * sign(cos_p)
