@@ -7,7 +7,9 @@
 geom_euler(
   mapping = NULL,
   data = NULL,
+  stat = "identity",
   position = "identity",
+  method = "VennDiagram",
   ...,
   na.rm = FALSE,
   show.legend = NA,
@@ -35,8 +37,14 @@ the plot data. The return value must be a \code{data.frame}, and
 will be used as the layer data. A \code{function} can be created
 from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
 
+\item{stat}{The statistical transformation to use on the data for this
+layer, as a string.}
+
 \item{position}{Position adjustment, either as a string, or the result of
 a call to a position adjustment function.}
+
+\item{method}{\code{string}, method for fitting Euler diagram. Should be either
+\code{"VennDiagram"} or \code{"eulerr"}.}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
