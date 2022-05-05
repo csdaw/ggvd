@@ -1,7 +1,7 @@
 #' @noRd
 #' @export
 generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
-                              inverted = FALSE, scaled = TRUE, euler.d = TRUE,
+                              scaled = TRUE, euler.d = TRUE,
                               offset = 0, sep.dist = 0.05) {
   # initialize logical variables to hold special conditions
   special.coincidental <- FALSE
@@ -9,24 +9,19 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
   special.exclusion <- FALSE
   list.switch <- FALSE
 
+  tmp1 <- max(area1, area2)
+  tmp2 <- min(area1, area2)
+
+  if (tmp1 != area1) inverted <- TRUE else inverted <- FALSE
+
   if (!inverted) {
-    tmp1 <- max(area1, area2)
-    tmp2 <- min(area1, area2)
-    if (tmp1 != area1) list.switch <- TRUE
-    area1 <- tmp1
-    area2 <- tmp2
     r1 <- sqrt(area1 / pi)
     r2 <- sqrt(area2 / pi)
     if (r2 == 0) r2 <- 0.5*r1
     shrink.factor <- max.circle.size / r1
   } else {
-    tmp1 <- max(area1, area2)
-    tmp2 <- min(area1, area2)
-    if (tmp1 != area1) list.switch <- TRUE
-    area1 <- tmp1
-    area2 <- tmp2
-    r1 <- sqrt(area1 / pi)
-    r2 <- sqrt(area2 / pi)
+    r1 <- sqrt(area2 / pi)
+    r2 <- sqrt(area1 / pi)
     if (r1 == 0) r1 <- 0.5*r2
     shrink.factor <- max.circle.size / r2
   }
@@ -116,6 +111,8 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
 
   ## EULER DIAGRAM WITH MUTUALLY EXCLUSIVE SETS
   if (euler.d & special.exclusion) {
+    # Note: inverted not working properly here (distances not identical)
+    # i.e. generate_vd_euler(12, 300, 0) not same distance as generate_vd_euler(300, 12, 0)
     # determine centres of exclusive circles and draw them
     x.centre.1 <- (1 - 2 * (r1 + r2)) / 2 + r1 - sep.dist / 2
     x.centre.2 <- 1 - (1 - 2 * (r1 + r2)) / 2 - r2 + sep.dist / 2
@@ -141,8 +138,8 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
 find.dist <- function(area1, area2, cross.area, inverted = FALSE) {
 
   if (inverted) {
-    r2 <- sqrt(area1 / pi);
     r1 <- sqrt(area2 / pi);
+    r2 <- sqrt(area1 / pi);
   }
   else {
     r1 <- sqrt(area1 / pi);
