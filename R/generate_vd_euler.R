@@ -9,20 +9,22 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
   special.exclusion <- FALSE
   list.switch <- FALSE
 
-  tmp1 <- max(area1, area2)
+  # which area is largest?
+  max_area <- max(area1, area2)
 
-  if (tmp1 != area1) inverted <- TRUE else inverted <- FALSE
+  # determine radius of both circles and 'shrink' factor to give circles
+  # a reasonable size (not too huge)
+  r1 <- sqrt(area1 / pi)
+  r2 <- sqrt(area2 / pi)
+  shrink.factor <- max.circle.size / sqrt(max_area / pi)
+
+
+  if (max_area != area1) inverted <- TRUE else inverted <- FALSE
 
   if (!inverted) {
-    r1 <- sqrt(area1 / pi)
-    r2 <- sqrt(area2 / pi)
-    if (r2 == 0) r2 <- 0.5*r1
-    shrink.factor <- max.circle.size / r1
+    if (r2 == 0) r2 <- 0.5 * r1
   } else {
-    r1 <- sqrt(area2 / pi)
-    r2 <- sqrt(area1 / pi)
-    if (r1 == 0) r1 <- 0.5*r2
-    shrink.factor <- max.circle.size / r2
+    if (r1 == 0) r1 <- 0.5 * r2
   }
 
   # convert radii to Grid dimensions
@@ -39,8 +41,14 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
     # calculate centres of circles
     d <- find.dist(area1, area2, cross.area, inverted = inverted)
     d <- d * shrink.factor
-    x.centre.1 <- (1 + r1 - r2 - d) / 2
-    x.centre.2 <- x.centre.1 + d
+
+    if (!inverted) {
+      x.centre.1 <- (1 + r1 - r2 - d) / 2
+      x.centre.2 <- x.centre.1 + d
+    } else {
+      x.centre.2 <- (1 + r1 - r2 - d) / 2
+      x.centre.1 <- x.centre.2 + d
+    }
 
     ellipse1 <- ellipse(
       x0 = x.centre.1,
@@ -91,11 +99,8 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
 
   ## EULER DIAGRAM WITH MUTUALLY EXCLUSIVE SETS ##
   if (euler.d & special.exclusion) {
-    # Note: inverted not working properly here (distances not identical)
-    # i.e. generate_vd_euler(12, 300, 0) not same distance as generate_vd_euler(300, 12, 0)
-    # determine centres of exclusive circles and draw them
-    x.centre.1 <- (1 - 2 * (r1 + r2)) / 2 + r1 - sep.dist / 2
-    x.centre.2 <- 1 - (1 - 2 * (r1 + r2)) / 2 - r2 + sep.dist / 2
+    x.centre.1 <- 0 - r1 - (sep.dist / 2)
+    x.centre.2 <- 0 + (sep.dist / 2) + r2
 
     ellipse1 <- ellipse(
       x0 = x.centre.1,
