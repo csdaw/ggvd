@@ -10,7 +10,6 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
   list.switch <- FALSE
 
   tmp1 <- max(area1, area2)
-  tmp2 <- min(area1, area2)
 
   if (tmp1 != area1) inverted <- TRUE else inverted <- FALSE
 
@@ -27,15 +26,13 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
   }
 
   # convert radii to Grid dimensions
-  r1 <- r1 * shrink.factor;
-  r2 <- r2 * shrink.factor;
+  r1 <- r1 * shrink.factor
+  r2 <- r2 * shrink.factor
 
   # check special conditions
   if (area1 == area2 & area2 == cross.area) special.coincidental <- TRUE
   if (cross.area != 0 & (cross.area == area2 | cross.area == area1)) special.inclusion <- TRUE
   if (0 == cross.area) special.exclusion <- TRUE
-
-  denom <- area1 + area2 - cross.area
 
   ## NORMAL EULER DIAGRAM ##
   if (scaled & !special.inclusion & !special.exclusion & !special.coincidental) {
@@ -61,23 +58,6 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
   }
   ## EULER DIAGRAM WHEN ONE SET IS COMPLETELY IN THE OTHER ##
   if (euler.d & special.inclusion & !special.coincidental) {
-    if (inverted) {
-      tmp1 <- area1
-      tmp2 <- area2
-      area1 <- tmp2
-      area2 <- tmp1
-    }
-
-    if (!scaled & !inverted) {
-      r1 <- 0.4
-      r2 <- 0.2
-    }
-
-    if (!scaled & inverted) {
-      r1 <- 0.2
-      r2 <- 0.4
-    }
-
     ellipse1 <- ellipse(
       x0 = 0.5,
       y0 = 0,
@@ -109,7 +89,7 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
     )
   }
 
-  ## EULER DIAGRAM WITH MUTUALLY EXCLUSIVE SETS
+  ## EULER DIAGRAM WITH MUTUALLY EXCLUSIVE SETS ##
   if (euler.d & special.exclusion) {
     # Note: inverted not working properly here (distances not identical)
     # i.e. generate_vd_euler(12, 300, 0) not same distance as generate_vd_euler(300, 12, 0)
@@ -138,37 +118,37 @@ generate_vd_euler <- function(area1, area2, cross.area, max.circle.size = 0.2,
 find.dist <- function(area1, area2, cross.area, inverted = FALSE) {
 
   if (inverted) {
-    r1 <- sqrt(area2 / pi);
-    r2 <- sqrt(area1 / pi);
+    r1 <- sqrt(area2 / pi)
+    r2 <- sqrt(area1 / pi)
   }
   else {
-    r1 <- sqrt(area1 / pi);
-    r2 <- sqrt(area2 / pi);
+    r1 <- sqrt(area1 / pi)
+    r2 <- sqrt(area2 / pi)
   }
 
   # set up a sequence of distances corresponding to full intersection to 0 intersection with set resolution (step)
-  d <- r1 + r2;
-  resolution <- 0.001;
-  d.list <- seq(r1 - r2 + resolution, d, resolution);
-  int.list <- sapply(d.list, find.intersect, r1, r2);
-  match.list <- (int.list >= cross.area);
-  index.true <- length(match.list[match.list]);
-  index.false <- index.true + 1;
+  d <- r1 + r2
+  resolution <- 0.001
+  d.list <- seq(r1 - r2 + resolution, d, resolution)
+  int.list <- sapply(d.list, find.intersect, r1, r2)
+  match.list <- (int.list >= cross.area)
+  index.true <- length(match.list[match.list])
+  index.false <- index.true + 1
 
   if (0 == index.true) {
-    return(d.list[index.false]);
+    return(d.list[index.false])
   }
   else {
-    return(mean(d.list[index.true], d.list[index.false]));
+    return(mean(d.list[index.true], d.list[index.false]))
   }
 }
 
 # find the intersection of two circles
 find.intersect <- function(d, r1, r2) {
 
-  beta  <- (r1^2 + d^2 - r2^2) / (2 * r1 * d);
-  gamma <- (r2^2 + d^2 - r1^2) / (2 * r2 * d);
+  beta  <- (r1^2 + d^2 - r2^2) / (2 * r1 * d)
+  gamma <- (r2^2 + d^2 - r1^2) / (2 * r2 * d)
 
-  area <- r1^2 * (acos(beta) - 0.5 * sin(2 * acos(beta))) + r2^2 * (acos(gamma) - 0.5 * sin(2 * acos(gamma)));
-  return(area);
+  area <- r1^2 * (acos(beta) - 0.5 * sin(2 * acos(beta))) + r2^2 * (acos(gamma) - 0.5 * sin(2 * acos(gamma)))
+  return(area)
 }

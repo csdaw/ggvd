@@ -26,8 +26,7 @@ StatEuler <- ggproto("StatEuler", Stat,
                            area1 = actual_input$count[[1]][1],
                            area2 = actual_input$count[[1]][3],
                            cross.area = actual_input$count[[1]][2],
-                           max.circle.size = 0.2,
-                           inverted = FALSE
+                           max.circle.size = 0.2
                          )
                          print(ellipses)
                        }
