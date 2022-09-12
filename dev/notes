@@ -1,0 +1,115 @@
+#### Input data - general ####
+
+- Using ggplot2, therefore ultimately the input must be a dataframe/tibble.
+- To have all the necessary info present (and available to the user to manipulate),
+  the input might have to be a tibble which allows for list columns.
+- BUT (see determine-input-df-structure) I think if I make the dataframe the
+  same number of rows as the number of segments this will be the best option?
+
+#### Dependencies ####
+
+Imports:
+- tibble
+- ggplot2
+- polyclip
+
+Suggests:
+- eulerr
+
+
+#### Input data - specific ####
+
+- From my previous notes, the minimal info (i.e. columns) necessary to make the
+most basic Venn is: set names (in a character column named set), number of observations in
+each set (in a numeric column named n), number of observations in each segment
+(in a list column named count).
+
+Need to double check the correct terminology on these things.
+
+#### Functions ####
+
+## prepare_venn()
+
+- Name subject to change
+- I think geom_venn and geom_euler should have identical input (even though a
+lot of the columns necessary for geom_euler are redundant for geom_venn)
+- I think this function may do most of the heavy lifting!
+
+## prepare_euler()
+
+- NAme subject to change
+- Perhaps the functions used to prepare the data for a venn vs an euler should
+  be different but ultimately output a similar df which is used
+- This function should do most of the heavy lifting
+
+## geom_venn() and GeomVenn
+
+- Standard venn, circles not scaled
+- Two types (need to decide on proper names): discrete (each set has a different colour)
+  and continuous (each segment has a different colour, can scale to count)
+- Ultimately a wrapper function/Geom akin to https://github.com/tidyverse/ggplot2/blob/main/R/geom-pointrange.r
+  around GeomEllipse, GeomPolygon (if type = continuous) and GeomText x 2/3 (set labels and count labels and percent?)
+
+## geom_euler() and GeomEuler
+
+- Scaled circles
+- Wrapper function/Geom
+
+## GeomEllipse
+
+- Make copies of the stuff from ggforce so you don't have to import it
+- Aesthetics:
+  - h (aka. x0, circle centre x) (required)
+  - k (aka. y0, circle centre y) (required)
+  - a (circle major thingy) (required)
+  - b (circle minor thingy) (required)
+  - phi (aka. angle, circle rotation?) (required)
+  - fill (unless type = continuous, in which case GeomPolygon hs fill and this fill should be NA)
+  - colour
+  - alpha
+  - size (or whatever the new linewidth aesthetic is..)
+  - linetype
+  - group? (maybe dunno???)
+- Computed variables
+  - x
+  - y
+
+## GeomPolygon
+
+- After using polyclip, can just leverage GeomPolygon
+- Also for optional 5 way venn (although should probably just use upset plot)
+- Aesthetics:
+  - x (required)
+  - y (required)
+  - alpha
+  - colour (this should always be NA I think, therefore don't make available for aesthetic mapping?)
+  - fill
+  - group? (see docs)
+  - linetype (this should be always be NA I think, therefore don't make available for aesthetic mapping?)
+  - size (this should be always be NA I think, therefore don't make available for aesthetic mapping?)
+
+## GeomText
+
+- Maybe can use this optionally? Like outlier.shape https://github.com/tidyverse/ggplot2/blob/main/R/geom-boxplot.r
+- Will need it at most 3 times perhaps?:
+ 1. Set labels
+ 2. Seg counts
+ 3. Seg percentages
+
+ Maybe somehow implement rectangle behind text? https://github.com/gaospecial/ggVennDiagram
+
+- Aesthetics:
+  - x (required)
+  - y (required)
+  - label (required)
+  - alpha
+  - angle
+  - colour
+  - family
+  - fontface
+  - group
+  - hjust
+  - lineheight
+  - size
+  - vjust
+
