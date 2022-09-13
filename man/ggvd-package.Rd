@@ -6,7 +6,7 @@
 \alias{ggvd-package}
 \title{ggvd: Another Implementation of Venn Diagrams in 'ggplot2'}
 \description{
-Simple functions to generate 2-4 way Venn diagrams using 'ggplot2' with minimal dependencies.
+The description will go here.
 }
 \author{
 \strong{Maintainer}: Charlotte Dawson \email{csdaw@outlook.com} (\href{https://orcid.org/0000-0002-7151-5971}{ORCID})

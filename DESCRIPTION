@@ -2,18 +2,16 @@ Package: ggvd
 Title: Another Implementation of Venn Diagrams in 'ggplot2'
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Charlotte",
-           family = "Dawson",
+    person(given = "Charlotte", family = "Dawson",
            role = c("aut", "cre"),
            email = "csdaw@outlook.com",
            comment = c(ORCID = "0000-0002-7151-5971"))
-Description: Simple functions to generate 2-4 way Venn diagrams using 
-    'ggplot2' with minimal dependencies.
+Description: The description will go here.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Imports: 
     ggplot2
 Depends: 
