@@ -32,7 +32,7 @@ match \code{m1}.}
 }
 \value{
 Returns a \code{data.frame} containing coordinates,
-with two columns: \code{x} and \code{y} and \code{n + 1} rows.
+with two columns: \code{x} and \code{y}, and \code{n + 1} rows.
 }
 \description{
 Given a set of geometric parameters, generate the x,y coordinates
