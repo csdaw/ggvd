@@ -43,7 +43,7 @@ ellipse <- function(x0 = 0, y0 = 0, a = 1, b = 1, angle = 0, n = 360L, m1 = 2, m
   # define m2 default
   m2 <- ifelse(missing(m2), m1, m2)
 
-  points <- seq(0, 2 * pi, length.out = n)
+  points <- seq(0, 2 * pi, length.out = n + 1)[seq_len(n)]
   cos_p <- cos(points)
   sin_p <- sin(points)
   x_tmp <- abs(cos_p)^(2 / m1) * a * sign(cos_p)

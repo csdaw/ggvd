@@ -9,12 +9,13 @@
 #### Dependencies ####
 
 Imports:
-- tibble
+- tibble (maybe not?)
 - ggplot2
 - polyclip
 
 Suggests:
 - eulerr
+- testthat
 
 
 #### Input data - specific ####
