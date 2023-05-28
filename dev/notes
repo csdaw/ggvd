@@ -11,6 +11,40 @@ Remember:
 n_segments = 2^n_circles - 1
 n_circles = sqrt(n_segments + 1)
 
+
+geom_venn shouldn't take in x0, y0, a, b, phi, rather should have pre-set
+ellipse values (x0, y0, a,b,phi etc.) for 2,3,4 way venn that are determined
+by n_row of input data.
+
+geom_venn should essentially comprised of:
+take input df (df_complete2) and determine n_sets and calculate x0, y0 etc.
+- geom_ellipse for circle outlines (and optionally fills?), input would be
+x0, y0, a, b, phi, etc. each row = 1 circle, na.rm = TRUE?
+- geom_ellipse_clip? geom_ellipse_seg? for circle segments, input would be a bit tricky,
+each row = 1 segment
+e.g. for 2way venn
+
+set   x0    y0  ...     seg     seg_colour (could rename to colour in processing?)
+A     1     1   ...     A       red
+B     2     1   ...     B       purple
+NA    NA    NA  ...     AB      green
+
+or last row could just be repeated x0, y0 and use unique() in setup_data
+
+set   x0    y0  ...     seg     seg_colour (could rename to colour in processing?)
+A     1     1   ...     A       red
+B     2     1   ...     B       purple
+B     2     1   ...     AB      green
+
+then calculate circles, then clip circles, then apply colour etc. etc.
+
+- geom_text for set labels
+- geom_text for seg labels
+- geom_text for seg percentages?
+
+
+
+
 #### Dependencies ####
 
 Imports:
@@ -21,6 +55,7 @@ Imports:
 Suggests:
 - eulerr
 - testthat
+- vdiffr?
 
 
 #### Input data - specific ####
@@ -31,6 +66,7 @@ each set (in a numeric column named n), number of observations in each segment
 (in a list column named count).
 
 Need to double check the correct terminology on these things.
+
 
 #### Functions ####
 
