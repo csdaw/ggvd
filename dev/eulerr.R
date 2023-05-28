@@ -1,3 +1,21 @@
+library(eulerr)
+
+# Fit a diagram with circles
+combo <- c(A = 2, B = 2, C = 2, "A&B" = 1, "A&C" = 1, "B&C" = 1)
+fit1 <- euler(combo)
+
+# Investigate the fit
+fit1
+
+# Plot it
+debug(eulerr:::setup_geometry)
+plot(fit1)
+
+
+
+
+
+
 library(ggvd)
 
 vec_l <- list(
