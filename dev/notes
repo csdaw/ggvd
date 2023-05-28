@@ -17,11 +17,22 @@ ellipse values (x0, y0, a,b,phi etc.) for 2,3,4 way venn that are determined
 by n_row of input data.
 
 geom_venn should essentially comprised of:
-take input df (df_complete2) and determine n_sets and calculate x0, y0 etc.
-- geom_ellipse for circle outlines (and optionally fills?), input would be
+
+1. take input df (df_complete2) and determine n_sets and calculate x0, y0 etc.
+2. geom_ellipse for circle outlines (and optionally fills?), input would be
 x0, y0, a, b, phi, etc. each row = 1 circle, na.rm = TRUE?
-- geom_ellipse_clip? geom_ellipse_seg? for circle segments, input would be a bit tricky,
-each row = 1 segment
+3. geom_ellipse_clip? geom_ellipse_seg? geom_clip_ellipse? geom_eclipse!! haha
+geom_ellipse_fragment,
+
+for circle segments, input would be a bit tricky, each row = 1 segment,
+
+To be truly generalisable, needs to handle no overlap or not having all possible
+overlaps at once, and still being able to have colour and grouping and
+whatever. Or perhaps, some error handling e.g. stop if ellipses don't overlap
+or stop if polyclip doesn't return something resonable.
+
+
+
 e.g. for 2way venn
 
 set   x0    y0  ...     seg     seg_colour (could rename to colour in processing?)
@@ -38,9 +49,9 @@ B     2     1   ...     AB      green
 
 then calculate circles, then clip circles, then apply colour etc. etc.
 
-- geom_text for set labels
-- geom_text for seg labels
-- geom_text for seg percentages?
+4. geom_text for set labels
+5. geom_text for seg labels
+6. geom_text for seg percentages?
 
 
 
