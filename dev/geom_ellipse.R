@@ -92,7 +92,7 @@ ggplot() +
 df %>%
   ggplot() +
   aes(x0 = x0, y0 = y0, a = a, b = b, angle = angle, fill = banana) +
-  geom_ellipse(colour = "black", alpha = 0.5) +
+  geom_ellipse(colour = "black", alpha = 0.5, n = 360) +
   scale_fill_identity() +
   coord_fixed()
 

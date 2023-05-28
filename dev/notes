@@ -6,6 +6,11 @@
 - BUT (see determine-input-df-structure) I think if I make the dataframe the
   same number of rows as the number of segments this will be the best option?
 
+Remember:
+
+n_segments = 2^n_circles - 1
+n_circles = sqrt(n_segments + 1)
+
 #### Dependencies ####
 
 Imports:
