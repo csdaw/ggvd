@@ -5,7 +5,7 @@
 \title{Generate an ellipse}
 \source{
 The code for this function is largely copied from \code{ggforce::StatEllip}
-which is licensed under the MIT license.
+which is distributed under the MIT license.
 }
 \usage{
 ellipse(x0 = 0, y0 = 0, a = 1, b = 1, angle = 0, n = 360L, m1 = 2, m2)
@@ -43,17 +43,17 @@ library(ggplot2)
 
 # default is a unit circle
 ggplot(ellipse(), aes(x, y)) +
-geom_polygon(colour = "black", fill = NA) +
-coord_fixed()
+  geom_polygon(colour = "black", fill = NA) +
+  coord_fixed()
 
 # angle is in radians, and rotation occurs counter-clockwise
 ggplot(ellipse(a = 2, angle = pi / 4), aes(x, y)) +
-geom_polygon(colour = "black", fill = NA) +
-coord_fixed()
+  geom_polygon(colour = "black", fill = NA) +
+  coord_fixed()
 
 # try a super ellipse
 ggplot(ellipse(a = 2, angle = pi / 4, m1 = 3), aes(x, y)) +
-geom_polygon(colour = "black", fill = NA) +
-coord_fixed()
+  geom_polygon(colour = "black", fill = NA) +
+  coord_fixed()
 
 }
