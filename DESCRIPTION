@@ -7,7 +7,7 @@ Authors@R:
            email = "csdaw@outlook.com",
            comment = c(ORCID = "0000-0002-7151-5971"))
 Description: The description will go here.
-License: MIT + file LICENSE
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

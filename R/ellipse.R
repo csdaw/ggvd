@@ -17,8 +17,9 @@
 #'
 #' @return Returns a `data.frame` containing coordinates,
 #' with two columns: `x` and `y`, and `n + 1` rows.
-#' @source The code for this function is largely copied from `ggforce::StatEllip`
-#' which is distributed under the MIT license.
+#' @source Code modified from `ggforce::StatEllip` which is distributed under
+#' the MIT license.
+#'
 #' @export
 #'
 #' @examples

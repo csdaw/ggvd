@@ -4,8 +4,8 @@
 \alias{ellipse}
 \title{Generate an ellipse}
 \source{
-The code for this function is largely copied from \code{ggforce::StatEllip}
-which is distributed under the MIT license.
+Code modified from \code{ggforce::StatEllip} which is distributed under
+the MIT license.
 }
 \usage{
 ellipse(x0 = 0, y0 = 0, a = 1, b = 1, angle = 0, n = 360L, m1 = 2, m2)
