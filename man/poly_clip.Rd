@@ -11,7 +11,8 @@ under the GPLv3 license.
 poly_clip(a, b, op = c("intersection", "union", "minus", "xor"))
 }
 \arguments{
-\item{a, b}{\code{list} or \verb{list of list}, specifying polygons. See details.}
+\item{a, b}{\code{data.frame} or \code{list} or \verb{list of lists}, specifying polygons.
+See details below.}
 
 \item{op}{\code{string}, set operation to be performed to combine \code{a} and \code{b}.
 One of \code{"intersection"}, \code{"union"}, \code{"minus"}, \code{"xor"} (partially matched).}
@@ -27,14 +28,64 @@ to the \emph{Clipper} C++ library.
 Each of the arguments \code{a} and \code{b} represents a region in the
 Euclidean plane bounded by closed polygons. The format of these arguments
 is either:
+
+.  - a \code{data.frame} containing two columns \code{x} and \code{y} or a \code{list} containing
+.  two numeric vectors \code{x} and \code{y} giving the coordinates of the vertices of a
+single polygon. The last vertex \strong{should not} repeat the first vertex.
 \itemize{
-\item a \code{list} containing two numeric vectors \code{x} and \code{y} giving the
-coordinates of the vertices of a single polygon. The last vertex
-\strong{should not} repeat the first vertex.
-\item a \verb{list of list(x,y)} structures giving the coordinates of the vertices
-of several polygons.
+\item a \verb{list of lists(x,y)} where \code{x} and \code{y} are numeric vectors giving the
+coordinates of the vertices of several polygons.
 }
 }
 \examples{
-#
+library(ggplot2)
+
+triangle <- list(
+  x = c(0, 1, 3),
+  y = c(0, 1, 0)
+)
+
+circle <- ellipse()
+
+ggplot(circle, aes(x = x, y = y)) +
+  geom_polygon(colour = "red") +
+  geom_polygon(data = data.frame(triangle), colour = "blue") +
+  coord_cartesian(xlim = c(-1.5, 3.5), ylim = c(-1.5, 1.5)) +
+  theme_bw()
+
+# 4 set operations:
+# intersection
+s1 <- poly_clip(triangle, circle, "intersection")
+
+ggplot(data.frame(s1), aes(x = x, y = y)) +
+  geom_polygon(colour = "green") +
+  coord_cartesian(xlim = c(-1.5, 3.5), ylim = c(-1.5, 1.5)) +
+  theme_bw()
+
+# union
+s2 <- poly_clip(triangle, circle, "union")
+
+ggplot(data.frame(s2), aes(x = x, y = y)) +
+  geom_polygon(colour = "green") +
+  coord_cartesian(xlim = c(-1.5, 3.5), ylim = c(-1.5, 1.5)) +
+  theme_bw()
+
+
+# minus (subtract circle from triangle)
+s3 <- poly_clip(triangle, circle, "minus")
+
+ggplot(data.frame(s3), aes(x = x, y = y)) +
+  geom_polygon(colour = "green") +
+  coord_cartesian(xlim = c(-1.5, 3.5), ylim = c(-1.5, 1.5)) +
+  theme_bw()
+
+# xor (result is 2 shapes here)
+s4 <- poly_clip(triangle, circle, "xor")
+
+ggplot(data.frame(s4[[1]]), aes(x = x, y = y)) +
+  geom_polygon(colour = "red") +
+  geom_polygon(data = data.frame(s4[[2]]), colour = "blue") +
+  coord_cartesian(xlim = c(-1.5, 3.5), ylim = c(-1.5, 1.5)) +
+  theme_bw()
+
 }
