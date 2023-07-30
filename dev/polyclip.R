@@ -38,7 +38,7 @@ polyclip(empty_list, shapes[[1]], op = "minus")
 library(eulerr)
 
 f1 <- venn(5, names = letters[1:5])
-#debug(eulerr:::setup_geometry)
+debug(eulerr:::setup_geometry)
 plot(f1)
 
 
@@ -168,60 +168,6 @@ microbenchmark::microbenchmark(
 
 
 
-
-
-# e is a list of lists of x/y vectors
-# each entry of e is 1 ellipse
-
-# pieces is a list of length n_segments
-
-# n_id = n_segments
-
-# id is a truth-table? matrix with
-# n_row = n_segments
-# and n_col = n_sets
-
-# so idx is the i'th row of the id matrix
-# and is a numeric corresponding to which sets
-# are overlapped for the segment i
-# e.g.
-# Segment ABC for a 3 set venn would have the idx
-# which(TRUE TRUE TRUE)
-# which would be be the numeric vector
-# 1 2 3
-
-# n_idx = length(idx) # how many of the n_sets are
-# included in this segment
-
-
-### OUTER LOOP (for i in rev(seq_len(n_segments)))
-# Deal with each segment (each i) at a time
-
-# IF
-
-# if n_idx == 1, i.e. if the segment describes just 1 set
-# Then to the pieces list[[i]]
-# assign a list, which contains a list, which contains x and y vectors
-# of the first ellipse in e
-
-# ELSE
-
-# piece[[i]] is the intersection of the first ellipse (list of vectors) and the
-# second ellipse (list of vectors)
-# if n_idx > 2
-## INNER LOOP (for j in 3:n_idx, i.e. 3:n_sets in this segment)
-# overwrise pieces[[i]] with the intersection of pieces[[i]] and
-# each ellipse more than the second ellipse i.e. e[[3]], e[[4]] etc. etc.
-
-# THEN
-
-# for the sets NOT described by the segment
-# overwrite pieces[[i]] with the 'minus' of pieces[[i]]
-# and the ellipses for the sets NOT described by the
-# segment
-
-
-### END OUTER LOOP
 
 
 
