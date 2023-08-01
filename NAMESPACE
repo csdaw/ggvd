@@ -2,4 +2,5 @@
 
 export(ellipse)
 export(poly_clip)
+export(poly_segment)
 import(ggplot2)

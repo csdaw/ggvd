@@ -100,8 +100,8 @@ e2 <- ellipse(x0 = 0.5)
 elist <- list(as.list(e1), as.list(e2))
 
 ggplot(mapping = aes(x, y)) +
-  geom_polygon(data = e1, colour = "red") +
-  geom_polygon(data = e2, colour = "blue")
+  geom_polygon(data = e1, colour = "red", fill = "grey80") +
+  geom_polygon(data = e2, colour = "blue", fill = "grey80")
 
 truthtable <- matrix(
   c(T, F, T, F, T, T),
