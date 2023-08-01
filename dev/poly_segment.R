@@ -112,6 +112,11 @@ truthtable <- matrix(
 test <- poly_segment(elist, truthtable)
 test
 names(test)
+length(test)
+
+
+## To do: write function to convert poly_segment output to a dataframe for
+## plotting
 
 test2 <- do.call(rbind.data.frame, test)
 head(test2)
@@ -123,3 +128,65 @@ rownames(test3) <- NULL
 
 ggplot(data = test3, aes(x, y, fill = segment_id)) +
   geom_polygon()
+
+
+## EDGE CASES TESTS
+
+# coincident circles
+e1 <- ellipse()
+e2 <- e1
+elist <- list(as.list(e1), as.list(e2))
+
+truthtable <- matrix(
+  c(T, F, T, F, T, T),
+  ncol = 2
+)
+
+debugonce(poly_segment)
+test <- poly_segment(elist, truthtable)
+test
+names(test)
+length(test) # length = 1!
+
+# list names doesn't work if there is only 1 non-zero list
+test2 <- do.call(rbind.data.frame, test)
+head(test2)
+rownames(test2)
+
+test3 <- test2
+test3$segment_id <- sub("\\..*$", "", rownames(test3))
+rownames(test3) <- NULL
+
+ggplot(data = test3, aes(x, y, fill = segment_id)) +
+  geom_polygon()
+
+# mutually exclusive circles (This seems to be fine)
+e1 <- ellipse()
+e2 <- ellipse(x0 = 10)
+elist <- list(as.list(e1), as.list(e2))
+
+truthtable <- matrix(
+  c(T, F, T, F, T, T),
+  ncol = 2
+)
+
+#debugonce(poly_segment)
+test <- poly_segment(elist, truthtable)
+test
+names(test)
+length(test) # length = 1!
+
+# list names doesn't work if there is only 1 non-zero list
+test2 <- do.call(rbind.data.frame, test)
+head(test2)
+rownames(test2)
+
+test3 <- test2
+test3$segment_id <- sub("\\..*$", "", rownames(test3))
+rownames(test3) <- NULL
+
+ggplot(data = test3, aes(x, y, fill = segment_id)) +
+  geom_polygon()
+
+
+
