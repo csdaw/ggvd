@@ -62,32 +62,32 @@ library(ggplot2)
 
 # output: named list of lists of length=2 with xy vectors
 
-poly_segment <- function(e, tt) {
-  n_e <- length(e)
-  n_segments <- 2L^n_e - 1L
+poly_segment <- function(polys, tt) {
+  n_polys <- length(polys)
+  n_segments <- 2L^n_polys - 1L
 
   segments <- vector(mode = "list", length = n_segments)
   names(segments) <- seq_len(n_segments)
 
-
   for (i in rev(seq_len(n_segments))) {
     tt_row <- which(tt[i, ])
-    n_intersects <- length(tt_row)
+    # for a given segment, how many polygons are intersecting?
+    n_polys_intersect <- length(tt_row)
 
-    if (n_intersects == 1L) {
-      segments[[i]] <- list(e[[tt_row[1]]])
+    if (n_polys_intersect == 1L) {
+      segments[[i]] <- list(polys[[tt_row[1]]])
     } else {
-      segments[[i]] <- poly_clip(e[[tt_row[1]]], e[[tt_row[2]]], "intersection")
+      segments[[i]] <- poly_clip(polys[[tt_row[1]]], polys[[tt_row[2]]], "intersection")
 
-      if (n_intersects > 2L) {
+      if (n_polys_intersect > 2L) {
         for (j in 3L:n_segments) {
-          segments[[i]] <- poly_clip(segments[[i]], e[[tt_row[j]]], "intersection")
+          segments[[i]] <- poly_clip(segments[[i]], polys[[tt_row[j]]], "intersection")
         }
       }
     }
 
     for (k in which(!tt[i, ])) {
-      segments[[i]] <- poly_clip(segments[[i]], e[[k]], "minus")
+      segments[[i]] <- poly_clip(segments[[i]], polys[[k]], "minus")
     }
   }
 
@@ -142,7 +142,7 @@ truthtable <- matrix(
   ncol = 2
 )
 
-debugonce(poly_segment)
+#debugonce(poly_segment)
 test <- poly_segment(elist, truthtable)
 test
 names(test)
