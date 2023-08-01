@@ -1,3 +1,6 @@
+library(ggvd)
+library(ggplot2)
+
 # eulerr/R/setup_geometry.R
 # https://github.com/jolars/eulerr/blob/30fe2dd6213cb76cdd94a12d625b028819e80078/R/setup_geometry.R#L49
 
@@ -54,11 +57,17 @@
 
 ### END OUTER LOOP
 
+# Input e: list of lists of length=2 with xy vectors
+# Input tt: truth table with nrow the same as length(e)
+
+# output: named list of lists of length=2 with xy vectors
+
 poly_segment <- function(e, tt) {
   n_e <- length(e)
   n_segments <- 2L^n_e - 1L
 
   segments <- vector(mode = "list", length = n_segments)
+  names(segments) <- seq_len(n_segments)
 
 
   for (i in rev(seq_len(n_segments))) {
@@ -82,7 +91,7 @@ poly_segment <- function(e, tt) {
     }
   }
 
-  return(segments)
+  return(unlist(segments, recursive = FALSE))
 }
 
 e1 <- ellipse()
@@ -99,29 +108,18 @@ truthtable <- matrix(
   ncol = 2
 )
 
-debugonce(poly_segment)
+#debugonce(poly_segment)
 test <- poly_segment(elist, truthtable)
 test
+names(test)
 
-dflist <- vector(mode = "list", length = length(test))
+test2 <- do.call(rbind.data.frame, test)
+head(test2)
+rownames(test2)
 
-for (i in seq_along(test)) {
-  x0 <- lapply(test[[i]], "[[", "x")
-  y0 <- lapply(test[[i]], "[[", "y")
+test3 <- test2
+test3$segment_id <- sub("\\..*$", "", rownames(test3))
+rownames(test3) <- NULL
 
-  if (length(x0) > 0L) {
-    dflist[[i]]$x <- c(x0, recursive = TRUE)
-    dflist[[i]]$y <- c(y0, recursive = TRUE)
-    dflist[[i]]$segment_id <- LETTERS[i]
-  }
-}
-
-dflist
-
-test2 <- do.call(rbind, lapply(dflist, as.data.frame))
-
-ggplot(data = test2, aes(x, y, fill = segment_id)) +
+ggplot(data = test3, aes(x, y, fill = segment_id)) +
   geom_polygon()
-
-
-
