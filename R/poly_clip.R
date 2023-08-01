@@ -7,11 +7,13 @@
 #'   Euclidean plane bounded by closed polygons. The format of these arguments
 #'   is either:
 #'
-#'.  - a `data.frame` containing two columns `x` and `y` or a `list` containing
-#'.  two numeric vectors `x` and `y` giving the coordinates of the vertices of a
+#'   - a `data.frame` containing two columns `x` and `y` or a `list` containing
+#'   two numeric vectors `x` and `y` giving the coordinates of the vertices of a
 #'   single polygon. The last vertex **should not** repeat the first vertex.
-#'   - a `list of lists(x,y)` where `x` and `y` are numeric vectors giving the
-#'   coordinates of the vertices of several polygons.
+#'   - a `list of lists(x,y)` giving the coordinates of several polygons,
+#'   where `x` and `y` are numeric vectors giving the coordinates of the
+#'   vertices of a single polygon. The last vertex **should not** repeat the
+#'   first vertex.
 #'
 #' @param a,b `data.frame` or `list` or `list of lists`, specifying polygons.
 #'   See details below.

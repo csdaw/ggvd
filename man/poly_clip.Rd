@@ -28,13 +28,14 @@ to the \emph{Clipper} C++ library.
 Each of the arguments \code{a} and \code{b} represents a region in the
 Euclidean plane bounded by closed polygons. The format of these arguments
 is either:
-
-.  - a \code{data.frame} containing two columns \code{x} and \code{y} or a \code{list} containing
-.  two numeric vectors \code{x} and \code{y} giving the coordinates of the vertices of a
-single polygon. The last vertex \strong{should not} repeat the first vertex.
 \itemize{
-\item a \verb{list of lists(x,y)} where \code{x} and \code{y} are numeric vectors giving the
-coordinates of the vertices of several polygons.
+\item a \code{data.frame} containing two columns \code{x} and \code{y} or a \code{list} containing
+two numeric vectors \code{x} and \code{y} giving the coordinates of the vertices of a
+single polygon. The last vertex \strong{should not} repeat the first vertex.
+\item a \verb{list of lists(x,y)} giving the coordinates of several polygons,
+where \code{x} and \code{y} are numeric vectors giving the coordinates of the
+vertices of a single polygon. The last vertex \strong{should not} repeat the
+first vertex.
 }
 }
 \examples{
