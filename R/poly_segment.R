@@ -71,7 +71,7 @@ poly_segment <- function(polys, tt) {
       segments[[i]] <- poly_clip(polys[[tt_row[1]]], polys[[tt_row[2]]], "intersection")
 
       if (n_polys_intersect > 2L) {
-        for (j in 3L:n_segments) {
+        for (j in 3L:n_polys_intersect) {
           segments[[i]] <- poly_clip(segments[[i]], polys[[tt_row[j]]], "intersection")
         }
       }

@@ -40,17 +40,9 @@ test_that("poly_segment works with mutually exclusive shapes", {
   expect_equal(lengths(segments3), rep(2, 2), ignore_attr = TRUE)
 })
 
-# FUNCTION NOT WORKING, WHYYY!! THE 3/3 overlap is missing.
-# test_that("poly_segment works with 3 overlapping shapes", {
-#   segments4 <- poly_segment(list(as.list(e1), as.list(e2), as.list(e4)), truth_table2)
-#
-#   expect_equal(length(segments4), 7)
-#   #expect_equal(lengths(segments4), rep(2, 7), ignore_attr = TRUE)
-# })
+test_that("poly_segment works with 3 overlapping shapes", {
+  segments4 <- poly_segment(list(as.list(e1), as.list(e2), as.list(e4)), truth_table2)
 
-zzz <- do.call(rbind.data.frame, segments4)
-
-zzz$id = sub("\\..*$", "", rownames(zzz))
-
-ggplot(zzz, aes(x, y, fill = id)) +
-  geom_polygon()
+  expect_equal(length(segments4), 7)
+  expect_equal(lengths(segments4), rep(2, 7), ignore_attr = TRUE)
+})
