@@ -19,7 +19,7 @@ f1 <- function(n) {
 
 f1(3)
 
-f2 <- function(n) {
+f2 <- function(n, boolean = FALSE) {
   out <- matrix(0, nrow = 2^n, ncol = n)
 
   n_rev <- n:1
@@ -27,11 +27,11 @@ f2 <- function(n) {
   for (i in seq_len(n)) {
     out[, n_rev[i]] <- rep(0:1, times = 2^(i - 1), each = 2^(n - i))
   }
-  # drop first row which is always all 0, and convert to boolean
-  out[, ]
+
+  if (boolean) out == 1 else out
 }
 
-f2(4)
+f2(3)
 
 eulerr:::bit_indexr(3)
 
