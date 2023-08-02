@@ -109,17 +109,41 @@ df_complete <- tibble::tibble(
 
 # 3 rows
 df_complete2 <- data.frame(
-  set = c("Some name of the set", "Another name of the set", NA_character_),
-  set_n = c(3, 3, NA_real_),
-  set_text_x = c(-0.54, 0.54, NA_real_),
-  set_text_y = c(1.1, 1.1, NA_real_),
-  # etc etc..
+  # geom_venn_ellipse
+  x = c(0, 1, NA_real_),
+  y = c(0, 0, NA_real_),
+  fill = c("red", "blue", NA_character_),
+  colour = c("pink", "green", NA_character_),
+  alpha = c(0.7, 0.7, NA_real_),
+  # group = ...
+  linetype = c(1, 2, NA_real_),
+  linewidth = c(1, 2, NA_real_),
+  # subgroup = ...
+
+  # text elements
+  set_name = c("Some name of the set", "Another name of the set", NA_character_),
+  set_name_x = c(-0.54, 0.54, NA_real_),
+  set_name_y = c(1.1, 1.1, NA_real_),
+  set_name_alpha = c(1, 1, NA_real_),
+  # set_name_angle
+  # set_name_colour
+  # set_name_family
+  # ...etc...
+  set_total = c(3, 4, NA_real_),
+  set_total_x = c(-0.54, 0.54, NA_real_),
+  set_total_y = c(1, 1, NA_real_),
   seg = c("A", "B", "AB"), # standardise these to A, B, C, AB, AC, etc. etc.
-  seg_id = 1:3,
+  # seg_group? seg_id? = 1:3,
   seg_count = c(2, 1, 2),
-  seg_percent = c("40%", "20%", "40%"),
   seg_count_x = circle_plot$data$centers$x,
-  seg_count_y = circle_plot$data$centers$y
+  seg_count_y = circle_plot$data$centers$y,
+  seg_pct = c("40%", "20%", "40%"),
+  seg_pct_x = circle_plot$data$centers$x,
+  seg_pct_y = circle_plot$data$centers$y - 0.1,
+
+  # common text aes
+
+
 )
 
 # I think this will work best as there is precedence e.g.
