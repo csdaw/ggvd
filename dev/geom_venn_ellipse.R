@@ -37,11 +37,57 @@ StatVennEllipse <- ggproto(
   }
 )
 
+# OR a different way, as per StatSpring https://ggplot2-book.org/ext-springs
+StatVennEllipse2 <- ggproto(
+  "StatVennEllipse", Stat,
+  setup_data = function(data, params) {
+    data$a <- if (is.null(data$a)) 1 else data$a
+    data$b <- if (is.null(data$b)) 1 else data$b
+    data$angle <- if (is.null(data$angle)) 0 else data$angle
+    data$m1 <- if (is.null(data$m1)) 2 else data$m1
+    data$m2 <- if (is.null(data$m2)) data$m1 else data$m2
+    data
+  },
+  compute_panel = function(self, data, scales, n = 360L) {
+    #browser()
+    cols_to_keep <- setdiff(names(data), c("x0", "y0", "a", "b", "angle", "m1", "m2"))
+    ellipses <- lapply(seq_len(nrow(data)), function(i) {
+      #browser()
+      ellipse_path <- ggvd::ellipse(
+        data$x0[i],
+        data$y0[i],
+        data$a[i],
+        data$b[i],
+        data$angle[i],
+        n,
+        data$m1[i],
+        data$m2[i]
+      )
+      cbind(ellipse_path, unclass(data[i, cols_to_keep]))
+    })
+    do.call(rbind, ellipses)
+  },
+  required_aes = c("x0", "y0"),
+  optional_aes = c("a", "b", "angle", "m1", "m2")
+)
+
+
+
 geom_venn_ellipse <- function(mapping = NULL, data = NULL, geom = "polygon",
                               position = "identity", n = 360L, na.rm = FALSE,
                               show.legend = NA, inherit.aes = TRUE, ...) {
   layer(
     data = data, mapping = mapping, stat = "VennEllipse", geom = geom,
+    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+    params = list(n = n, na.rm = na.rm, ...)
+  )
+}
+
+geom_venn_ellipse2 <- function(mapping = NULL, data = NULL, geom = "polygon",
+                              position = "identity", n = 360L, na.rm = FALSE,
+                              show.legend = NA, inherit.aes = TRUE, ...) {
+  layer(
+    data = data, mapping = mapping, stat = "VennEllipse2", geom = geom,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
     params = list(n = n, na.rm = na.rm, ...)
   )
@@ -65,5 +111,19 @@ df <- data.frame(
 
 #df
 
+
+
 ggplot(df, aes(x0 = x0, y0 = y0, a = a, b = b, angle = angle, group = id)) +
-  geom_venn_ellipse(alpha = 0.5)
+  geom_venn_ellipse(alpha = 0.5, aes(fill = as.character(id)),
+                    linetype = "solid", colour = "black")
+
+p <- ggplot(df, aes(x0 = x0, y0 = y0, a = a, b = b, angle = angle, group = id))
+
+microbenchmark::microbenchmark(
+  p + geom_venn_ellipse(),
+  p + geom_venn_ellipse2(),
+  times = 1000L
+)
+
+
+
