@@ -1,5 +1,6 @@
 library(ggplot2)
 library(grid)
+library(tibble)
 # library(ggdebug)
 
 df_test <- data.frame(
@@ -72,15 +73,12 @@ StatVennEllipse2 <- ggproto(
     # params$segfills <- some_vector
     #
     # }
-    params
+    browser()
+
   },
   setup_data = function(data, params) {
     browser()
-    data$a <- if (is.null(data$a)) 1 else data$a
-    data$b <- if (is.null(data$b)) 1 else data$b
-    data$angle <- if (is.null(data$angle)) 0 else data$angle
-    data$m1 <- if (is.null(data$m1)) 2 else data$m1
-    data$m2 <- if (is.null(data$m2)) data$m1 else data$m2
+
     data # if using segment filles, it will complain about NAs here unless we remove them silently but carefully
     # if segment fills are passed as aes(fill = ...), then you might deal with NAs
     # using ggplot2::remove_missing() as per https://ggplot2-book.org/ext-springs#sec-spring3
@@ -92,9 +90,36 @@ StatVennEllipse2 <- ggproto(
     # }
   },
   compute_panel = function(data, scales, n = 360L) {
+
+  },
+  required_aes = c("x0", "y0"),
+  optional_aes = c("a", "b", "angle", "m1", "m2")
+)
+
+GeomVennEllipse <- ggproto(
+  "GeomVennEllipse", GeomPolygon,
+  extra_params = c("na.rm", "n", "count"),
+  required_aes = c("x0", "y0"),
+  optional_aes = c("a", "b", "angle", "m1", "m2"),
+  setup_params = function(data, params) {
+    if (class(data$fill) == "list") {
+      params$count <- unique(unlist(data$fill))
+    }
+    params
+  },
+  setup_data = function(data, params, n = 360L) {
     browser()
+    data$a <- if (is.null(data$a)) 1 else data$a
+    data$b <- if (is.null(data$b)) 1 else data$b
+    data$angle <- if (is.null(data$angle)) 0 else data$angle
+    data$m1 <- if (is.null(data$m1)) 2 else data$m1
+    data$m2 <- if (is.null(data$m2)) data$m1 else data$m2
+    data$fill <- if (!is.null(data$fill) & class(data$fill) == "list") NULL else data$fill
+
     cols_to_keep <- setdiff(names(data), c("x0", "y0", "a", "b", "angle", "m1", "m2"))
-    ellipses <- lapply(seq_len(nrow(data)), function(i) {
+    n_ellipses <- nrow(data)
+    n_segments <- 2^n_ellipses - 1
+    ellipses <- lapply(seq_len(n_ellipses), function(i) {
       #browser()
       ellipse_path <- ggvd::ellipse(
         data$x0[i],
@@ -106,18 +131,25 @@ StatVennEllipse2 <- ggproto(
         data$m1[i],
         data$m2[i]
       )
-      cbind(ellipse_path, unclass(data[i, cols_to_keep]))
+      cbind(ellipse_path, c(unclass(data[i, cols_to_keep]), fill = NA))
     })
-    do.call(rbind, ellipses)
-  },
-  required_aes = c("x0", "y0"),
-  optional_aes = c("a", "b", "angle", "m1", "m2")
-)
 
-GeomVennEllipse <- ggproto(
-  "GeomVennEllipse", GeomPolygon,
+    fills <- poly_segment(ellipses, bit_comb(n_ellipses, boolean = TRUE)[-1, ])
+    counts <- params$count
+
+    test <- vector(mode = "list", length = n_segments)
+
+    for (i in seq_len(n_segments)) {
+      test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, PANEL = 1, fill = counts[i]))
+    }
+
+
+
+    zzz <- do.call(rbind, c(test, ellipses))
+    zzz
+  },
   draw_panel = function(data, panel_params, coord) {
-    #browser()
+    browser()
     if (is.null(data) || nrow(data) == 0) return(zeroGrob())
 
     # is there some sorting on group necessary here before munching?
@@ -179,6 +211,16 @@ geom_venn_ellipse2 <- function(mapping = NULL, data = NULL, geom = "polygon",
                                show.legend = NA, inherit.aes = TRUE, ...) {
   layer(
     data = data, mapping = mapping, stat = "VennEllipse2", geom = "VennEllipse",
+    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+    params = list(n = n, na.rm = na.rm, ...)
+  )
+}
+
+geom_venn_ellipse3 <- function(mapping = NULL, data = NULL, geom = "polygon",
+                               position = "identity", n = 360L, na.rm = FALSE,
+                               show.legend = NA, inherit.aes = TRUE, ...) {
+  layer(
+    data = data, mapping = mapping, stat = "identity", geom = "VennEllipse",
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
     params = list(n = n, na.rm = na.rm, ...)
   )
@@ -252,3 +294,47 @@ rownames(ddd) <- NULL
 
 ggplot(data = ddd, aes(x, y, fill = group)) +
   geom_polygon()
+
+## TRy different df input
+
+df2 <- tibble( # row 1 = top left, row 2 = top right, row 3 = bottom centre
+  id = c(2, 1, 3),
+  id2 = c("B", "D", "C"),
+  x0 = c(0, 1, 0.5),
+  y0 = c(0.5, 0.5, -0.5),
+  a = 1,
+  b = 1,
+  angle = 0,
+  alpha = 0.5,
+  colour = "black",
+  fill = c("red", "green", "blue"),
+  linetype = "solid",
+  linewidth = 2,
+  # segs = rep(unlist(lcombn(1:3)), 3),
+  count = list(rep(c(11, 22, 33, 3, 4, 5, 6), 2))
+)
+
+ggplot(df2, aes(x0 = x0, y0 = y0, a = a, b = b, angle = angle, fill = count, group = id)) +
+  geom_venn_ellipse3(alpha = 1, linetype = "solid", colour = "black") +
+  scale_fill_identity()
+
+
+f1 <- function(n, boolean = TRUE) {
+  tt <- bit_comb(n = n, boolean = boolean)[-1, ]
+  apply(tt, 1, function(x) seq_len(ncol(tt))[x])
+}
+
+f1(3)
+
+f2 <- function(vv) {
+  do.call("c", lapply(seq_along(vv), function(i) combn(vv, i, FUN = list)))
+}
+
+xxx <- f2(1:3)
+
+microbenchmark::microbenchmark(
+  f1(10),
+  f2(1:10)
+)
+
+
