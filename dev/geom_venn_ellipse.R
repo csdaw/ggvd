@@ -144,12 +144,14 @@ GeomVennEllipse <- ggproto(
     }
 
 
-
+    yyy <- do.call(rbind, ellipses)
     zzz <- do.call(rbind, c(test, ellipses))
-    zzz
+    zzz$fill = as.character(zzz$fill)
+    yyy
   },
-  draw_panel = function(data, panel_params, coord) {
+  draw_panel = function(data, panel_params, coord, count = NULL) {
     browser()
+    print(count)
     if (is.null(data) || nrow(data) == 0) return(zeroGrob())
 
     # is there some sorting on group necessary here before munching?
