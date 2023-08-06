@@ -108,7 +108,7 @@ GeomVennEllipse <- ggproto(
     params
   },
   setup_data = function(data, params, n = 360L) {
-    browser()
+    #browser()
     data$a <- if (is.null(data$a)) 1 else data$a
     data$b <- if (is.null(data$b)) 1 else data$b
     data$angle <- if (is.null(data$angle)) 0 else data$angle
@@ -131,23 +131,9 @@ GeomVennEllipse <- ggproto(
         data$m1[i],
         data$m2[i]
       )
-      cbind(ellipse_path, c(unclass(data[i, cols_to_keep]), fill = NA))
+      cbind(ellipse_path, unclass(data[i, cols_to_keep]))
     })
-
-    fills <- poly_segment(ellipses, bit_comb(n_ellipses, boolean = TRUE)[-1, ])
-    counts <- params$count
-
-    test <- vector(mode = "list", length = n_segments)
-
-    for (i in seq_len(n_segments)) {
-      test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, PANEL = 1, fill = counts[i]))
-    }
-
-
-    yyy <- do.call(rbind, ellipses)
-    zzz <- do.call(rbind, c(test, ellipses))
-    zzz$fill = as.character(zzz$fill)
-    yyy
+    do.call(rbind, ellipses)
   },
   draw_panel = function(data, panel_params, coord, count = NULL) {
     browser()
@@ -166,6 +152,22 @@ GeomVennEllipse <- ggproto(
       munched$group <- match(munched$group, unique0(munched$group))
     }
 
+    aaa <- with(munched[, c("x", "y", "group")], split(munched[, c("x", "y")], group))
+
+    fills <- poly_segment(
+      aaa,
+      bit_comb(3, boolean = TRUE)[-1, ] # to do: do not hard-code this!
+    )
+
+    counts <- count
+
+    test <- vector(mode = "list", length = 7) # to do: do not hard-code this!
+
+    for (i in seq_len(7)) { # to do: do not hard code this!
+      test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+3, PANEL = 1, fill = counts[i])) # to do: do not hard-code this
+    }
+
+    yyy <- do.call(rbind, test)
 
     # as per geom_shape
     first_idx <- !duplicated(munched$group)
@@ -179,20 +181,44 @@ GeomVennEllipse <- ggproto(
 
 
     #browser()
-    polygonGrob(
+    venn_outline <- polygonGrob(
       munched$x, munched$y,
       default.units = "native",
       id = munched$group,
       gp = gpar(
         col = first_rows$colour,
-        fill = alpha(first_rows$fill, first_rows$alpha), # add some ifelse continuous clause here
+        # fill = alpha(first_rows$fill, first_rows$alpha), #to do: do not hard-code, add some ifelse continuous clause here
+        fill = NA,
         lwd = (if (is.null(first_rows$linewidth)) first_rows$size else first_rows$linewidth) * .pt,
         lty = first_rows$linetype
       )
     )
 
+
+    first_idx2 <- !duplicated(yyy$group)
+    first_rows2 <- yyy[first_idx2, ]
+
+    venn_fill <- polygonGrob(
+      yyy$x, yyy$y,
+      default.units = "native",
+      id = yyy$group,
+      gp = gpar(
+        col = NA,
+        fill =first_rows2$fill,
+        lwd = 0.5,
+        lty = 1
+      )
+    )
+
+
+
     # I think best to draw segments first if necessary, then outlines
     # To add separate fills use gTree as per https://github.com/tidyverse/ggplot2/blob/main/R/geom-pointrange.R I think?
+
+    ggplot2:::ggname(
+      "geom_venn_ellipse",
+      grid::grobTree(venn_fill, venn_outline)
+    )
   }
 )
 
@@ -317,8 +343,7 @@ df2 <- tibble( # row 1 = top left, row 2 = top right, row 3 = bottom centre
 )
 
 ggplot(df2, aes(x0 = x0, y0 = y0, a = a, b = b, angle = angle, fill = count, group = id)) +
-  geom_venn_ellipse3(alpha = 1, linetype = "solid", colour = "black") +
-  scale_fill_identity()
+  geom_venn_ellipse3(colour = "black")
 
 
 f1 <- function(n, boolean = TRUE) {
