@@ -18,7 +18,8 @@ df <- tibble(
   x0 = c(0, 1, 0.5),
   y0 = c(0, 0, -0.5),
   count = list(c(11, 22, 33, 1+2, 1+3, 2+3, 1+2+3)),
-  var = c("red", "green", "purple")
+  var = c("red", "green", "purple"),
+  var2 = c(6, 4, 5)
 )
 
 StatTest <- ggproto(
@@ -33,7 +34,7 @@ StatTest <- ggproto(
   },
   compute_panel = function(data, scales, n = 360L) { # n goes here...
     if (length(data) == 0 || nrow(data) == 0) return(data)
-    browser()
+    #browser()
     data$group <- make_unique(as.character(data$group))
     n_ellipses <- nrow(data)
     data <- data[rep(seq_len(n_ellipses), each = n), ]
@@ -53,7 +54,7 @@ GeomTest <- ggproto(
   "GeomTest", GeomPolygon,
   required_aes = c("x", "y"),
   setup_params = function(data, params) {
-    browser()
+    #browser()
     params
   }
 )
@@ -78,4 +79,12 @@ ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
 
 # data$group is 3,1,2 (alphabetical order of colour names)
 ggplot(df, aes(x0 = x0, y0 = y0, fill = var)) +
+  geom_test()
+
+# data$group is all -1
+ggplot(df, aes(x0 = x0, y0 = y0, fill = var2)) +
+  geom_test()
+
+# data$group is 3,1,2 (numeric order of 6, 4, 5 in column var2)
+ggplot(df, aes(x0 = x0, y0 = y0, fill = var2, group = var2)) +
   geom_test()
