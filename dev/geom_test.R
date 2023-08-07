@@ -14,10 +14,29 @@ make_unique <- function(x, sep = '.') {
   paste0(x, sep, sprintf(suffix_format, suffix))
 }
 
+debug(df2ellipse)
+df2ellipse <- function(df, n = 360L) {
+  stopifnot(all(c("x0", "y0", "a", "b", "angle", "m1", "m2") %in% colnames(df)))
+
+  n_ellipses <- nrow(df)
+  df$group <- if (is.null(df$group) | all(df$group == -1)) seq_len(n_ellipses) else df$group
+  df <- df[rep(seq_len(n_ellipses), each = n), ]
+
+  points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)],
+                n_ellipses)
+  cos_p <- cos(points)
+  sin_p <- sin(points)
+  x_tmp <- abs(cos_p)^(2 / df$m1) * df$a * sign(cos_p)
+  y_tmp <- abs(sin_p)^(2 / df$m2) * df$b * sign(sin_p)
+  df$x <- df$x0 + x_tmp * cos(df$angle) - y_tmp * sin(df$angle)
+  df$y <- df$y0 + x_tmp * sin(df$angle) + y_tmp * cos(df$angle)
+  df
+}
+
 df <- tibble(
   x0 = c(0, 1, 0.5),
   y0 = c(0, 0, -0.5),
-  count = list(c(11, 22, 33, 1+2, 1+3, 2+3, 1+2+3)), # overwritten/ignored for now
+  count = list(seq(from = 5, by = 5, length.out = 7)),
   var = c("red", "green", "purple"),
   set = c(3, 1, 2)
 )
@@ -37,36 +56,27 @@ StatTest <- ggproto(
     browser()
     #data$group <- make_unique(as.character(data$group))
     n_ellipses <- nrow(data)
-    data <- data[rep(seq_len(n_ellipses), each = n), ]
-    points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)],
-                  n_ellipses)
-    cos_p <- cos(points)
-    sin_p <- sin(points)
-    x_tmp <- abs(cos_p)^(2 / data$m1) * data$a * sign(cos_p)
-    y_tmp <- abs(sin_p)^(2 / data$m2) * data$b * sign(sin_p)
-    data$x <- data$x0 + x_tmp * cos(data$angle) - y_tmp * sin(data$angle)
-    data$y <- data$y0 + x_tmp * sin(data$angle) + y_tmp * cos(data$angle)
 
-    # Currently counts = c(5, 10, 15, 20, 25, 30, 35)
-    # and set circles = 1 [top right], 2 [bottom], 3 [top left]
-    # therefore counts correspond to the following segments
-    # segments = c(1, 2, 1&2, 3, 1&3, 2&3, 1&2&3)
-    # i.e. same order as bit_comb(3)[-1, ]
-    counts <- seq(from = 5, by = 5, length.out = 7)
-    polys <- with(data[, c("x", "y", "group")], split(data[, c("x", "y")], group))
-    fills <- poly_segment(
-      polys,
-      tt = bit_comb(n_ellipses, boolean = TRUE)[-1, ]
-    )
+    if (!is.null(data$fill) & class(data$fill) == "list") {
+      counts <- data$fill[1][[1]]
+      data$fill <- NULL
+      data <- df2ellipse(data, n = n)
+      polys <- with(data[, c("x", "y", "group")], split(data[, c("x", "y")], group))
+      fills <- poly_segment(
+        polys,
+        tt = bit_comb(n_ellipses, boolean = TRUE)[-1, ]
+      )
+      test <- vector(mode = "list", length = 7) # to do: do not hard-code this!
 
-    test <- vector(mode = "list", length = 7) # to do: do not hard-code this!
+      for (i in seq_len(7)) { # to do: do not hard code this!
+        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+3, PANEL = 1, fill = counts[i])) # to do: do not hard-code this
+      }
 
-    for (i in seq_len(7)) { # to do: do not hard code this!
-      test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+3, PANEL = 1, fill = counts[i])) # to do: do not hard-code this
+      out <- do.call(rbind, test)
+    } else {
+      out <- df2ellipse(data, n = n)
     }
-
-    yyy <- do.call(rbind, test)
-    return(yyy)
+    out
   }
 )
 
@@ -96,9 +106,13 @@ geom_test <- function(mapping = NULL, data = NULL, geom = "polygon",
 # joined in the correct order
 # data$group is all -1 unless we set group explicitly
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) + # we've hard-coded the fill, so fill can be the name of any valid column, it won't make a difference currently
-  geom_test(show.legend = TRUE) +
-  scale_fill_continuous() +
-  theme(legend.position = "right")
+  geom_test() +
+  scale_fill_continuous()
+
+# data$group is all -1
+ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
+  geom_test() +
+  scale_fill_continuous()
 
 # data$group is all -1
 ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
@@ -108,10 +122,10 @@ ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
 ggplot(df, aes(x0 = x0, y0 = y0, fill = var)) +
   geom_test()
 
-# data$group is all -1
+# data$group is all -1, circle are draw in row order, and filled with numbers in set
 ggplot(df, aes(x0 = x0, y0 = y0, fill = set)) +
   geom_test()
 
-# data$group is 3,1,2 (numeric order of 6, 4, 5 in column var2)
+# data$group is 3, 1, 2, circles are drawn in set order and filled with numbers in set
 ggplot(df, aes(x0 = x0, y0 = y0, fill = set, group = set)) +
   geom_test()
