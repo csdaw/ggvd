@@ -28,6 +28,7 @@ df <- tibble(
   x0 = c(0, 1, 0.5),
   y0 = c(0, 0, -0.5),
   count = list(seq(from = 5, by = 5, length.out = 7)),
+  test = list(c("orange", "black", "blue", "red", "green", "purple", "pink")),
   var = c("red", "green", "purple"),
   set = c(3, 1, 2)
 )
@@ -160,9 +161,13 @@ ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) +
   geom_test() +
   scale_fill_continuous()
 
+ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = test)) +
+  geom_test()
+
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count, colour = var)) +
   geom_test(linewidth = 2) +
-  scale_fill_continuous()
+  scale_fill_continuous() +
+  scale_color_discrete(na.translate = FALSE)
 
 # data$group is all -1
 ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
