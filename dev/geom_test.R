@@ -2,19 +2,6 @@ library(ggvd)
 library(ggplot2)
 library(tibble)
 
-# This function is like base::make.unique, but it
-# maintains the ordering of the original names if the values
-# are sorted.
-make_unique <- function(x, sep = '.') {
-  if (!anyDuplicated(x)) return(x)
-  groups <- match(x, unique(x))
-  suffix <- unsplit(lapply(split(x, groups), seq_along), groups)
-  max_chars <- nchar(max(suffix))
-  suffix_format <- paste0('%0', max_chars, 'd')
-  paste0(x, sep, sprintf(suffix_format, suffix))
-}
-
-debug(df2ellipse)
 df2ellipse <- function(df, n = 360L) {
   stopifnot(all(c("x0", "y0", "a", "b", "angle", "m1", "m2") %in% colnames(df)))
 
@@ -32,6 +19,7 @@ df2ellipse <- function(df, n = 360L) {
   df$y <- df$y0 + x_tmp * sin(df$angle) + y_tmp * cos(df$angle)
   df
 }
+# debug(df2ellipse)
 
 df <- tibble(
   x0 = c(0, 1, 0.5),
@@ -43,6 +31,7 @@ df <- tibble(
 
 StatTest <- ggproto(
   "StatTest", Stat,
+  required_aes = c("x0", "y0", "group"),
   setup_data = function(data, params) {
     data$a <- if (is.null(data$a)) 1 else data$a
     data$b <- if (is.null(data$b)) 1 else data$b
@@ -51,32 +40,30 @@ StatTest <- ggproto(
     data$m2 <- if (is.null(data$m2)) data$m1 else data$m2
     data
   },
-  compute_panel = function(data, scales, n = 360L) { # n goes here...
+  compute_panel = function(data, scales, n = 360L) {
     if (length(data) == 0 || nrow(data) == 0) return(data)
     browser()
-    #data$group <- make_unique(as.character(data$group))
     n_ellipses <- nrow(data)
+    n_segments <- 2^n_ellipses - 1
 
     if (!is.null(data$fill) & class(data$fill) == "list") {
       counts <- data$fill[1][[1]]
       data$fill <- NULL
       data <- df2ellipse(data, n = n)
-      polys <- with(data[, c("x", "y", "group")], split(data[, c("x", "y")], group))
       fills <- poly_segment(
-        polys,
+        split(data[, c("x", "y")], data$group),
         tt = bit_comb(n_ellipses, boolean = TRUE)[-1, ]
       )
-      test <- vector(mode = "list", length = 7) # to do: do not hard-code this!
+      test <- vector(mode = "list", length = n_segments)
 
-      for (i in seq_len(7)) { # to do: do not hard code this!
-        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+3, PANEL = 1, fill = counts[i])) # to do: do not hard-code this
+      for (i in seq_len(n_segments)) {
+        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, PANEL = 1, fill = counts[i])) # Not sure if hard-coding panel is okay...
       }
 
-      out <- do.call(rbind, test)
+      do.call(rbind, test)
     } else {
-      out <- df2ellipse(data, n = n)
+      df2ellipse(data, n = n)
     }
-    out
   }
 )
 
@@ -105,7 +92,7 @@ geom_test <- function(mapping = NULL, data = NULL, geom = "polygon",
 # Need to generate truth table with counts in a way that can be
 # joined in the correct order
 # data$group is all -1 unless we set group explicitly
-ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) + # we've hard-coded the fill, so fill can be the name of any valid column, it won't make a difference currently
+ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) +
   geom_test() +
   scale_fill_continuous()
 
