@@ -1,6 +1,7 @@
 library(ggvd)
 library(ggplot2)
 library(tibble)
+library(grid)
 
 
 df2ellipse <- function(df, n = 360L) {
@@ -50,6 +51,7 @@ StatTest <- ggproto(
     cols_to_keep <- setdiff(names(data), c("x0", "y0", "a", "b", "angle", "m1", "m2"))
 
     if (!is.null(data$fill) & class(data$fill) == "list") {
+      data$part <- "set"
       counts <- data$fill[1][[1]]
       data$fill <- NULL
 
@@ -62,12 +64,12 @@ StatTest <- ggproto(
       test <- vector(mode = "list", length = n_segments)
 
       for (i in seq_len(n_segments)) {
-        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, fill = counts[i], PANEL = factor(1))) # Not sure if hard-coding panel is okay..., but it is necessary for now
+        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, fill = counts[i], PANEL = factor(1), part = "segment")) # Not sure if hard-coding panel is okay..., but it is necessary for now
       }
 
-      vctrs::vec_rbind(data, do.call(rbind, test))
+      vctrs::vec_rbind(data, do.call(rbind, test))[, c("x", "y", "part", cols_to_keep)]
     } else {
-      df2ellipse(data, n = n)
+      df2ellipse(data, n = n)[, c("x", "y", cols_to_keep)]
     }
   }
 )
@@ -76,12 +78,69 @@ GeomTest <- ggproto(
   "GeomTest", GeomPolygon,
   required_aes = c("x", "y"),
   setup_params = function(data, params) {
-    browser()
+    #browser()
     params
+  },
+  draw_panel = function(data, panel_params, coord) {
+    browser()
+    n <- nrow(data)
+    if (n == 1) return(zeroGrob())
+
+    munched <- coord_munch(coord, data, panel_params)
+    munched <- munched[order(munched$group), ]
+
+    if (!is.null(munched$part)) {
+      seg_munched <- munched[munched$part == "segment", ]
+      seg_first_idx <- !duplicated(seg_munched$group)
+      seg_first_rows <- seg_munched[seg_first_idx, ]
+
+      seg_poly <- grid::polygonGrob(
+        seg_munched$x, seg_munched$y,
+        default.units = "native",
+        id = seg_munched$group, gp = gpar(
+          col = NA,
+          fill = alpha(seg_first_rows$fill, seg_first_rows$alpha),
+          lwd = seg_first_rows$linewidth * .pt,
+          lty = seg_first_rows$linetype
+        )
+      )
+
+      set_munched <- munched[munched$part == "set", ]
+      set_first_idx <- !duplicated(set_munched$group)
+      set_first_rows <- set_munched[set_first_idx, ]
+
+      set_poly <- grid::polygonGrob(
+        set_munched$x, set_munched$y,
+        default.units = "native",
+        id = set_munched$group, gp = gpar(
+          col = set_first_rows$colour,
+          fill = NA,
+          lwd = set_first_rows$linewidth * .pt,
+          lty = set_first_rows$linetype
+        )
+      )
+
+      ggplot2:::ggname("geom_test", gTree(children = gList(seg_poly, set_poly)))
+
+    } else {
+      first_idx <- !duplicated(munched$group)
+      first_rows <- munched[first_idx, ]
+
+      grid::polygonGrob(
+        munched$x, munched$y,
+        default.units = "native",
+        id = munched$group, gp = gpar(
+          col = first_rows$colour,
+          fill = alpha(first_rows$fill, first_rows$alpha),
+          lwd = first_rows$linewidth * .pt,
+          lty = first_rows$linetype
+        )
+      )
+    }
   }
 )
 
-geom_test <- function(mapping = NULL, data = NULL, geom = "polygon",
+geom_test <- function(mapping = NULL, data = NULL,
                       position = "identity", n = 360L, na.rm = FALSE,
                       show.legend = NA, inherit.aes = TRUE, ...) {
   layer(
@@ -102,7 +161,7 @@ ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) +
   scale_fill_continuous()
 
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count, colour = var)) +
-  geom_test() +
+  geom_test(linewidth = 2) +
   scale_fill_continuous()
 
 # data$group is all -1
