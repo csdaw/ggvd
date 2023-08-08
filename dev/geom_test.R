@@ -2,12 +2,14 @@ library(ggvd)
 library(ggplot2)
 library(tibble)
 
+
 df2ellipse <- function(df, n = 360L) {
   stopifnot(all(c("x0", "y0", "a", "b", "angle", "m1", "m2") %in% colnames(df)))
 
   n_ellipses <- nrow(df)
   df$group <- if (is.null(df$group) | all(df$group == -1)) seq_len(n_ellipses) else df$group
   df <- df[rep(seq_len(n_ellipses), each = n), ]
+  rownames(df) <- NULL
 
   points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)],
                 n_ellipses)
@@ -19,7 +21,7 @@ df2ellipse <- function(df, n = 360L) {
   df$y <- df$y0 + x_tmp * sin(df$angle) + y_tmp * cos(df$angle)
   df
 }
-# debug(df2ellipse)
+#debugonce(df2ellipse)
 
 df <- tibble(
   x0 = c(0, 1, 0.5),
@@ -45,22 +47,25 @@ StatTest <- ggproto(
     browser()
     n_ellipses <- nrow(data)
     n_segments <- 2^n_ellipses - 1
+    cols_to_keep <- setdiff(names(data), c("x0", "y0", "a", "b", "angle", "m1", "m2"))
 
     if (!is.null(data$fill) & class(data$fill) == "list") {
       counts <- data$fill[1][[1]]
       data$fill <- NULL
+
       data <- df2ellipse(data, n = n)
       fills <- poly_segment(
         split(data[, c("x", "y")], data$group),
         tt = bit_comb(n_ellipses, boolean = TRUE)[-1, ]
       )
+
       test <- vector(mode = "list", length = n_segments)
 
       for (i in seq_len(n_segments)) {
-        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, PANEL = 1, fill = counts[i])) # Not sure if hard-coding panel is okay...
+        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, fill = counts[i], PANEL = factor(1))) # Not sure if hard-coding panel is okay..., but it is necessary for now
       }
 
-      do.call(rbind, test)
+      vctrs::vec_rbind(data, do.call(rbind, test))
     } else {
       df2ellipse(data, n = n)
     }
@@ -93,6 +98,10 @@ geom_test <- function(mapping = NULL, data = NULL, geom = "polygon",
 # joined in the correct order
 # data$group is all -1 unless we set group explicitly
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) +
+  geom_test() +
+  scale_fill_continuous()
+
+ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count, colour = var)) +
   geom_test() +
   scale_fill_continuous()
 
