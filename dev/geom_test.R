@@ -5,24 +5,7 @@ library(grid)
 library(ggtrace)
 
 
-df2ellipse <- function(df, n = 360L) {
-  stopifnot(all(c("x0", "y0", "a", "b", "angle", "m1", "m2") %in% colnames(df)))
 
-  n_ellipses <- nrow(df)
-  df$group <- if (is.null(df$group) | all(df$group == -1)) seq_len(n_ellipses) else df$group
-  df <- df[rep(seq_len(n_ellipses), each = n), ]
-  rownames(df) <- NULL
-
-  points <- rep(seq(0, 2 * pi, length.out = n + 1)[seq_len(n)],
-                n_ellipses)
-  cos_p <- cos(points)
-  sin_p <- sin(points)
-  x_tmp <- abs(cos_p)^(2 / df$m1) * df$a * sign(cos_p)
-  y_tmp <- abs(sin_p)^(2 / df$m2) * df$b * sign(sin_p)
-  df$x <- df$x0 + x_tmp * cos(df$angle) - y_tmp * sin(df$angle)
-  df$y <- df$y0 + x_tmp * sin(df$angle) + y_tmp * cos(df$angle)
-  df
-}
 #debugonce(df2ellipse)
 
 df <- tibble(

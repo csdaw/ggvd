@@ -1,22 +1,11 @@
-e1 <- ellipse()
-e2 <- ellipse(x0 = 0.4)
-e3 <- ellipse(x0 = 10)
-e4 <- ellipse(x0 = 0.2, y0 = 0.2)
+e1 <- df2ellipse(data.frame(x0 = 0, y0 = 0))[, c("x", "y")]
+e2 <- df2ellipse(data.frame(x0 = 0.4, y0 = 0))[, c("x", "y")]
+e3 <- df2ellipse(data.frame(x0 = 10, y0 = 0))[, c("x", "y")]
+e4 <- df2ellipse(data.frame(x0 = 0.2, y0 = 0.2))[, c("x", "y")]
 
-truth_table1 <- matrix(
-  c(TRUE, FALSE, TRUE,
-    FALSE, TRUE, TRUE),
-  ncol = 2,
-  nrow = 3
-)
+truth_table1 <- bit_comb(2, boolean = TRUE)[-1, ]
 
-truth_table2 <- matrix(
-  c(TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE,
-    FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE,
-    FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, TRUE),
-  ncol = 3,
-  nrow = 7
-)
+truth_table2 <- bit_comb(3, boolean = TRUE)[-1, ]
 
 test_that("poly_segment works normally", {
   segments1 <- poly_segment(list(as.list(e1), as.list(e2)), truth_table1)
