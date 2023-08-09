@@ -19,18 +19,12 @@ df <- tibble(
 
 StatTest <- ggproto(
   "StatTest", Stat,
-  required_aes = c("x0", "y0", "group"),
-  setup_data = function(data, params) {
-    data$a <- if (is.null(data$a)) 1 else data$a
-    data$b <- if (is.null(data$b)) 1 else data$b
-    data$angle <- if (is.null(data$angle)) 0 else data$angle
-    data$m1 <- if (is.null(data$m1)) 2 else data$m1
-    data$m2 <- if (is.null(data$m2)) data$m1 else data$m2
-    data
-  },
-  compute_panel = function(data, scales, n = 360L) {
+  required_aes = c("x0", "y0"),
+  optional_aes = c("a", "b", "angle", "m1", "m2"),
+  extra_params = c("n", "na.rm"),
+  compute_panel = function(self, data, scales, n = 360L) {
     if (length(data) == 0 || nrow(data) == 0) return(data)
-    #browser()
+
     n_ellipses <- nrow(data)
     n_segments <- 2^n_ellipses - 1
     cols_to_keep <- setdiff(names(data), c("x0", "y0", "a", "b", "angle", "m1", "m2"))
@@ -41,23 +35,26 @@ StatTest <- ggproto(
       data$fill <- NULL
 
       data <- df2ellipse(data, n = n)
-      fills <- poly_segment(
+
+      data_segments <- poly_segment(
         split(data[, c("x", "y")], data$group),
         tt = bit_comb(n_ellipses, boolean = TRUE)[-1, ]
       )
-
-      test <- vector(mode = "list", length = n_segments)
+      data2 <- vector(mode = "list", length = n_segments)
 
       for (i in seq_len(n_segments)) {
-        test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, fill = counts[i], PANEL = factor(1), part = "segment")) # Not sure if hard-coding panel is okay..., but it is necessary for now
+        data2[[i]] <- cbind.data.frame(
+          data_segments[[i]],
+          list(group = i+n_ellipses, fill = counts[i], PANEL = factor(1), part = "segment")
+        ) # Not sure if hard-coding panel is okay..., but it is necessary for now
       }
 
-      out <- vctrs::vec_rbind(data, do.call(rbind, test))[, c("x", "y", "part", cols_to_keep)]
+      data <- vctrs::vec_rbind(data, do.call(rbind, data2))[, c("x", "y", "part", cols_to_keep)]
 
       # This is a bit janky, deal with NAs in discrete scale prior to scale determination
-      if (class(out$fill) == "character") out$fill[is.na(out$fill)] <- unique(out$fill)[2]
-      if (!is.null(out$colour) & class(out$colour) == "character") out$colour[is.na(out$colour)] <- unique(out$colour)[2]
-      out
+      if (class(data$fill) == "character") data$fill[is.na(data$fill)] <- unique(data$fill)[2]
+      if (!is.null(data$colour) & class(data$colour) == "character") data$colour[is.na(data$colour)] <- unique(data$colour)[2]
+      data
     } else {
       df2ellipse(data, n = n)[, c("x", "y", cols_to_keep)]
     }
