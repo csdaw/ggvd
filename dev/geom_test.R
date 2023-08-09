@@ -4,7 +4,7 @@ library(tibble)
 library(grid)
 library(ggtrace)
 
-
+geom_test <- ggvd::geom_venn_ellipse
 
 #debugonce(df2ellipse)
 
@@ -184,7 +184,7 @@ ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
 
 # data$group is 3,1,2 (alphabetical order of colour names)
 ggplot(df, aes(x0 = x0, y0 = y0, fill = var)) +
-  geom_test()
+  geom_test(alpha = 0.3)
 
 # data$group is all -1, circle are draw in row order, and filled with numbers in set
 ggplot(df, aes(x0 = x0, y0 = y0, fill = set)) +

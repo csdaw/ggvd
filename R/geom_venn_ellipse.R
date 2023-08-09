@@ -56,12 +56,11 @@ GeomVennEllipse <- ggproto(
     munched <- munched[order(munched$group), ]
 
     if (!is.null(munched$part)) {
-      #browser()
       seg_munched <- munched[munched$part == "segment", ]
       seg_first_idx <- !duplicated(seg_munched$group)
       seg_first_rows <- seg_munched[seg_first_idx, ]
 
-      segments <- grid::polygonGrob(
+      fills <- grid::polygonGrob(
         seg_munched$x, seg_munched$y,
         default.units = "native",
         id = seg_munched$group,
@@ -77,26 +76,23 @@ GeomVennEllipse <- ggproto(
       set_first_idx <- !duplicated(set_munched$group)
       set_first_rows <- set_munched[set_first_idx, ]
 
-      sets <- grid::polygonGrob(
+      outlines <- grid::polygonGrob(
         set_munched$x, set_munched$y,
         default.units = "native",
         id = set_munched$group,
         gp = grid::gpar(
-          col = set_first_rows$colour,
           fill = NA,
+          col = set_first_rows$colour,
           lwd = set_first_rows$linewidth * .pt,
           lty = set_first_rows$linetype
         )
       )
 
-      gTree(name = "geom_venn_ellipse", children = gList(segments, sets))
-
     } else {
       first_idx <- !duplicated(munched$group)
       first_rows <- munched[first_idx, ]
 
-      grid::polygonGrob(
-        name = "geom_venn_ellipse",
+      fills <- grid::polygonGrob(
         munched$x, munched$y,
         default.units = "native",
         id = munched$group,
@@ -107,7 +103,21 @@ GeomVennEllipse <- ggproto(
           lty = first_rows$linetype
         )
       )
+
+      outlines <- grid::polygonGrob(
+        munched$x, munched$y,
+        default.units = "native",
+        id = munched$group,
+        gp = gpar(
+          fill = NA,
+          col = first_rows$colour,
+          lwd = first_rows$linewidth * .pt,
+          lty = first_rows$linetype
+        )
+      )
     }
+
+    gTree(name = "geom_venn_ellipse", children = grid::gList(fills, outlines))
   }
 )
 
