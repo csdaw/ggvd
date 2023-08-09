@@ -2,6 +2,7 @@ library(ggvd)
 library(ggplot2)
 library(tibble)
 library(grid)
+library(ggtrace)
 
 
 df2ellipse <- function(df, n = 360L) {
@@ -46,7 +47,7 @@ StatTest <- ggproto(
   },
   compute_panel = function(data, scales, n = 360L) {
     if (length(data) == 0 || nrow(data) == 0) return(data)
-    browser()
+    #browser()
     n_ellipses <- nrow(data)
     n_segments <- 2^n_ellipses - 1
     cols_to_keep <- setdiff(names(data), c("x0", "y0", "a", "b", "angle", "m1", "m2"))
@@ -68,7 +69,11 @@ StatTest <- ggproto(
         test[[i]] <- cbind.data.frame(fills[[i]], list(group = i+n_ellipses, fill = counts[i], PANEL = factor(1), part = "segment")) # Not sure if hard-coding panel is okay..., but it is necessary for now
       }
 
-      vctrs::vec_rbind(data, do.call(rbind, test))[, c("x", "y", "part", cols_to_keep)]
+      out <- vctrs::vec_rbind(data, do.call(rbind, test))[, c("x", "y", "part", cols_to_keep)]
+
+      if (class(out$fill) == "character") out$fill[is.na(out$fill)] <- "thisisaplaceholder"
+      if (!is.null(out$colour) & class(out$colour) == "character") out$colour[is.na(out$colour)] <- "thisisaplaceholder"
+      out
     } else {
       df2ellipse(data, n = n)[, c("x", "y", cols_to_keep)]
     }
@@ -78,12 +83,14 @@ StatTest <- ggproto(
 GeomTest <- ggproto(
   "GeomTest", GeomPolygon,
   required_aes = c("x", "y"),
+  default_aes = aes(colour = NA, fill = NA, linewidth = 0.5, linetype = 1,
+                    alpha = NA, subgroup = NULL),
   setup_params = function(data, params) {
     #browser()
     params
   },
   draw_panel = function(data, panel_params, coord) {
-    browser()
+    #browser()
     n <- nrow(data)
     if (n == 1) return(zeroGrob())
 
@@ -91,11 +98,12 @@ GeomTest <- ggproto(
     munched <- munched[order(munched$group), ]
 
     if (!is.null(munched$part)) {
+      #browser()
       seg_munched <- munched[munched$part == "segment", ]
       seg_first_idx <- !duplicated(seg_munched$group)
       seg_first_rows <- seg_munched[seg_first_idx, ]
 
-      seg_poly <- grid::polygonGrob(
+      segments <- grid::polygonGrob(
         seg_munched$x, seg_munched$y,
         default.units = "native",
         id = seg_munched$group, gp = gpar(
@@ -110,7 +118,7 @@ GeomTest <- ggproto(
       set_first_idx <- !duplicated(set_munched$group)
       set_first_rows <- set_munched[set_first_idx, ]
 
-      set_poly <- grid::polygonGrob(
+      sets <- grid::polygonGrob(
         set_munched$x, set_munched$y,
         default.units = "native",
         id = set_munched$group, gp = gpar(
@@ -121,7 +129,7 @@ GeomTest <- ggproto(
         )
       )
 
-      ggplot2:::ggname("geom_test", gTree(children = gList(seg_poly, set_poly)))
+      ggplot2:::ggname("geom_test", gTree(children = gList(segments, sets)))
 
     } else {
       first_idx <- !duplicated(munched$group)
@@ -151,6 +159,19 @@ geom_test <- function(mapping = NULL, data = NULL,
   )
 }
 
+
+# > ggtrace::get_method_inheritance(GeomTest)
+# $Geom
+# [1] "aesthetics"      "draw_group"      "draw_layer"      "draw_panel"      "extra_params"    "non_missing_aes"
+# [7] "optional_aes"    "parameters"      "required_aes"    "setup_data"      "setup_params"    "use_defaults"
+#
+# $GeomPolygon
+# [1] "default_aes" "draw_key"    "handle_na"   "rename_size"
+#
+# $GeomTest
+# [1] "draw_panel"   "required_aes" "setup_params"
+
+
 # Top right circle group # = 1, therefore drawn first
 # Bottom circle group # = 2, therefore drawn second
 # Top left circle group # = 3, therefore drawn third
@@ -162,7 +183,8 @@ ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) +
   scale_fill_continuous()
 
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = test)) +
-  geom_test()
+  geom_test(colour = "red") +
+  scale_fill_discrete()
 
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count, colour = var)) +
   geom_test(linewidth = 2) +
