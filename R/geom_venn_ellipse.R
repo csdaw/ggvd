@@ -1,24 +1,6 @@
-library(ggvd)
-library(ggplot2)
-library(tibble)
-library(grid)
-library(ggtrace)
-
-
-
-#debugonce(df2ellipse)
-
-df <- tibble(
-  x0 = c(0, 1, 0.5),
-  y0 = c(0, 0, -0.5),
-  count = list(seq(from = 5, by = 5, length.out = 7)),
-  test = list(c("orange", "black", "blue", "red", "green", "purple", "pink")),
-  var = c("red", "green", "purple"),
-  set = c(3, 1, 2)
-)
-
-StatTest <- ggproto(
-  "StatTest", Stat,
+#' @export
+StatVennEllipse <- ggproto(
+  "StatVennEllipse", Stat,
   required_aes = c("x0", "y0"),
   optional_aes = c("a", "b", "angle", "m1", "m2"),
   extra_params = c("n", "na.rm"),
@@ -61,8 +43,9 @@ StatTest <- ggproto(
   }
 )
 
-GeomTest <- ggproto(
-  "GeomTest", GeomPolygon,
+#' @export
+GeomVennEllipse <- ggproto(
+  "GeomVennEllipse", GeomPolygon,
   default_aes = aes(colour = "black", fill = NA, linewidth = 0.5, linetype = 1,
                     alpha = NA, subgroup = NULL),
   draw_panel = function(self, data, panel_params, coord) {
@@ -82,7 +65,7 @@ GeomTest <- ggproto(
         seg_munched$x, seg_munched$y,
         default.units = "native",
         id = seg_munched$group,
-        gp = gpar(
+        gp = grid::gpar(
           col = NA,
           fill = alpha(seg_first_rows$fill, seg_first_rows$alpha),
           lwd = seg_first_rows$linewidth * .pt,
@@ -98,7 +81,7 @@ GeomTest <- ggproto(
         set_munched$x, set_munched$y,
         default.units = "native",
         id = set_munched$group,
-        gp = gpar(
+        gp = grid::gpar(
           col = set_first_rows$colour,
           fill = NA,
           lwd = set_first_rows$linewidth * .pt,
@@ -106,14 +89,14 @@ GeomTest <- ggproto(
         )
       )
 
-      gTree(name = "geom_test", children = gList(segments, sets))
+      gTree(name = "geom_venn_ellipse", children = gList(segments, sets))
 
     } else {
       first_idx <- !duplicated(munched$group)
       first_rows <- munched[first_idx, ]
 
       grid::polygonGrob(
-        name = "geom_test",
+        name = "geom_venn_ellipse",
         munched$x, munched$y,
         default.units = "native",
         id = munched$group,
@@ -128,68 +111,13 @@ GeomTest <- ggproto(
   }
 )
 
-geom_test <- function(mapping = NULL, data = NULL,
-                      position = "identity", n = 360L, na.rm = FALSE,
-                      show.legend = NA, inherit.aes = TRUE, ...) {
+#' @export
+geom_venn_ellipse <- function(mapping = NULL, data = NULL,
+                              position = "identity", n = 360L, na.rm = FALSE,
+                              show.legend = NA, inherit.aes = TRUE, ...) {
   layer(
-    data = data, mapping = mapping, stat = StatTest, geom = GeomTest,
+    data = data, mapping = mapping, stat = StatVennEllipse, geom = GeomVennEllipse,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
     params = list(n = n, na.rm = na.rm, ...)
   )
 }
-
-
-# > ggtrace::get_method_inheritance(GeomTest)
-# $Geom
-# [1] "aesthetics"      "draw_group"      "draw_layer"      "draw_panel"      "extra_params"    "non_missing_aes"
-# [7] "optional_aes"    "parameters"      "required_aes"    "setup_data"      "setup_params"    "use_defaults"
-#
-# $GeomPolygon
-# [1] "default_aes" "draw_key"    "handle_na"   "rename_size"
-#
-# $GeomTest
-# [1] "draw_panel"   "required_aes" "setup_params"
-
-
-# Top right circle group # = 1, therefore drawn first
-# Bottom circle group # = 2, therefore drawn second
-# Top left circle group # = 3, therefore drawn third
-# Need to generate truth table with counts in a way that can be
-# joined in the correct order
-# data$group is all -1 unless we set group explicitly
-ggplot(df, aes(x0 = x0, y0 = y0)) +
-  geom_test()
-
-ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) +
-  geom_test() +
-  scale_fill_continuous()
-
-ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = test)) +
-  geom_test(colour = "red") +
-  scale_fill_discrete()
-
-ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count, colour = var)) +
-  geom_test(linewidth = 2) +
-  scale_fill_continuous() +
-  scale_color_discrete()
-
-# data$group is all -1
-ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
-  geom_test() +
-  scale_fill_continuous()
-
-# data$group is all -1
-ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
-  geom_test()
-
-# data$group is 3,1,2 (alphabetical order of colour names)
-ggplot(df, aes(x0 = x0, y0 = y0, fill = var)) +
-  geom_test()
-
-# data$group is all -1, circle are draw in row order, and filled with numbers in set
-ggplot(df, aes(x0 = x0, y0 = y0, fill = set)) +
-  geom_test()
-
-# data$group is 3, 1, 2, circles are drawn in set order and filled with numbers in set
-ggplot(df, aes(x0 = x0, y0 = y0, fill = set, group = set)) +
-  geom_test()
