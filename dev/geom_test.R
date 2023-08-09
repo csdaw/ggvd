@@ -63,15 +63,9 @@ StatTest <- ggproto(
 
 GeomTest <- ggproto(
   "GeomTest", GeomPolygon,
-  required_aes = c("x", "y"),
-  default_aes = aes(colour = NA, fill = NA, linewidth = 0.5, linetype = 1,
+  default_aes = aes(colour = "black", fill = NA, linewidth = 0.5, linetype = 1,
                     alpha = NA, subgroup = NULL),
-  setup_params = function(data, params) {
-    #browser()
-    params
-  },
-  draw_panel = function(data, panel_params, coord) {
-    #browser()
+  draw_panel = function(self, data, panel_params, coord) {
     n <- nrow(data)
     if (n == 1) return(zeroGrob())
 
@@ -87,7 +81,8 @@ GeomTest <- ggproto(
       segments <- grid::polygonGrob(
         seg_munched$x, seg_munched$y,
         default.units = "native",
-        id = seg_munched$group, gp = gpar(
+        id = seg_munched$group,
+        gp = gpar(
           col = NA,
           fill = alpha(seg_first_rows$fill, seg_first_rows$alpha),
           lwd = seg_first_rows$linewidth * .pt,
@@ -102,7 +97,8 @@ GeomTest <- ggproto(
       sets <- grid::polygonGrob(
         set_munched$x, set_munched$y,
         default.units = "native",
-        id = set_munched$group, gp = gpar(
+        id = set_munched$group,
+        gp = gpar(
           col = set_first_rows$colour,
           fill = NA,
           lwd = set_first_rows$linewidth * .pt,
@@ -119,7 +115,8 @@ GeomTest <- ggproto(
       grid::polygonGrob(
         munched$x, munched$y,
         default.units = "native",
-        id = munched$group, gp = gpar(
+        id = munched$group,
+        gp = gpar(
           col = first_rows$colour,
           fill = alpha(first_rows$fill, first_rows$alpha),
           lwd = first_rows$linewidth * .pt,
@@ -134,7 +131,7 @@ geom_test <- function(mapping = NULL, data = NULL,
                       position = "identity", n = 360L, na.rm = FALSE,
                       show.legend = NA, inherit.aes = TRUE, ...) {
   layer(
-    data = data, mapping = mapping, stat = "test", geom = "test",
+    data = data, mapping = mapping, stat = StatTest, geom = GeomTest,
     position = position, show.legend = show.legend, inherit.aes = inherit.aes,
     params = list(n = n, na.rm = na.rm, ...)
   )
@@ -159,6 +156,9 @@ geom_test <- function(mapping = NULL, data = NULL,
 # Need to generate truth table with counts in a way that can be
 # joined in the correct order
 # data$group is all -1 unless we set group explicitly
+ggplot(df, aes(x0 = x0, y0 = y0)) +
+  geom_test()
+
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count)) +
   geom_test() +
   scale_fill_continuous()
