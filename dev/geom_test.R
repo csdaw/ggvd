@@ -71,8 +71,9 @@ StatTest <- ggproto(
 
       out <- vctrs::vec_rbind(data, do.call(rbind, test))[, c("x", "y", "part", cols_to_keep)]
 
-      if (class(out$fill) == "character") out$fill[is.na(out$fill)] <- "thisisaplaceholder"
-      if (!is.null(out$colour) & class(out$colour) == "character") out$colour[is.na(out$colour)] <- "thisisaplaceholder"
+      # This is a bit janky, deal with NAs in discrete scale prior to scale determination
+      if (class(out$fill) == "character") out$fill[is.na(out$fill)] <- unique(out$fill)[2]
+      if (!is.null(out$colour) & class(out$colour) == "character") out$colour[is.na(out$colour)] <- unique(out$colour)[2]
       out
     } else {
       df2ellipse(data, n = n)[, c("x", "y", cols_to_keep)]
@@ -189,7 +190,7 @@ ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = test)) +
 ggplot(df, aes(x0 = x0, y0 = y0, group = set, fill = count, colour = var)) +
   geom_test(linewidth = 2) +
   scale_fill_continuous() +
-  scale_color_discrete(na.translate = FALSE)
+  scale_color_discrete()
 
 # data$group is all -1
 ggplot(df, aes(x0 = x0, y0 = y0, fill = count)) +
